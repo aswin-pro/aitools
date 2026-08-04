@@ -1,0 +1,11 @@
+#microphone-button {
+    cursor: pointer;
+}
+#microphone-button svg {
+    vertical-align: middle;
+}
+
+.form-control {
+    height: 61px !important;
+    border-radius: 0px !important;
+}

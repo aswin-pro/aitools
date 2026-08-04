@@ -1,0 +1,10 @@
+{
+    "plugin_id": "SlackNotification",
+    "name": "Slack Notification",
+    "description": "Adds Slack messaging capabilities.",
+    "version": "1.0.0",
+    "img": "slack.png",
+    "main_route": "admin.plugin.slack.settings",
+    "platform": "aitools",
+    "min_version": "3.0.0"
+}

@@ -1,0 +1,21 @@
+.record-btn {
+    position: absolute;
+    right: 4px;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    background: #007bff;
+    border-radius: 50%;
+}
+
+.icon-tabler {
+    stroke: #6c757d;
+}
+
+.record-btn:hover .icon-tabler {
+    stroke: #007bff;
+}
+
+.record-icon-tabler {
+    stroke: #ffffff !important;
+}

@@ -1,0 +1,10 @@
+{
+    "plugin_id": "MSG91SmsNotification",
+    "name": "MSG91 SMS Notification",
+    "description": "Adds SMS Notification capabilities.",
+    "version": "1.0.0",
+    "img": "msg91.png",
+    "main_route": "admin.plugin.msg91_sms_notification.settings",
+    "platform": "aitools",
+    "min_version": "3.0.0"
+}

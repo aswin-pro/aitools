@@ -1,0 +1,10 @@
+{
+    "plugin_id": "TwilioSmsNotification",
+    "name": "Twilio Sms Notification",
+    "description": "Adds Sms Notification capabilities.",
+    "version": "1.0.0",
+    "img": "twilio.png",
+    "main_route": "admin.plugin.twilio_sms_notification.settings",
+    "platform": "aitools",
+    "min_version": "3.0.0"
+}

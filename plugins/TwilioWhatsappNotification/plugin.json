@@ -1,0 +1,10 @@
+{
+    "plugin_id": "TwilioWhatsappNotification",
+    "name": "Twilio WhatsApp Notification",
+    "description": "Adds Whatsapp Notification capabilities.",
+    "version": "1.0.0",
+    "img": "twilio.png",
+    "main_route": "admin.plugin.twilio_whatsapp_notification.settings",
+    "platform": "aitools",
+    "min_version": "3.0.0"
+}
