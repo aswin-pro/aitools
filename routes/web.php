@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\PluginController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Payment\ToyyibpayController;
 use App\Http\Controllers\Payment\FlutterwaveController;
 use Illuminate\Support\Facades\File;
@@ -18,6 +19,9 @@ use Illuminate\Support\Facades\File;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+Route::get('/', [HomeController::class, 'index']);
 
 // Installer Middleware
 Route::group(['middleware' => 'Installer'], function () {
