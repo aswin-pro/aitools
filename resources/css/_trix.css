@@ -1,4 +1,4 @@
-/** These are specific for the tag that will be added to the rich text content */
+/* * These are specific for the tag that will be added to the rich text content
 .trix-content .attachment-gallery > .attachment,
 .trix-content .attachment-gallery > rich-text-attachment {
     flex: 1 0 33%;
@@ -46,4 +46,4 @@
 
 .trix-content img {
     margin: 0 auto;
-}
+} */

@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Payment\ToyyibpayController;
 use App\Http\Controllers\Payment\FlutterwaveController;
 use Illuminate\Support\Facades\File;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,8 +68,11 @@ Route::group(['middleware' => 'Installer'], function () {
     // Admin routes
     Route::group(['as' => 'admin.', 'prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
         // Dashboard
-        Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, "index"])->name('dashboard');
+        // Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, "index"])->name('dashboard');
 
+        Route::get('dashboard', function () {
+    return Inertia::render('Dashboard');
+})->name('dashboard');
         // Users
         Route::get('users', [App\Http\Controllers\Admin\UserController::class, "index"])->name('users');
         Route::get('edit-user/{id}', [App\Http\Controllers\Admin\UserController::class, "editUser"])->name('edit.user');
