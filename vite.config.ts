@@ -23,9 +23,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': '/resources/js',
-            'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
-        },
-            
+        },   
     },
 
     build: {
@@ -33,6 +31,12 @@ export default defineConfig({
     },
         esbuild: {
         jsx: 'automatic',
+    },
+     server: {
+        host: "127.0.0.1",
+        hmr: {
+            host: "127.0.0.1",
+        },
     },
 
 });

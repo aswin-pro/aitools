@@ -10,12 +10,12 @@ import { useTranslation } from 'react-i18next';
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: '/dashboard/settings/profile',
+        url: route('user.edit.account'),
         icon: null,
     },
     {
         title: 'Password',
-        href: '/dashboard/settings/password',
+        url: route('user.change.password'),
         icon: null,
     },
 ];
@@ -43,16 +43,16 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     <nav className="flex flex-col space-y-1 space-x-0">
                         {sidebarNavItems.map((item, index) => (
                             <Button
-                                key={`${typeof item.href === 'string' ? item.href : item.href.url}-${index}`}
+                                key={`${typeof item.url === 'string' ? item.url : item.url.url}-${index}`}
                                 size="sm"
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
                                     'bg-muted':
-                                        currentPath === item.href,
+                                        currentPath === item.url,
                                 })}
                             >
-                                <Link href={item.href}>
+                                <Link href={item.url}>
                                     {item.icon && (
                                         <item.icon className="h-4 w-4" />
                                     )}
