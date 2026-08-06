@@ -8,6 +8,9 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+use Inertia\Resonse;
+
 
 class AccountController extends Controller
 {
@@ -35,7 +38,9 @@ class AccountController extends Controller
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.account.index', compact('account_details', 'settings', 'config'));
+        return Inertia::render('admin/settings/profile', compact('account_details', 'settings', 'config'));
+
+        // return view('admin.pages.account.index', compact('account_details', 'settings', 'config'));
     }
 
     // Edit account
@@ -46,7 +51,7 @@ class AccountController extends Controller
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.account.edit', compact('account_details', 'settings', 'config'));
+        return view('admin.pages.profile', compact('account_details', 'settings', 'config'));
     }
 
     // Update account

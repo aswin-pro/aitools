@@ -32,7 +32,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     const currentPath = window.location.pathname;    
 
     return (
-        <div>
+        <div className="p-5">
             <Heading
                 title="Settings"
                 description="Manage your profile and account settings"
