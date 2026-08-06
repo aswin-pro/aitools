@@ -10,7 +10,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Resonse;
-
+use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rules\Email;
+use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
@@ -51,70 +53,133 @@ class AccountController extends Controller
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.profile', compact('account_details', 'settings', 'config'));
+        return Inertia::render('admin/settings/profile', compact('account_details', 'settings', 'config'));
+        // return view('admin.pages.profile', compact('account_details', 'settings', 'config'));
     }
 
     // Update account
+    // public function updateAccount(Request $request)
+    // {
+    //     // Validation
+    //     $validated = $request->validate([
+    //         'name' => 'required|min:3',
+    //         'email' => 'required'
+    //     ]);
+
+    //     // Check profile image
+    //     if (isset($request->profile_picture)) {
+    //         $validator = $request->validate([
+    //             'profile_picture' => 'required|mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
+    //         ]);
+
+    //         // get profile image
+    //         $profile_picture = $request->profile_picture->getClientOriginalName();
+    //         $UploadProfile = pathinfo($profile_picture, PATHINFO_FILENAME);
+    //         $UploadExtension = pathinfo($profile_picture, PATHINFO_EXTENSION);
+
+    //         // Upload image
+    //         if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "gif" || $UploadExtension == "svg") {
+    //             // Upload image
+    //             $profile_picture = 'images/admin/profile_images/' . $UploadProfile . '_' . uniqid() . '.' . $UploadExtension;
+    //             $request->profile_picture->move(public_path('images/admin/profile_images'), $profile_picture);
+
+    //             // Update user profile image
+    //             User::where('id', auth()->user()->id)->update([
+    //                 'profile_image' => $profile_picture
+    //             ]);
+    //         }
+
+    //         return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
+    //     } else {
+    //         // Update user profile data
+    //         User::where('id', auth()->user()->id)->update([
+    //             'name' => $request->name
+    //         ]);
+
+    //         // Get register user data
+    //         $registerUserData = User::where('id', auth()->user()->id)->first();
+
+    //         if ($request->email != $registerUserData->email) {
+    //             // Check already register count
+    //             $alreadyRegister = User::where('email', $request->email)->count();
+
+    //             // Check already register
+    //             if ($alreadyRegister <= 0) {
+    //                 // Update user profile data
+    //                 User::where('id', auth()->user()->id)->update([
+    //                     'email' => $request->email
+    //                 ]);
+    //                 return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
+    //             } else {
+    //                 return redirect()->route('admin.edit.account')->with('failed', trans('This email address already registered.'));
+    //             }
+    //         }
+
+    //         return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
+    //     }
+    // }
+
     public function updateAccount(Request $request)
     {
-        // Validation
+        
+        $user = User::findOrFail(auth()->id());
+
+        // Validate request
         $validated = $request->validate([
-            'name' => 'required|min:3',
-            'email' => 'required'
+            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'email' => [
+                'required',
+                'email:rfc,dns',
+                'max:255',
+                'unique:users,email,' . $user->id,
+            ],
+            'profile_picture' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,jpg,png,gif,svg,webp',
+                'max:1024',
+            ],
         ]);
 
-        // Check profile image
-        if (isset($request->profile_picture)) {
-            // Image validatation
-            $validator = $request->validate([
-                'profile_picture' => 'required|mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
-            ]);
+        // Upload profile picture
+        if ($request->hasFile('profile_picture')) {
 
-            // get profile image
-            $profile_picture = $request->profile_picture->getClientOriginalName();
-            $UploadProfile = pathinfo($profile_picture, PATHINFO_FILENAME);
-            $UploadExtension = pathinfo($profile_picture, PATHINFO_EXTENSION);
-
-            // Upload image
-            if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "gif" || $UploadExtension == "svg") {
-                // Upload image
-                $profile_picture = 'images/admin/profile_images/' . $UploadProfile . '_' . uniqid() . '.' . $UploadExtension;
-                $request->profile_picture->move(public_path('images/admin/profile_images'), $profile_picture);
-
-                // Update user profile image
-                User::where('id', auth()->user()->id)->update([
-                    'profile_image' => $profile_picture
-                ]);
+            // Delete old image
+            if (
+                $user->profile_image &&
+                File::exists(public_path($user->profile_image))
+            ) {
+                File::delete(public_path($user->profile_image));
             }
 
-            return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
-        } else {
-            // Update user profile data
-            User::where('id', auth()->user()->id)->update([
-                'name' => $request->name
-            ]);
+            $file = $request->file('profile_picture');
 
-            // Get register user data
-            $registerUserData = User::where('id', auth()->user()->id)->first();
+            $filename = pathinfo(
+                $file->getClientOriginalName(),
+                PATHINFO_FILENAME
+            );
 
-            if ($request->email != $registerUserData->email) {
-                // Check already register count
-                $alreadyRegister = User::where('email', $request->email)->count();
+            $extension = $file->getClientOriginalExtension();
 
-                // Check already register
-                if ($alreadyRegister <= 0) {
-                    // Update user profile data
-                    User::where('id', auth()->user()->id)->update([
-                        'email' => $request->email
-                    ]);
-                    return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
-                } else {
-                    return redirect()->route('admin.edit.account')->with('failed', trans('This email address already registered.'));
-                }
-            }
+            $imageName = $filename . '_' . uniqid() . '.' . $extension;
 
-            return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
+            $file->move(
+                public_path('images/admin/profile_images'),
+                $imageName
+            );
+
+            $user->profile_image = 'images/admin/profile_images/' . $imageName;
         }
+
+        // Update profile
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        $user->save();
+
+        return redirect()
+            ->route('admin.edit.account')
+            ->with('success', __('Profile updated successfully!'));
     }
 
     // Change password
@@ -125,28 +190,56 @@ class AccountController extends Controller
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.account.change-password', compact('account_details', 'settings', 'config'));
+        return Inertia::render('admin/settings/security', compact('account_details', 'settings', 'config'));
+
+        // return view('admin.pages.account.change-password', compact('account_details', 'settings', 'config'));
     }
 
     // Update password
+    // public function updatePassword(Request $request)
+    // {
+    //     $validator = $request->validate([
+    //         'new_password' => 'required',
+    //         'confirm_password' => 'required'
+    //     ]);
+
+    //     if ($request->new_password == $request->confirm_password) {
+    //         // Update Password
+    //         User::where('id', auth()->user()->id)->update([
+    //             'password' => bcrypt($request->new_password)
+    //         ]);
+
+    //         return redirect()->route('admin.change.password')->with('success', trans('Profile Password Changed Successfully!'));
+    //     } else {
+    //         return redirect()->route('admin.change.password')->with('failed', trans('Confirm Password Mismatched.'));
+    //     }
+    // }
+
     public function updatePassword(Request $request)
-    {
-        $validator = $request->validate([
-            'new_password' => 'required',
-            'confirm_password' => 'required'
-        ]);
+{
+    $validated = $request->validate([
+        'current_password' => [
+            'required',
+            'current_password',
+        ],
 
-        if ($request->new_password == $request->confirm_password) {
-            // Update Password
-            User::where('id', auth()->user()->id)->update([
-                'password' => bcrypt($request->new_password)
-            ]);
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'max:255',
+            'confirmed',
+        ],
+    ]);
 
-            return redirect()->route('admin.change.password')->with('success', trans('Profile Password Changed Successfully!'));
-        } else {
-            return redirect()->route('admin.change.password')->with('failed', trans('Confirm Password Mismatched.'));
-        }
-    }
+    auth()->user()->update([
+        'password' => Hash::make($validated['new_password']),
+    ]);
+
+    return redirect()
+        ->route('admin.change.password')
+        ->with('success', __('Password updated successfully!'));
+}
 
     // Change theme
     public function changeTheme($id)

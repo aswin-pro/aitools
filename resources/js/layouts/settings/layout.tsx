@@ -4,71 +4,57 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { type PropsWithChildren } from 'react';
-import { useTranslation } from 'react-i18next';
 
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        url: route('user.edit.account'),
+        url: route('admin.edit.account'),
         icon: null,
     },
     {
         title: 'Password',
-        url: route('user.change.password'),
+        url: route('admin.change.password'),
+        icon: null,
+    },
+    {
+        title: 'Appearance',
+        url: '/settings/appearance',
         icon: null,
     },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
-    // i18n
-    const { t } = useTranslation();
-    
-    if (typeof window === 'undefined') {
-        return null;
-    }
-
-    // current path
-    const currentPath = window.location.pathname;    
+export default function SettingsLayout({ children }: { children: React.ReactNode }) {
+    const currentPath = window.location.pathname;
 
     return (
-        <div className="p-5">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
+        <div className="px-4 py-6">
+            <Heading title="Settings" description="Manage your profile and account settings" />
 
-            <div className="flex flex-col lg:flex-row lg:space-x-12">
+            <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item, index) => (
+                        {sidebarNavItems.map((item) => (
                             <Button
-                                key={`${typeof item.url === 'string' ? item.url : item.url.url}-${index}`}
+                                key={item.url}
                                 size="sm"
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted':
-                                        currentPath === item.url,
+                                    'bg-muted': currentPath === item.url,
                                 })}
                             >
-                                <Link href={item.url}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
-                                    )}
-                                    { t(item.title) }
+                                <Link href={item.url} prefetch>
+                                    {item.title}
                                 </Link>
                             </Button>
                         ))}
                     </nav>
                 </aside>
 
-                <Separator className="my-6 lg:hidden" />
+                <Separator className="my-6 md:hidden" />
 
                 <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">
-                        {children}
-                    </section>
+                    <section className="max-w-xl space-y-12">{children}</section>
                 </div>
             </div>
         </div>

@@ -1,76 +1,103 @@
-import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { edit } from '@/routes/security';
-/* @chisel-passkeys */
-import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
-import ManagePasskeys from '@/components/manage-passkeys';
-/* @end-chisel-passkeys */
-/* @chisel-2fa */
-import type { Props as ManageTwoFactorProps } from '@/components/manage-two-factor';
-import ManageTwoFactor from '@/components/manage-two-factor';
-/* @end-chisel-2fa */
+import InputError from "@/components/input-error";
+import AppLayout from "@/layouts/app-layout";
+import SettingsLayout from "@/layouts/settings/layout";
+import { SharedData, type BreadcrumbItem } from "@/types";
+import { Transition } from "@headlessui/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
+import { FormEventHandler, useEffect, useRef } from "react";
 
-type Props = {
-    passwordRules: string;
-} /* @chisel-passkeys */ & ManagePasskeysProps /* @end-chisel-passkeys */ /* @chisel-2fa */ &
-    ManageTwoFactorProps /* @end-chisel-2fa */;
+import HeadingSmall from "@/components/heading-small";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-export default function Security(props: Props) {
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: "Password settings",
+        href: "/settings/password",
+    },
+];
+
+export default function Password() {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
+    const { flash } = usePage<SharedData>().props;
+
+    const {
+        data,
+        setData,
+        errors,
+        post,
+        reset,
+        processing,
+        recentlySuccessful,
+    } = useForm({
+        current_password: "",
+        new_password: "",
+        new_password_confirmation: "",
+    });
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+
+        if (flash.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
+
+    const updatePassword: FormEventHandler = (e) => {
+        e.preventDefault();
+
+        post(route("admin.update.password"), {
+            preserveScroll: true,
+            onSuccess: () => reset(),
+            onError: (errors) => {
+                if (errors.password) {
+                    reset("new_password", "new_password_confirmation");
+                    passwordInput.current?.focus();
+                }
+
+                if (errors.current_password) {
+                    reset("current_password");
+                    currentPasswordInput.current?.focus();
+                }
+            },
+        });
+    };
+
     return (
-        <>
-            <Head title="Security settings" />
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Profile settings" />
 
-            <h1 className="sr-only">Security settings</h1>
+            <SettingsLayout>
+                <div className="space-y-6">
+                    <HeadingSmall
+                        title="Update password"
+                        description="Ensure your account is using a long, random password to stay secure"
+                    />
 
-            <div className="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
-                />
-
-                <Form
-                    {...SecurityController.update.form()}
-                    options={{
-                        preserveScroll: true,
-                    }}
-                    resetOnError={[
-                        'password',
-                        'password_confirmation',
-                        'current_password',
-                    ]}
-                    resetOnSuccess
-                    onError={(errors) => {
-                        if (errors.password) {
-                            passwordInput.current?.focus();
-                        }
-
-                        if (errors.current_password) {
-                            currentPasswordInput.current?.focus();
-                        }
-                    }}
-                    className="space-y-6"
-                >
-                    {({ errors, processing }) => (
-                        <>
-                            <div className="grid gap-2">
+                    <form onSubmit={updatePassword} className="space-y-6">
+                        <div className="grid md:grid-cols-2 gap-7">
+                            <div className="grid col-span-2 gap-2">
                                 <Label htmlFor="current_password">
                                     Current password
                                 </Label>
 
-                                <PasswordInput
+                                <Input
                                     id="current_password"
                                     ref={currentPasswordInput}
-                                    name="current_password"
+                                    value={data.current_password}
+                                    onChange={(e) =>
+                                        setData(
+                                            "current_password",
+                                            e.target.value,
+                                        )
+                                    }
+                                    type="password"
                                     className="mt-1 block w-full"
                                     autoComplete="current-password"
                                     placeholder="Current password"
@@ -82,17 +109,20 @@ export default function Security(props: Props) {
                             <div className="grid gap-2">
                                 <Label htmlFor="password">New password</Label>
 
-                                <PasswordInput
+                                <Input
                                     id="password"
                                     ref={passwordInput}
-                                    name="password"
+                                    value={data.new_password}
+                                    onChange={(e) =>
+                                        setData("new_password", e.target.value)
+                                    }
+                                    type="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="New password"
-                                    passwordrules={props.passwordRules}
                                 />
 
-                                <InputError message={errors.password} />
+                                <InputError message={errors.new_password} />
                             </div>
 
                             <div className="grid gap-2">
@@ -100,56 +130,45 @@ export default function Security(props: Props) {
                                     Confirm password
                                 </Label>
 
-                                <PasswordInput
+                                <Input
                                     id="password_confirmation"
-                                    name="password_confirmation"
+                                    value={data.new_password_confirmation}
+                                    onChange={(e) =>
+                                        setData(
+                                            "new_password_confirmation",
+                                            e.target.value,
+                                        )
+                                    }
+                                    type="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
                                     placeholder="Confirm password"
-                                    passwordrules={props.passwordRules}
                                 />
 
                                 <InputError
-                                    message={errors.password_confirmation}
+                                    message={errors.new_password_confirmation}
                                 />
                             </div>
+                        </div>
 
-                            <div className="flex items-center gap-4">
-                                <Button
-                                    disabled={processing}
-                                    data-test="update-password-button"
-                                >
-                                    Save
-                                </Button>
-                            </div>
-                        </>
-                    )}
-                </Form>
-            </div>
+                        <div className="flex items-center gap-4">
+                            <Button disabled={processing}>Save password</Button>
 
-            {/* @chisel-2fa */}
-            <ManageTwoFactor
-                canManageTwoFactor={props.canManageTwoFactor}
-                requiresConfirmation={props.requiresConfirmation}
-                twoFactorEnabled={props.twoFactorEnabled}
-            />
-            {/* @end-chisel-2fa */}
-
-            {/* @chisel-passkeys */}
-            <ManagePasskeys
-                canManagePasskeys={props.canManagePasskeys}
-                passkeys={props.passkeys}
-            />
-            {/* @end-chisel-passkeys */}
-        </>
+                            <Transition
+                                show={recentlySuccessful}
+                                enter="transition ease-in-out"
+                                enterFrom="opacity-0"
+                                leave="transition ease-in-out"
+                                leaveTo="opacity-0"
+                            >
+                                <p className="text-sm text-neutral-600">
+                                    Saved
+                                </p>
+                            </Transition>
+                        </div>
+                    </form>
+                </div>
+            </SettingsLayout>
+        </AppLayout>
     );
 }
-
-Security.layout = {
-    breadcrumbs: [
-        {
-            title: 'Security settings',
-            href: edit(),
-        },
-    ],
-};
