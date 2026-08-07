@@ -16,6 +16,9 @@ use Artesaos\SEOTools\Facades\SEOTools;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LoginController extends Controller
 {
@@ -143,4 +146,21 @@ class LoginController extends Controller
         }
         return redirect()->to('/user/dashboard');
     }
+
+        public function logout(Request $request)
+    {
+        // Logout the authenticated user
+        Auth::logout();
+
+        // Invalidate the current session
+        $request->session()->invalidate();
+
+        // Generate a new CSRF token
+        $request->session()->regenerateToken();
+
+        // Redirect to login page
+        // return redirect()->route('login');
+
+        return Inertia::location(route('login'));
+    }   
 }

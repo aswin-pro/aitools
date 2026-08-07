@@ -17,7 +17,22 @@ const sidebarNavItems: NavItem[] = [
         icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'General Configuration',
+        url: '/settings/appearance',
+        icon: null,
+    },
+    {
+        title: 'Website Configuration',
+        url: '/settings/appearance',
+        icon: null,
+    },
+    {
+        title: 'AI Tools Configuration',
+        url: '/settings/appearance',
+        icon: null,
+    },
+    {
+        title: 'AWS S3 Configuration',
         url: '/settings/appearance',
         icon: null,
     },

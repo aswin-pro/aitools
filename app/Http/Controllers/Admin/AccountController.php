@@ -190,7 +190,7 @@ class AccountController extends Controller
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return Inertia::render('admin/settings/security', compact('account_details', 'settings', 'config'));
+        return Inertia::render('admin/settings/password', compact('account_details', 'settings', 'config'));
 
         // return view('admin.pages.account.change-password', compact('account_details', 'settings', 'config'));
     }
@@ -216,7 +216,7 @@ class AccountController extends Controller
     // }
 
     public function updatePassword(Request $request)
-{
+    {
     $validated = $request->validate([
         'current_password' => [
             'required',
@@ -228,9 +228,25 @@ class AccountController extends Controller
             'string',
             'min:8',
             'max:255',
-            'confirmed',
         ],
-    ]);
+
+        'confirm_password' => [
+            'required',
+            'same:new_password',
+        ],
+    ],
+    [
+        'current_password.required' => 'Please enter your current password',
+        'current_password.current_password' => 'The current password is incorrect',
+
+        'new_password.required' => 'Please enter a new password.',
+        'new_password.min' => 'The new password must be at least 8 characters.',
+
+        'new_password.confirmed' => 'The passwords do not match.',
+        'confrim_password.required' => 'Please enter a confirm password'
+    ]
+    
+    );
 
     auth()->user()->update([
         'password' => Hash::make($validated['new_password']),
@@ -239,7 +255,7 @@ class AccountController extends Controller
     return redirect()
         ->route('admin.change.password')
         ->with('success', __('Password updated successfully!'));
-}
+    }
 
     // Change theme
     public function changeTheme($id)

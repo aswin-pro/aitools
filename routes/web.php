@@ -143,6 +143,8 @@ Route::group(['middleware' => 'Installer'], function () {
         Route::post('update-account', [App\Http\Controllers\Admin\AccountController::class, "updateAccount"])->name('update.account')->middleware(['demo.mode']);
         Route::get('change-password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
         Route::post('update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
+        Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
 
         // Plugins
         Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
