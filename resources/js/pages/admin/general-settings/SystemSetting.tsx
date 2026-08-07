@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
-import { adminSettingsNav } from "@/config/admin/setting-nav";
+import { generalSettingNav } from "@/config/admin/general-setting-nav";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,16 +20,16 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route("admin.dashboard"),
     },
     {
-        title: "Settings",
+        title: "General Settings",
         href: route("admin.index.account"),
     },
     {
-        title: "Profile",
+        title: "System Settings",
         href: "#",
     },
 ];
 
-export default function Profile() {
+export default function SystemSetting() {
     const { auth, flash } = usePage<SharedData>().props;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,7 +43,7 @@ export default function Profile() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile Settings" />
 
-            <SettingsLayout items={adminSettingsNav}>
+            <SettingsLayout items={generalSettingNav}>
                 <div className="space-y-6">
                     <HeadingSmall
                         title="Profile information"

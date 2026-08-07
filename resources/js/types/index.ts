@@ -9,16 +9,21 @@ export interface BreadcrumbItem {
     href: string;
 }
 
-export interface NavGroup {
-    title: string;
-    items: NavItem[];
-}
+// export interface NavGroup {
+//     title: string;
+//     items: NavItem[];
+// }
 
 export interface NavItem {
     title: string;
     url: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+}
+
+export interface NavGroup {
+    label: string;
+    items: NavItem[];
 }
 
 export interface SharedData {

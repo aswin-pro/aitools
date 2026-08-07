@@ -2,23 +2,14 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, PackageSearch as packageSearch } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        url: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Products',
-        url: '/products',
-        icon: packageSearch,
-    },
-];
+type AppSidebarProps = {
+    groups: NavGroup[]
+}
 
 const footerNavItems: NavItem[] = [
     {
@@ -33,7 +24,7 @@ const footerNavItems: NavItem[] = [
     },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ groups } : AppSidebarProps) {
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -49,7 +40,16 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                {groups.map((group)=>{
+                    return (
+                    <NavMain  
+                        key={group.label}
+                        label={group.label}
+                        items={group.items}
+                    />
+                    )
+
+                })}
             </SidebarContent>
 
             <SidebarFooter>

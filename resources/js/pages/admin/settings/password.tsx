@@ -10,8 +10,17 @@ import { Transition } from "@headlessui/react";
 import { Form, Head, usePage } from "@inertiajs/react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { adminSettingsNav } from "@/config/admin/setting-nav";
 
 const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: "Dashboard",
+        href: route("admin.dashboard"),
+    },
+    {
+        title: "Settings",
+        href: route("admin.index.account"),
+    },
     {
         title: "Password",
         href: "#",
@@ -33,7 +42,7 @@ export default function Password() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Password Settings" />
 
-            <SettingsLayout>
+            <SettingsLayout items={adminSettingsNav}>
                 <div className="space-y-6">
                     <HeadingSmall
                         title="Update password"

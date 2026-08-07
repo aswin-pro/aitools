@@ -10,11 +10,7 @@ import { ChevronsUpDown } from 'lucide-react';
 export function NavUser() {
     const { auth } = usePage<SharedData>().props;
 
-    // const page = usePage();
 
-    // console.log(page);
-
-    // return null;
 
     const { state } = useSidebar();
     const isMobile = useIsMobile();
@@ -41,20 +37,3 @@ export function NavUser() {
         </SidebarMenu>
     );
 }
-
-
-// import { usePage } from '@inertiajs/react';
-
-// export function NavUser() {
-//     const { auth } = usePage().props as any;
-
-//     if (!auth?.user) {
-//         return null;
-//     }
-
-//     return (
-//         <div>
-//             {auth.user.name}
-//         </div>
-//     );
-// }

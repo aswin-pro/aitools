@@ -5,40 +5,12 @@ import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        url: route('admin.edit.account'),
-        icon: null,
-    },
-    {
-        title: 'Password',
-        url: route('admin.change.password'),
-        icon: null,
-    },
-    {
-        title: 'General Configuration',
-        url: '/settings/appearance',
-        icon: null,
-    },
-    {
-        title: 'Website Configuration',
-        url: '/settings/appearance',
-        icon: null,
-    },
-    {
-        title: 'AI Tools Configuration',
-        url: '/settings/appearance',
-        icon: null,
-    },
-    {
-        title: 'AWS S3 Configuration',
-        url: '/settings/appearance',
-        icon: null,
-    },
-];
+type SettingsLayoutProps = {
+    children: React.ReactNode;
+    items: NavItem[];
+}
 
-export default function SettingsLayout({ children }: { children: React.ReactNode }) {
+export default function SettingsLayout({ children, items }: SettingsLayoutProps) {
     const currentPath = window.location.pathname;
 
     return (
@@ -48,7 +20,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item) => (
+                        {items.map((item) => (
                             <Button
                                 key={item.url}
                                 size="sm"
