@@ -24,7 +24,7 @@ export const adminSidebarNav: NavGroup[] = [
         items: [
             {
                 title: "General Settings",
-                url: route("admin.dashboard"),
+                url: route("admin.settings"),
                 icon: Settings,
             },
 

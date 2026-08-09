@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
+use Inertia\Inertia;
 
 class SettingController extends Controller
 {
@@ -49,6 +50,8 @@ class SettingController extends Controller
 
         $settings['image_limit'] = $image_limit;
 
+        $dateTimeFormats = getDateTimeFormats();
+
         // Get all languages from the config
         $languages = config('app.languages');
 
@@ -58,14 +61,67 @@ class SettingController extends Controller
         // Get the default language
         $defaultLanguage = config('app.locale');
 
-        return view('admin.pages.settings.index', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'selectedLanguages', 'defaultLanguage'));
+        return Inertia::render('admin/settings/general-settings/SystemSetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage'));
+
+        // return view('admin.pages.settings.index', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'selectedLanguages', 'defaultLanguage'));
     }
 
     // Update General Setting
     public function changeGeneralSettings(Request $request)
     {
+        $validated = $request->validate([
+            'show_website' => [
+                'required',
+                'in:yes,no',
+            ],
+
+            'timezone' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'languages' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'default_language' => [
+                'required',
+                'string',
+                'max:10',
+            ],
+
+            'date_time_format' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'currency_format_type' => [
+                'required',
+                'string',
+                'in:1,234,567.89,12,34,567.89,1.234.567,89,1 234 567,89,1\'234\'567.89',
+            ],
+
+            'currency_decimals_place' => [
+                'required',
+                'integer',
+                'min:0',
+                'max:4',
+            ],
+
+            'currency' => [
+                'required',
+                'string',
+                'max:10',
+            ],
+        ]);
+
+
         Config::where('config_key', 'show_website')->update([
-            'config_value' => $request->show_website,
+            'config_value' => $validated['show_website'],
         ]);
 
         Config::where('config_key', 'timezone')->update([
@@ -75,7 +131,7 @@ class SettingController extends Controller
         // This will update the languages array in config/app.php file
         $this->updateLanguages($request->languages, $request->default_language);
 
-        // Get the language
+        // // Get the language
         app()->setLocale($request->default_language);
 
         // Update the date format
@@ -84,7 +140,7 @@ class SettingController extends Controller
         ]);
 
         Config::where('config_key', 'currency_format_type')->update([
-            'config_value' => $request->currency_format,
+            'config_value' => $request->currency_format_type,
         ]);
 
         Config::where('config_key', 'currency_decimals_place')->update([
@@ -95,13 +151,13 @@ class SettingController extends Controller
             'config_value' => $request->currency,
         ]);
 
-        Config::where('config_key', 'term')->update([
-            'config_value' => $request->term,
-        ]);
+        // Config::where('config_key', 'term')->update([
+        //     'config_value' => $request->term,
+        // ]);
 
-        // Set new values using putenv
-        $this->updateEnvFile('TIMEZONE', $request->timezone);
-        $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
+        // // Set new values using putenv
+        // $this->updateEnvFile('TIMEZONE', $request->timezone);
+        // $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
 
         // Page redirect
         return redirect()->route('admin.settings')->with('success', trans('General Settings Updated Successfully!'));
@@ -110,6 +166,7 @@ class SettingController extends Controller
     // Update Website Setting
     public function changeWebsiteSettings(Request $request)
     {
+
         Setting::where('id', '1')->update([
             'site_name' => $request->site_name
         ]);
@@ -118,12 +175,13 @@ class SettingController extends Controller
             'config_value' => $request->site_name
         ]);
 
+
         // App name
         $appName = str_replace('"', "", $request->app_name);
         $appName = str_replace("'", "", $appName);
 
         // Set new values using putenv
-        $this->updateEnvFile('APP_NAME', '"'.$appName.'"');
+        $this->updateEnvFile('APP_NAME', '"' . $appName . '"');
 
         Config::where('config_key', 'app_theme')->update([
             'config_value' => $request->app_theme
@@ -144,7 +202,8 @@ class SettingController extends Controller
 
             // Update details
             Setting::where('id', '1')->update([
-                'site_name' => $request->site_name, 'site_logo' => $site_logo
+                'site_name' => $request->site_name,
+                'site_logo' => $site_logo
             ]);
         }
 
@@ -159,7 +218,8 @@ class SettingController extends Controller
 
             // Update details
             Setting::where('id', '1')->update([
-                'site_name' => $request->site_name, 'site_logo_light' => $site_logo_light
+                'site_name' => $request->site_name,
+                'site_logo_light' => $site_logo_light
             ]);
         }
 
@@ -174,7 +234,8 @@ class SettingController extends Controller
 
             // Update details
             Setting::where('id', '1')->update([
-                'site_name' => $request->site_name, 'favicon' => $favi_icon
+                'site_name' => $request->site_name,
+                'favicon' => $favi_icon
             ]);
         }
 
@@ -454,7 +515,7 @@ class SettingController extends Controller
             // Delete all files in bootstrap/cache except .gitignore
             $cachePath  = base_path('bootstrap/cache');
             $cacheFiles = File::files($cachePath);
-            foreach ($cacheFiles as $file) { 
+            foreach ($cacheFiles as $file) {
                 if ($file->getFilename() !== '.gitignore') {
                     File::delete($file);
                 }

@@ -32,17 +32,23 @@ export interface SharedData {
     auth: Auth;
     [key: string]: unknown;
 
-    //    account_details: {
-    //     id: number;
-    //     name: string;
-    //     email: string;
-    //     profile_image: string | null;
-    // };
-
     flash: {
         success?: string;
         error?: string;
     }
+
+    config: ConfigItem[];
+
+    timezonelist: string[];
+
+    currencies: Currency[];
+
+    dateTimeFormats: Record<string, string>;
+
+    defaultLanguage: string;
+
+    languages: Record<string, string>;
+
 }
 
 export interface ProfileForm {
@@ -61,3 +67,32 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+
+type ConfigItem = {
+    id: number;
+    config_key: string;
+    config_value: string | null;
+    status: number;
+    created_at: string;
+    updated_at: string;
+};
+
+export interface Currency {
+    id: number;
+    priority: number;
+    iso_code: string;
+    name: string;
+    symbol: string;
+    subunit: string;
+    subunit_to_unit: number;
+    symbol_first: number;
+    html_entity: string;
+    decimal_mark: string;
+    thousands_separator: string;
+    iso_numeric: string;
+    status: number;
+    created_at: string;
+    updated_at: string;
+};
+

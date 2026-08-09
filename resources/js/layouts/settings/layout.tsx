@@ -40,8 +40,8 @@ export default function SettingsLayout({ children, items }: SettingsLayoutProps)
 
                 <Separator className="my-6 md:hidden" />
 
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">{children}</section>
+                <div className="flex-1 max-w-3xl md:max-w-3xl">
+                    <section className="max-w-4xl space-y-12">{children}</section>
                 </div>
             </div>
         </div>
