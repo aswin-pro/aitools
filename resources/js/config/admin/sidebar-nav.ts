@@ -11,19 +11,14 @@ export const adminSidebarNav: NavGroup[] = [
                 url: route("admin.dashboard"),
                 icon: LayoutGrid,
             },
-            {
-                title: "Products",
-                url: route("admin.dashboard"),
-                icon: PackageSearch,
-            },
         ]
     },
 
     {
-        label: "Settings",
+        label: "Others",
         items: [
             {
-                title: "General Settings",
+                title: "Settings",
                 url: route("admin.settings"),
                 icon: Settings,
             },

@@ -27,7 +27,7 @@ export default function SettingsLayout({ children, items }: SettingsLayoutProps)
                                 variant="ghost"
                                 asChild
                                 className={cn('w-full justify-start', {
-                                    'bg-muted': currentPath === item.url,
+                                     "bg-muted": new URL(item.url).pathname === currentPath,
                                 })}
                             >
                                 <Link href={item.url} prefetch>

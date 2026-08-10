@@ -195,26 +195,6 @@ class AccountController extends Controller
         // return view('admin.pages.account.change-password', compact('account_details', 'settings', 'config'));
     }
 
-    // Update password
-    // public function updatePassword(Request $request)
-    // {
-    //     $validator = $request->validate([
-    //         'new_password' => 'required',
-    //         'confirm_password' => 'required'
-    //     ]);
-
-    //     if ($request->new_password == $request->confirm_password) {
-    //         // Update Password
-    //         User::where('id', auth()->user()->id)->update([
-    //             'password' => bcrypt($request->new_password)
-    //         ]);
-
-    //         return redirect()->route('admin.change.password')->with('success', trans('Profile Password Changed Successfully!'));
-    //     } else {
-    //         return redirect()->route('admin.change.password')->with('failed', trans('Confirm Password Mismatched.'));
-    //     }
-    // }
-
     public function updatePassword(Request $request)
     {
     $validated = $request->validate([

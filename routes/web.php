@@ -71,7 +71,7 @@ Route::group(['middleware' => 'Installer'], function () {
         // Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, "index"])->name('dashboard');
 
         Route::get('dashboard', function () {
-            return Inertia::render('admin/Dashboard');
+            return Inertia::render('admin/dashboard');
         })->name('dashboard');
         
         // Users
@@ -138,12 +138,15 @@ Route::group(['middleware' => 'Installer'], function () {
         Route::get('view-invoice/{id}', [App\Http\Controllers\Admin\TransactionController::class, "viewInvoice"])->name('view.invoice');
 
         // Account Setting
-        Route::get('account', [App\Http\Controllers\Admin\AccountController::class, "index"])->name('index.account');
-        Route::get('edit-account', [App\Http\Controllers\Admin\AccountController::class, "editAccount"])->name('edit.account');
+        Route::get('settings', [App\Http\Controllers\Admin\AccountController::class, "index"])->name('index.account');
+        Route::get('settings/edit-profile', [App\Http\Controllers\Admin\AccountController::class, "editAccount"])->name('edit.account');
         Route::post('update-account', [App\Http\Controllers\Admin\AccountController::class, "updateAccount"])->name('update.account')->middleware(['demo.mode']);
-        Route::get('change-password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
+        Route::get('settings/change-password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
         Route::post('update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
+        //general settings
+        Route::get('settings/system-settings', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
 
 
         // Plugins
@@ -183,7 +186,6 @@ Route::group(['middleware' => 'Installer'], function () {
         Route::get('action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
 
         // Setting
-        Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
         Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
         Route::post('change-aws-s3-settings', [App\Http\Controllers\Admin\SettingController::class, "changeS3Settings"])->name('change.aws.s3.settings')->middleware(['demo.mode']);
         Route::post('change-ai-settings', [App\Http\Controllers\Admin\SettingController::class, "changeAISettings"])->name('change.ai.settings')->middleware(['demo.mode']);

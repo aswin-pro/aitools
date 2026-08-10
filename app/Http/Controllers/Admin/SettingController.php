@@ -63,9 +63,7 @@ class SettingController extends Controller
         // Get the default language
         $defaultLanguage = config('app.locale');
 
-        return Inertia::render('admin/settings/general-settings/SystemSetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage'));
-
-        // return view('admin.pages.settings.index', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'selectedLanguages', 'defaultLanguage'));
+        return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage', 'image_limit'));
     }
 
     // Update General Setting
@@ -103,20 +101,25 @@ class SettingController extends Controller
             'config_value' => $request->currency,
         ]);
 
-        // Config::where('config_key', 'term')->update([
-        //     'config_value' => $request->term,
-        // ]);
+        Config::where('config_key', 'term')->update([
+            'config_value' => $request->term,
+        ]);
 
-        // // Set new values using putenv
-        // $this->updateEnvFile('TIMEZONE', $request->timezone);
-        // $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
+        // Set new values using putenv
+        $this->updateEnvFile('TIMEZONE', $request->timezone);
+        $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
 
         // Page redirect
-        return redirect()->route('admin.settings')->with('success', trans('General Settings Updated Successfully!'));
+        // return back()->with(
+        //     'success',
+        //     'General Settings Updated Successfully!'
+        // );
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'General Settings Updated Successfully!',
+        // ]);
     }
-
-
-
 
 
 

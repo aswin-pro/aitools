@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -35,72 +35,150 @@ export function LanguageMultiSelect({
             onChange(value.filter((item) => item !== code));
         } else {
             onChange([...value, code]);
-        }   
+        }
     };
 
-    const selectedNames = Object.entries(languages)
-        .filter(([code]) => value.includes(code))
-        .map(([, name]) => name);
+    const removeLanguage = (code: string) => {
+        onChange(value.filter((item) => item !== code));
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
+            {/* <PopoverTrigger asChild>
+    <div
+        role="combobox"
+        aria-expanded={open}
+        className={cn(
+            "flex min-h-10 w-full cursor-pointer items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
+            "ring-offset-background focus-within:outline-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        )}
+    >
+        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+            {value.length === 0 ? (
+                <span className="text-muted-foreground">
+                    Select languages
+                </span>
+            ) : (
+                <>
+                    {value.slice(0, 10).map((code) => (
+                        <span
+                            key={code}
+                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium"
+                        >
+                            <span className="max-w-20 truncate">
+                                {languages[code]}
+                            </span>
+
+                            <button
+                                type="button"
+                                className="rounded-sm opacity-60 hover:opacity-100"
+                                onPointerDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    removeLanguage(code);
+                                }}
+                            >
+                                <X className="h-3 w-3 cursor-pointer" />
+                            </button>
+                        </span>
+                    ))}
+
+                    {value.length > 10 && (
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                            +{value.length - 10} more
+                        </span>
+                    )}
+                </>
+            )}
+        </div>
+
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+    </div>
+</PopoverTrigger> */}
+
             <PopoverTrigger asChild>
-                <Button
-                    type="button"
-                    variant="outline"
+                <div
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between font-normal"
+                    className={cn(
+                        "min-h-10 w-full cursor-pointer rounded-md border border-input bg-background px-3 py-2",
+                        // "text-sm ring-offset-background focus-within:outline-none",
+                        // "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+                    )}
                 >
-                    <span className="truncate">
-                        {selectedNames.length > 0
-                            ? selectedNames.join(", ")
-                            : "Select languages"}
-                    </span>
+                    <div className="flex flex-wrap gap-1">
+                        {value.length === 0 ? (
+                            <span className="py-1 text-muted-foreground">
+                                Select languages
+                            </span>
+                        ) : (
+                            value.map((code) => (
+                                <span
+                                    key={code}
+                                    className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium"
+                                >
+                                    {languages[code]}
 
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
+                                    <button
+                                        type="button"
+                                        className="rounded-sm opacity-60 hover:opacity-100"
+                                        onPointerDown={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            removeLanguage(code);
+                                        }}
+                                    >
+                                        <X className="h-3 w-3 cursor-pointer" />
+                                    </button>
+                                </span>
+                            ))
+                        )}
+                    </div>
+                </div>
             </PopoverTrigger>
 
             <PopoverContent
-                className="w-[var(--radix-popover-trigger-width)] p-0"
                 align="start"
+                className="w-[var(--radix-popover-trigger-width)] min-w-0 p-0"
             >
                 <Command>
                     <CommandInput placeholder="Search language..." />
 
-                    <CommandList>
-                        <CommandEmpty>
-                            No language found.
-                        </CommandEmpty>
+                    <CommandList className="max-h-60">
+                        <CommandEmpty>No language found.</CommandEmpty>
 
                         <CommandGroup>
-                            {Object.entries(languages).map(
-                                ([code, name]) => {
-                                    const isSelected = value.includes(code);
+                            {Object.entries(languages).map(([code, name]) => {
+                                const isSelected = value.includes(code);
 
-                                    return (
-                                        <CommandItem
-                                            key={code}
-                                            value={`${code} ${name}`}
-                                            onSelect={() =>
-                                                toggleLanguage(code)
-                                            }
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    isSelected
-                                                        ? "opacity-100"
-                                                        : "opacity-0",
-                                                )}
-                                            />
+                                return (
+                                    <CommandItem
+                                        key={code}
+                                        value={`${code} ${name}`}
+                                        onSelect={() => toggleLanguage(code)}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4 shrink-0",
+                                                isSelected
+                                                    ? "opacity-100"
+                                                    : "opacity-0",
+                                            )}
+                                        />
 
-                                            {name}
-                                        </CommandItem>
-                                    );
-                                },
-                            )}
+                                        <span className="truncate">{name}</span>
+                                    </CommandItem>
+                                );
+                            })}
                         </CommandGroup>
                     </CommandList>
                 </Command>

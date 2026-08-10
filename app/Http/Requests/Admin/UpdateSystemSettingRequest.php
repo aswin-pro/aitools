@@ -34,17 +34,17 @@ class UpdateSystemSettingRequest extends FormRequest
                 'max:100',
             ],
 
-            // 'languages' => [
-            //     'required',
-            //     'array',
-            //     'min:1',
-            // ],
+            'languages' => [
+                'required',
+                'array',
+                'min:1',
+            ],
 
-            // 'default_language' => [
-            //     'required',
-            //     'string',
-            //     'max:10',
-            // ],
+            'default_language' => [
+                'required',
+                'string',
+                'max:10',
+            ],
 
             'date_time_format' => [
                 'required',
@@ -75,6 +75,18 @@ class UpdateSystemSettingRequest extends FormRequest
                 'required',
                 'string',
                 'max:10',
+            ],
+            
+            'term' => [
+                'required', 
+                'in:monthly,yearly'
+            ],
+
+            'image_limit' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:102400'
             ],
         ];
     }

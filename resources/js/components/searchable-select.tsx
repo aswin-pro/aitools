@@ -34,6 +34,7 @@ type SearchableSelectProps = {
     emptyMessage?: string;
     name?: string;
     error?: string;
+    searchable?: boolean;
 };
 
 export function SearchableSelect({
@@ -46,6 +47,7 @@ export function SearchableSelect({
     emptyMessage = "No results found.",
     name,
     error,
+    searchable = true
 }: SearchableSelectProps) {
     const selectedOption = options.find(
         (option) => option.value === value,
@@ -64,7 +66,7 @@ export function SearchableSelect({
                         type="button"
                         variant="outline"
                         role="combobox"
-                        className="max-w-[280px] justify-between font-normal"
+                        className="w-full md:max-w-[280px] justify-between font-normal"
                     >
                         <span className="truncate">
                             {selectedOption?.label || placeholder}
@@ -75,11 +77,14 @@ export function SearchableSelect({
                 </PopoverTrigger>
 
                 <PopoverContent
-                    className="w-[var(--radix-popover-trigger-width)] p-0"
+                    className="w-[var(--radix-popover-trigger-width)]  p-0"
                     align="start"
                 >
                     <Command>
-                        <CommandInput placeholder={searchPlaceholder} />
+                        {searchable && (
+                            <CommandInput placeholder={searchPlaceholder} />
+                        )}
+                        
 
                         <CommandList>
                             <CommandEmpty>
@@ -90,10 +95,7 @@ export function SearchableSelect({
                                 {options.map((option) => (
                                     <CommandItem
                                         key={option.value}
-                                        value={
-                                            option.searchValue ??
-                                            `${option.value} ${option.label}`
-                                        }
+
                                         onSelect={() =>
                                             onChange(option.value)
                                         }

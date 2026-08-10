@@ -49,6 +49,12 @@ export interface SharedData {
 
     languages: Record<string, string>;
 
+    selectedLanguages: string[];
+
+    image_limit: {
+        SIZE_LIMIT: string;
+    };
+
 }
 
 export interface ProfileForm {

@@ -255,7 +255,6 @@ return [
     // Languages
     'languages' => [
   'en' => 'English',
-  'ar' => 'Arabic',
   'bn' => 'Bangla',
   'bg' => 'Bulgarian',
   'zh' => 'Chinese',
@@ -266,7 +265,6 @@ return [
   'he' => 'Hebrew',
   'hu' => 'Hungarian',
   'id' => 'Indonesian',
-  'it' => 'Italian',
   'ja' => 'Japanese',
   'lt' => 'Lithuanian',
   'ms' => 'Malay',
@@ -277,7 +275,6 @@ return [
   'es' => 'Spanish',
   'si' => 'Sinhala',
   'sv' => 'Swedish',
-  'ta' => 'Tamil',
   'th' => 'Thai',
   'tr' => 'Turkish',
   'ur' => 'Urdu',
