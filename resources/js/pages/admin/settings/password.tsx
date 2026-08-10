@@ -63,7 +63,7 @@ export default function Password() {
                             reset,
                         }) => (
                             <>
-                                <div className="grid gap-6 md:grid-cols-2">
+                                <div className="grid gap-6 md:grid-cols-2 items-start">
                                     <div className="space-y-2 md:col-span-2">
                                         <Label
                                             htmlFor="current_password"

@@ -9,10 +9,12 @@ use App\Models\Setting;
 use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateSystemSettingRequest;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class SettingController extends Controller
@@ -67,61 +69,11 @@ class SettingController extends Controller
     }
 
     // Update General Setting
-    public function changeGeneralSettings(Request $request)
+    public function changeGeneralSettings(UpdateSystemSettingRequest $request)
     {
-        $validated = $request->validate([
-            'show_website' => [
-                'required',
-                'in:yes,no',
-            ],
-
-            'timezone' => [
-                'required',
-                'string',
-                'max:100',
-            ],
-
-            'languages' => [
-                'required',
-                'array',
-                'min:1',
-            ],
-
-            'default_language' => [
-                'required',
-                'string',
-                'max:10',
-            ],
-
-            'date_time_format' => [
-                'required',
-                'string',
-                'max:100',
-            ],
-
-            'currency_format_type' => [
-                'required',
-                'string',
-                'in:1,234,567.89,12,34,567.89,1.234.567,89,1 234 567,89,1\'234\'567.89',
-            ],
-
-            'currency_decimals_place' => [
-                'required',
-                'integer',
-                'min:0',
-                'max:4',
-            ],
-
-            'currency' => [
-                'required',
-                'string',
-                'max:10',
-            ],
-        ]);
-
 
         Config::where('config_key', 'show_website')->update([
-            'config_value' => $validated['show_website'],
+            'config_value' => $request->show_website,
         ]);
 
         Config::where('config_key', 'timezone')->update([
@@ -162,6 +114,11 @@ class SettingController extends Controller
         // Page redirect
         return redirect()->route('admin.settings')->with('success', trans('General Settings Updated Successfully!'));
     }
+
+
+
+
+
 
     // Update Website Setting
     public function changeWebsiteSettings(Request $request)

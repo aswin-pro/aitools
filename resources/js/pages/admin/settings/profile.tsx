@@ -65,8 +65,8 @@ export default function Profile() {
                             setError,
                         }) => (
                             <>
-                                <div className="grid gap-7 md:grid-cols-2">
-                                    <div className="grid gap-2">
+                                <div className="grid gap-7 md:grid-cols-2 items-start">
+                                    <div className="grid gap-2 ">
                                         <Label
                                             htmlFor="name"
                                             required
@@ -88,7 +88,7 @@ export default function Profile() {
                                             />
                                     </div>
 
-                                    <div className="grid gap-2">
+                                    <div className="grid gap-2 items-start">
                                         <Label
                                             htmlFor="email"
                                             required
@@ -111,7 +111,7 @@ export default function Profile() {
                                             />
                                     </div>
 
-                                    <div className="grid gap-2 md:col-span-2">
+                                    <div className="grid gap-2 md:col-span-2 items-start">
                                         <Label htmlFor="profile_picture">
                                             Profile Picture
                                         </Label>
