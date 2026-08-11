@@ -63,7 +63,7 @@ class SettingController extends Controller
         // Get the default language
         $defaultLanguage = config('app.locale');
 
-        return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage'));
+        return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage', 'image_limit'));
     }
 
     // Update General Setting
@@ -112,16 +112,9 @@ class SettingController extends Controller
         return to_route(
             'admin.settings'
         );
-
-        // return redirect()
-        //     ->route('admin.settings')
-        //     ->with('success', __('Settings updated successfully!'));
     }
 
  
-
-
-
     // Update Website Setting
     public function changeWebsiteSettings(Request $request)
     {

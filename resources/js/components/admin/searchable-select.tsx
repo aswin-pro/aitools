@@ -16,7 +16,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "../ui/label";
-
+import { Input } from "../ui/input";
 
 type SearchableSelectOption = {
     value: string;
@@ -47,58 +47,49 @@ export function SearchableSelect({
     emptyMessage = "No results found.",
     name,
     error,
-    searchable = true
+    searchable = true,
 }: SearchableSelectProps) {
-    const selectedOption = options.find(
-        (option) => option.value === value,
-    );
+    const selectedOption = options.find((option) => option.value === value);
 
     return (
         <div className="grid gap-2">
-              {label && (
+            {label && (
                 <Label htmlFor={name} required>
                     {label}
                 </Label>
             )}
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        role="combobox"
-                        className="w-full min-w-[100px] justify-between font-normal"
-                    >
-                        <span className="truncate">
-                            {selectedOption?.label || placeholder}
-                        </span>
+                    <div className="relative">
+                        <Input
+                            id={name}
+                            value={selectedOption?.label || ""}
+                            placeholder={placeholder}
+                            readOnly
+                            className="cursor-pointer pr-10"
+                        />
 
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
+                        <ChevronsUpDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
+                    </div>
                 </PopoverTrigger>
 
                 <PopoverContent
-                    className="w-[var(--radix-popover-trigger-width)]  p-0"
+                    className="w-[var(--radix-popover-trigger-width)] p-0"
                     align="start"
                 >
                     <Command>
                         {searchable && (
                             <CommandInput placeholder={searchPlaceholder} />
                         )}
-                        
 
                         <CommandList>
-                            <CommandEmpty>
-                                {emptyMessage}
-                            </CommandEmpty>
+                            <CommandEmpty>{emptyMessage}</CommandEmpty>
 
                             <CommandGroup>
                                 {options.map((option) => (
                                     <CommandItem
                                         key={option.value}
-
-                                        onSelect={() =>
-                                            onChange(option.value)
-                                        }
+                                        onSelect={() => onChange(option.value)}
                                     >
                                         <Check
                                             className={cn(
@@ -118,19 +109,9 @@ export function SearchableSelect({
                 </PopoverContent>
             </Popover>
 
-            {name && (
-                <input
-                    type="hidden"
-                    name={name}
-                    value={value}
-                />
-            )}
+            {name && <input type="hidden" name={name} value={value} />}
 
-            {error && (
-                <p className="text-sm text-destructive">
-                    {error}
-                </p>
-            )}
+            {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
     );
 }

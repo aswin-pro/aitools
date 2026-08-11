@@ -29,10 +29,8 @@ export interface NavGroup {
 
 export interface SharedData {
     name: string;
-    quote: { message: string; author: string };
     auth: Auth;
     [key: string]: unknown;
-
     role: number;
 
     flash: {
@@ -40,23 +38,6 @@ export interface SharedData {
         error?: string;
     }
 
-    config: ConfigItem[];
-
-    timezonelist: string[];
-
-    currencies: Currency[];
-
-    dateTimeFormats: Record<string, string>;
-
-    defaultLanguage: string;
-
-    languages: Record<string, string>;
-
-    selectedLanguages: string[];
-
-    image_limit: {
-        SIZE_LIMIT: string;
-    };
 
 }
 
@@ -79,30 +60,7 @@ export interface User {
 }
 
 
-type ConfigItem = {
-    id: number;
-    config_key: string;
-    config_value: string | null;
-    status: number;
-    created_at: string;
-    updated_at: string;
-};
 
-export interface Currency {
-    id: number;
-    priority: number;
-    iso_code: string;
-    name: string;
-    symbol: string;
-    subunit: string;
-    subunit_to_unit: number;
-    symbol_first: number;
-    html_entity: string;
-    decimal_mark: string;
-    thousands_separator: string;
-    iso_numeric: string;
-    status: number;
-    created_at: string;
-    updated_at: string;
-};
+
+
 

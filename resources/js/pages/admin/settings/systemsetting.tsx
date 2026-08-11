@@ -1,4 +1,4 @@
-import { type BreadcrumbItem, type SharedData } from "@/types";
+import { type BreadcrumbItem } from "@/types";
 import { Form, Head, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import HeadingSmall from "@/components/heading-small";
@@ -6,13 +6,14 @@ import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
-
 import { SearchableSelect } from "@/components/admin/searchable-select";
 import { LanguageMultiSelect } from "@/components/admin/language-multi-select";
 import AppLayout from "@/layouts/app/app-layout";
+import { useTranslation } from "react-i18next";
+import FormInput from "@/components/admin/form-input";
+import { systemSetting } from "@/types/admin";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -31,7 +32,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function SystemSetting() {
     const {
-        flash,
         config,
         timezonelist,
         currencies,
@@ -40,90 +40,67 @@ export default function SystemSetting() {
         languages,
         selectedLanguages,
         image_limit,
-    } = usePage<SharedData>().props;
+    } = usePage<systemSetting>().props;
 
-    const showWebsite = config.find(
-        (item) => item.config_key === "show_website",
-    )?.config_value;
-
-    const timeZone = config.find(
-        (item) => item.config_key === "timezone",
-    )?.config_value;
-
-    const currency = config.find(
-        (item) => item.config_key === "currency",
-    )?.config_value;
-
-    const currencyFormat = config.find(
-        (item) => item.config_key === "currency_format_type",
-    )?.config_value;
-
-    const currencyDecimals = config.find(
-        (item) => item.config_key === "currency_decimals_place",
-    )?.config_value;
-
-    const dateTimeFormat = config.find(
-        (item) => item.config_key === "date_time_format",
-    )?.config_value;
-
-    const term = config.find(
-        (item) => item.config_key === "term",
-    )?.config_value;
-
-    const [websiteVisibility, setWebsiteVisibility] = useState(
-        showWebsite || "yes",
+    const configValues = Object.fromEntries(
+        config.map((item) => [item.config_key, item.config_value]),
     );
 
-    const [timeZoneValue, setTimeZoneValue] = useState(timeZone || "");
+    //accessing the config values
+    configValues.show_website;
+    configValues.timezone;
+    configValues.currency;
+    configValues.currency_format_type;
+    configValues.currency_decimals_place;
+    configValues.date_time_format;
+    configValues.term;
 
-    const [currencyValue, setCurrencyValue] = useState(currency || "");
+    const [settings, setSettings] = useState({
+        websiteVisibility: configValues.show_website || "yes",
+        timezone: configValues.timezone || "",
+        currency: configValues.currency || "",
+        currencyFormat: configValues.currency_format_type || "",
+        currencyDecimals: configValues.currency_decimals_place || 0,
+        dateTimeFormat: configValues.date_time_format || "",
+        defaultLanguage: String(defaultLanguage || ""),
+        selectedLanguages: selectedLanguages || [],
+        term: configValues.term || "",
+    });
 
-    const [currencyFormatValue, setCurrencyFormatValue] = useState(
-        currencyFormat || "",
-    );
+    const [imageLimitValue, setImageLimitValue] = useState(image_limit.SIZE_LIMIT);
 
-    const [currencyDecimalValue, setcurrencyDecimalValue] = useState(
-        currencyDecimals || 0,
-    );
+    const updateSetting = (key: string, value: any) => {
+        setSettings((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
 
-    const [dateTimeFormatValue, setDateTimeFormatValue] = useState(
-        dateTimeFormat || "",
-    );
-
-    const [defaultLanguageValue, setDefaultLanguage] = useState(
-        String(defaultLanguage || ""),
-    );
-
-    const [selectedLanguageValues, setSelectedLanguageValues] = useState<
-        string[]
-    >(selectedLanguages || []);
-
-    const [termValue, setTermValue] = useState(term || "");
-
-    const [imageLimitValue, setImageLimitValue] = useState(
-        image_limit?.SIZE_LIMIT || "",
-    );
+    const { t } = useTranslation();
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="System Settings" />
+            <Head title={t("System Settings")} />
 
-            <SettingsLayout >
+            <SettingsLayout>
                 <div className="space-y-6 max-w-[5xl]">
                     <HeadingSmall
-                        title="System Settings"
-                        description="General Website configuration settings"
+                        title={t("System Settings")}
+                        description={"General Website configuration settings"}
                     />
 
                     <Form
-                        action={route("dashboard.admin.change.general.settings")}
+                        action={route(
+                            "dashboard.admin.change.general.settings",
+                        )}
                         method="post"
                         resetOnSuccess={false}
                         className="space-y-6"
                         onSuccess={() => {
-                            toast.success(
-                                "General Settings Updated Successfully!",
-                            );
+                            toast.success(t("Settings Updated Successfully!"));
+                        }}
+                        onError={() => {
+                            toast.error(t("Error updating settings"));
                         }}
                     >
                         {({
@@ -136,51 +113,69 @@ export default function SystemSetting() {
                             <div>
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-start">
                                     <SearchableSelect
-                                        label="Show Website Frontend?"
-                                        value={websiteVisibility}
-                                        onChange={setWebsiteVisibility}
+                                        label={t("Show Website Frontend?")}
+                                        value={settings.websiteVisibility}
+                                        onChange={(value) =>
+                                            updateSetting(
+                                                "websiteVisibility",
+                                                value,
+                                            )
+                                        }
                                         options={[
-                                            { value: "yes", label: "Yes" },
-                                            { value: "no", label: "No" },
+                                            { value: "yes", label: t("Yes") },
+                                            { value: "no", label: t("No") },
                                         ]}
-                                        placeholder="Select an option"
+                                        placeholder={t("Select an option")}
                                         name="show_website"
                                         error={errors.show_website}
                                         searchable={false}
                                     />
 
                                     <SearchableSelect
-                                        label="Timezone"
-                                        value={timeZoneValue}
-                                        onChange={setTimeZoneValue}
+                                        label={t("Timezone")}
+                                        value={settings.timezone}
+                                        onChange={(value) =>
+                                            updateSetting("timezone", value)
+                                        }
                                         options={timezonelist.map((zone) => ({
                                             value: zone,
                                             label: zone,
                                         }))}
-                                        placeholder="Select timezone"
-                                        searchPlaceholder="Search timezone..."
+                                        placeholder={t("Select timezone")}
+                                        searchPlaceholder={t(
+                                            "Search timezone...",
+                                        )}
                                         name="timezone"
                                         error={errors.timezone}
                                     />
 
                                     <SearchableSelect
-                                        label="Currency"
-                                        value={currencyValue}
-                                        onChange={setCurrencyValue}
+                                        label={t("Currency")}
+                                        value={settings.currency}
+                                        onChange={(value) =>
+                                            updateSetting("currency", value)
+                                        }
                                         options={currencies.map((currency) => ({
                                             value: currency.iso_code,
                                             label: `${currency.name} (${currency.symbol})`,
                                         }))}
-                                        placeholder="Select currency"
-                                        searchPlaceholder="Search currency..."
+                                        placeholder={t("Select currency")}
+                                        searchPlaceholder={t(
+                                            "Search currency...",
+                                        )}
                                         name="currency"
                                         error={errors.currency}
                                     />
 
                                     <SearchableSelect
-                                        label="Currency Format"
-                                        value={currencyFormatValue}
-                                        onChange={setCurrencyFormatValue}
+                                        label={t("Currency Format")}
+                                        value={settings.currencyFormat}
+                                        onChange={(value) =>
+                                            updateSetting(
+                                                "currencyFormat",
+                                                value,
+                                            )
+                                        }
                                         options={[
                                             {
                                                 value: "1,234,567.89",
@@ -203,70 +198,82 @@ export default function SystemSetting() {
                                                 label: "1'234'567.89",
                                             },
                                         ]}
-                                        placeholder="Select currency format"
-                                        searchPlaceholder="Search currency format..."
-                                        emptyMessage="No currency format found."
+                                        placeholder={t(
+                                            "Select currency format",
+                                        )}
+                                        searchPlaceholder={t(
+                                            "Search currency format...",
+                                        )}
+                                        emptyMessage={t(
+                                            "No currency format found.",
+                                        )}
                                         name="currency_format_type"
                                         error={errors.currency_format_type}
                                     />
 
-                                    <div className="grid gap-2">
-                                        <Label
-                                            htmlFor="currency_decimals_place"
-                                            required
-                                        >
-                                            Decimal Places
-                                        </Label>
-
-                                        <Input
-                                            type="number"
-                                            name="currency_decimals_place"
-                                            value={currencyDecimalValue || 0}
-                                            min={0}
-                                            onChange={(e) =>
-                                                setcurrencyDecimalValue(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            placeholder="Decimals Places eg: 2, 3"
-                                        />
-
-                                        <InputError
-                                            message={
-                                                errors.currency_decimals_place
-                                            }
-                                        />
-                                    </div>
+                                    <FormInput
+                                        type="number"
+                                        name="currency_decimals_place"
+                                        label={t("Decimal Places")}
+                                        value={settings.currencyDecimals || 0}
+                                        min={0}
+                                        onChange={(e) =>
+                                            updateSetting(
+                                                "currencyDecimals",
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            "Decimals Places eg: 2, 3",
+                                        )}
+                                        error={errors.currency_decimals_place}
+                                    />
 
                                     <SearchableSelect
-                                        label="Date Time Format"
-                                        value={dateTimeFormatValue}
-                                        onChange={setDateTimeFormatValue}
+                                        label={t("Date Time Format")}
+                                        value={settings.dateTimeFormat}
+                                        onChange={(value) =>
+                                            updateSetting(
+                                                "dateTimeFormat",
+                                                value,
+                                            )
+                                        }
                                         options={Object.entries(
                                             dateTimeFormats,
                                         ).map(([value, label]) => ({
                                             value,
                                             label,
                                         }))}
-                                        placeholder="Select Date & Time format"
-                                        searchPlaceholder="Search date & time format..."
-                                        emptyMessage="No date & time format found."
+                                        placeholder={t(
+                                            "Select Date & Time format",
+                                        )}
+                                        searchPlaceholder={t(
+                                            "Search date & time format...",
+                                        )}
+                                        emptyMessage={t(
+                                            "No date & time format found.",
+                                        )}
                                         name="date_time_format"
                                         error={errors.date_time_format}
                                     />
 
                                     <div className="grid gap-2 md:col-span-3">
                                         <Label htmlFor="languages" required>
-                                            Languages
+                                            {t("Languages")}
                                         </Label>
 
                                         <LanguageMultiSelect
                                             languages={languages}
-                                            value={selectedLanguageValues}
-                                            onChange={setSelectedLanguageValues}
+                                            value={settings.selectedLanguages}
+                                            onChange={(value) =>
+                                                updateSetting(
+                                                    "selectedLanguages",
+                                                    value,
+                                                )
+                                            }
                                         />
 
-                                        {selectedLanguageValues.map(
+                                        {settings.selectedLanguages.map(
                                             (language) => (
                                                 <input
                                                     key={language}
@@ -283,9 +290,14 @@ export default function SystemSetting() {
                                     </div>
 
                                     <SearchableSelect
-                                        label="Default Language"
-                                        value={defaultLanguageValue}
-                                        onChange={setDefaultLanguage}
+                                        label={t("Default Language")}
+                                        value={settings.defaultLanguage}
+                                        onChange={(value) =>
+                                            updateSetting(
+                                                "defaultLanguage",
+                                                value,
+                                            )
+                                        }
                                         options={Object.entries(languages).map(
                                             ([code, name]) => ({
                                                 value: code,
@@ -293,55 +305,51 @@ export default function SystemSetting() {
                                                 searchValue: `${code} ${name}`,
                                             }),
                                         )}
-                                        placeholder="Select default language"
-                                        searchPlaceholder="Search language..."
-                                        emptyMessage="No language found."
+                                        placeholder={t(
+                                            "Select default language",
+                                        )}
+                                        searchPlaceholder={t(
+                                            "Search language...",
+                                        )}
+                                        emptyMessage={t("No language found.")}
                                         name="default_language"
                                         error={errors.default_language}
                                     />
 
                                     <SearchableSelect
-                                        label="Default Plan Term"
-                                        value={termValue}
-                                        onChange={setTermValue}
+                                        label={t("Default Plan Term")}
+                                        value={settings.term}
+                                        onChange={(value) =>
+                                            updateSetting("term", value)
+                                        }
                                         options={[
                                             {
                                                 value: "monthly",
-                                                label: "Monthly",
+                                                label: t("Monthly"),
                                             },
                                             {
                                                 value: "yearly",
-                                                label: "Yearly",
+                                                label: t("Yearly"),
                                             },
                                         ]}
-                                        placeholder="Select an option"
+                                        placeholder={t("Select an option")}
                                         name="term"
                                         error={errors.term}
                                         searchable={false}
                                     />
 
-                                    {/* <div className="grid gap-2">
-                                        <Label htmlFor="image_limit" required>
-                                            Default Image Upload Size
-                                        </Label>
-
-                                        <Input
-                                            id="image_limit"
-                                            name="image_limit"
-                                            type="number"
-                                            value={imageLimitValue}
-                                            onChange={(e) =>
-                                                setImageLimitValue(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            placeholder="Enter image size"
-                                        />
-
-                                        <InputError
-                                            message={errors.image_limit}
-                                        />
-                                    </div> */}
+                                    <FormInput
+                                        id="image_limit"
+                                        name="image_limit"
+                                        type="number"
+                                        label={t("Default Image Upload Size")}
+                                        value={imageLimitValue}
+                                        onChange={(e) =>
+                                            setImageLimitValue(e.target.value)
+                                        }
+                                        placeholder={t("Enter image size")}
+                                        error={errors.image_limit}
+                                    />
                                 </div>
 
                                 <div className="flex items-center mt-4 gap-4">

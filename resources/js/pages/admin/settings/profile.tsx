@@ -1,17 +1,14 @@
 import { type BreadcrumbItem, type SharedData } from "@/types";
 import { Transition } from "@headlessui/react";
 import { Form, Head, usePage } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
-
-import DeleteUser from "@/components/delete-user";
+import { useRef } from "react";
 import HeadingSmall from "@/components/heading-small";
-import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app/app-layout";
+import FormInput from "@/components/admin/form-input";
+import { useTranslation } from "react-i18next";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -29,24 +26,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Profile() {
+    const { t } = useTranslation();
+
     const { auth, flash } = usePage<SharedData>().props;
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (flash.success) toast.success(flash.success);
-        if (flash.error) toast.error(flash.error);
-    }, [flash]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Profile Settings" />
+            <Head title={t("Profile Settings")} />
 
-            <SettingsLayout >
+            <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Profile information"
-                        description="Update your name and email address"
+                        title={t("Profile information")}
+                        description={t("Update your name and email address")}
                     />
 
                     <Form
@@ -55,6 +47,12 @@ export default function Profile() {
                         encType="multipart/form-data"
                         resetOnSuccess={false}
                         className="space-y-6"
+                        onSuccess={() => {
+                            toast.success(t("Profile Updated Successfully!"));
+                        }}
+                        onError={() => {
+                            toast.error(t("Error updating profile"));
+                        }}
                     >
                         {({
                             errors,
@@ -62,126 +60,98 @@ export default function Profile() {
                             recentlySuccessful,
                             clearErrors,
                             setError,
-                        }) => (
-                            <>
-                                <div className="grid gap-7 md:grid-cols-2 items-start">
-                                    <div className="grid gap-2 ">
-                                        <Label
-                                            htmlFor="name"
-                                            required
-                                        >
-                                            Name
-                                        </Label>
+                        }) => {
+                            const handleProfilePictureChange = (
+                                e: React.ChangeEvent<HTMLInputElement>,
+                            ) => {
+                                const file = e.target.files?.[0];
 
-                                        <Input
+                                if (!file) return;
+
+                                if (file.size > 1024 * 1024) {
+                                    toast.error(
+                                        t(
+                                            "Profile photo must be less than 1 MB.",
+                                        ),
+                                    );
+
+                                    setError(
+                                        "profile_picture",
+                                        t(
+                                            "Profile photo must be less than 1 MB.",
+                                        ),
+                                    );
+
+                                    e.target.value = "";
+                                }
+                            };
+
+                            return (
+                                <>
+                                    <div className="grid gap-7 md:grid-cols-2 items-start">
+                                        <FormInput
                                             id="name"
                                             name="name"
+                                            label={t("Name")}
+                                            required
                                             defaultValue={auth.user.name}
                                             autoComplete="name"
-                                            placeholder="Full name"
+                                            placeholder={t("Full name")}
+                                            error={errors.name}
                                             onChange={() => clearErrors("name")}
                                         />
 
-                                            <InputError
-                                                message={errors.name}
-                                            />
-                                    </div>
-
-                                    <div className="grid gap-2 items-start">
-                                        <Label
-                                            htmlFor="email"
-                                            required
-                                        >
-                                            Email Address
-                                        </Label>
-
-                                        <Input
+                                        <FormInput
                                             id="email"
                                             name="email"
                                             type="email"
+                                            label={t("Email Address")}
+                                            required
                                             defaultValue={auth.user.email}
                                             autoComplete="username"
-                                            placeholder="Email address"
-                                            onChange={() => clearErrors("email")}
+                                            placeholder={t("Email address")}
+                                            error={errors.email}
+                                            onChange={() =>
+                                                clearErrors("email")
+                                            }
                                         />
 
-                                            <InputError
-                                                message={errors.email}
-                                            />
-                                    </div>
-
-                                    <div className="grid gap-2 md:col-span-2 items-start">
-                                        <Label htmlFor="profile_picture">
-                                            Profile Picture
-                                        </Label>
-
-                                        <Input
-                                            ref={fileInputRef}
+                                        <FormInput
                                             id="profile_picture"
                                             name="profile_picture"
                                             type="file"
+                                            label={t("Profile Picture")}
                                             accept="image/*"
-                                            onChange={(e) => {
-                                                const file =
-                                                    e.target.files?.[0];
-
-                                                if (!file) return;
-
-                                                if (
-                                                    file.size >
-                                                    1024 * 1024
-                                                ) {
-                                                    toast.error(
-                                                        "Profile photo must be less than 1 MB."
-                                                    );
-
-                                                    setError(
-                                                        "profile_picture",
-                                                        "Profile photo must be less than 1 MB."
-                                                    );
-
-                                                    if (
-                                                        fileInputRef.current
-                                                    ) {
-                                                        fileInputRef.current.value =
-                                                            "";
-                                                    }
-
-                                                    return;
-                                                }
-                                            }}
+                                            error={errors.profile_picture}
+                                            containerClassName="md:col-span-2"
+                                            onChange={
+                                                handleProfilePictureChange
+                                            }
                                         />
-
-                                            <InputError
-                                                message={
-                                                    errors.profile_picture
-                                                }
-                                            />
                                     </div>
-                                </div>
 
-                                <div className="flex items-center gap-4">
-                                    <Button disabled={processing}>
-                                        Save
-                                    </Button>
+                                    <div className="flex items-center gap-4">
+                                        <Button disabled={processing}>
+                                            {t("Save")}
+                                        </Button>
 
-                                    <Transition
-                                        show={recentlySuccessful}
-                                        enter="transition ease-in-out"
-                                        enterFrom="opacity-0"
-                                        leave="transition ease-in-out"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <p className="text-sm text-muted-foreground">
-                                            Saved.
-                                        </p>
-                                    </Transition>
-                                </div>
-                            </>
-                        )}
+                                        <Transition
+                                            show={recentlySuccessful}
+                                            enter="transition ease-in-out"
+                                            enterFrom="opacity-0"
+                                            leave="transition ease-in-out"
+                                            leaveTo="opacity-0"
+                                        >
+                                            <p className="text-sm text-muted-foreground">
+                                                {t("Saved.")}
+                                            </p>
+                                        </Transition>
+                                    </div>
+                                </>
+                            );
+                        }}
                     </Form>
                 </div>
-
             </SettingsLayout>
         </AppLayout>
     );

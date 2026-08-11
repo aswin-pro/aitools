@@ -1,16 +1,14 @@
-import InputError from "@/components/input-error";
 import HeadingSmall from "@/components/heading-small";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import SettingsLayout from "@/layouts/settings/layout";
 import { SharedData, type BreadcrumbItem } from "@/types";
 import { Transition } from "@headlessui/react";
 import { Form, Head, usePage } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
+import {  useRef } from "react";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app/app-layout";
-
+import FormInput from "@/components/admin/form-input";
+import { useTranslation } from "react-i18next";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,25 +26,21 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Password() {
-    const { flash } = usePage<SharedData>().props;
+
+    const { t } = useTranslation();
 
     const currentPasswordRef = useRef<HTMLInputElement>(null);
     const newPasswordRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        if (flash.success) toast.success(flash.success);
-        if (flash.error) toast.error(flash.error);
-    }, [flash]);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password Settings" />
+            <Head title={t("Password Settings")} />
 
-            <SettingsLayout >
+            <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure."
+                        title={t("Update password")}
+                        description={t("Ensure your account is using a long, random password to stay secure.")}
                     />
 
                     <Form
@@ -54,6 +48,12 @@ export default function Password() {
                         method="post"
                         className="space-y-6"
                         resetOnSuccess
+                        onSuccess={() => {
+                            toast.success(t("Password Updated Successfully!"));
+                        }}
+                        onError={() => {
+                            toast.error(t("Error updating password"));
+                        }}
                     >
                         {({
                             errors,
@@ -64,82 +64,52 @@ export default function Password() {
                         }) => (
                             <>
                                 <div className="grid gap-6 md:grid-cols-2 items-start">
-                                    <div className="space-y-2 md:col-span-2">
-                                        <Label
-                                            htmlFor="current_password"
-                                            required
-                                        >
-                                            Current Password
-                                        </Label>
+                                    <FormInput
+                                        label={t("Current Password")}
+                                        ref={currentPasswordRef}
+                                        id="current_password"
+                                        name="current_password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        placeholder={t("Current password")}
+                                        error={errors.current_password}
+                                        containerClassName="md:col-span-2"
+                                        onChange={() =>
+                                            clearErrors("current_password")
+                                        }
+                                    />
 
-                                        <Input
-                                            ref={currentPasswordRef}
-                                            id="current_password"
-                                            name="current_password"
-                                            type="password"
-                                            autoComplete="current-password"
-                                            placeholder="Current password"
-                                            onChange={() => clearErrors("current_password")}
-                                        />
+                                    <FormInput
+                                        label={t("New Password")}
+                                        ref={newPasswordRef}
+                                        id="new_password"
+                                        name="new_password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        placeholder={t("New password")}
+                                        error={errors.new_password}
+                                        onChange={() =>
+                                            clearErrors("new_password")
+                                        }
+                                    />
 
-                                            <InputError
-                                                message={
-                                                    errors.current_password
-                                                }
-                                            />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label
-                                            htmlFor="new_password"
-                                            required
-                                        >
-                                            New Password
-                                        </Label>
-
-                                        <Input
-                                            ref={newPasswordRef}
-                                            id="new_password"
-                                            name="new_password"
-                                            type="password"
-                                            autoComplete="new-password"
-                                            placeholder="New password"
-                                            onChange={() => clearErrors("new_password")}
-                                        />
-
-                                            <InputError
-                                                message={errors.new_password}
-                                            />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label
-                                            htmlFor="new_password_confirmation"
-                                            required
-                                        >
-                                            Confirm Password
-                                        </Label>
-
-                                        <Input
-                                            id="new_password_confirmation"
-                                            name="confirm_password"
-                                            type="password"
-                                            autoComplete="new-password"
-                                            placeholder="Confirm password"
-                                            onChange={() => clearErrors("confirm_password")}
-                                        />
-
-                                            <InputError
-                                                message={
-                                                    errors.confirm_password
-                                                }
-                                            />
-                                    </div>
+                                    <FormInput
+                                        label={t("Confirm Password")}
+                                        id="new_password_confirmation"
+                                        name="confirm_password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        placeholder={t("Confirm password")}
+                                        error={errors.confirm_password}
+                                        onChange={() =>
+                                            clearErrors("confirm_password")
+                                        }
+                                    />
                                 </div>
 
                                 <div className="flex items-center gap-4">
                                     <Button disabled={processing}>
-                                        Save Password
+                                        {t("Save Password")}
                                     </Button>
 
                                     <Transition
@@ -150,7 +120,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-muted-foreground">
-                                            Saved.
+                                            {t("Saved.")}
                                         </p>
                                     </Transition>
                                 </div>
