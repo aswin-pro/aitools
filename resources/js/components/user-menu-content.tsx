@@ -25,7 +25,7 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
     const { t } = useTranslation();
     const role = usePage<SharedData>().props.role;
 
-    const profileRoute = role == 1 ? route('admin.edit.account') : route('user.settings.profile');
+    const profileRoute = role == 1 ? route('dashboard.admin.edit.account') : route('user.settings.profile');
 
     return (
         <>

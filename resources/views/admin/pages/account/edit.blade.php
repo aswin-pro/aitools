@@ -23,7 +23,7 @@
                 {{-- Edit --}}
                 <div class="col-sm-12 col-lg-12">
 
-                    <form action="{{ route('admin.update.account') }}" method="post" enctype="multipart/form-data"
+                    <form action="{{ route('dashboard.admin.update.account') }}" method="post" enctype="multipart/form-data"
                         class="card">
                         @csrf
 

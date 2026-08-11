@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { UserKey, UserPen } from 'lucide-react';
+import { LockKeyhole, Settings, User, UserKey, UserPen } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,19 +22,19 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 title: 'Profile',
                 url: route('dashboard.admin.edit.account'),
                 route: 'dashboard.admin.edit.account',
-                icon: null,
+                icon: User,
             },
             {
                 title: 'Password',
                 url: route('dashboard.admin.change.password'),
                 route: 'dashboard.admin.change.password',
-                icon: null,
+                icon: LockKeyhole,
             },
             {
                 title: 'System Settings',
                 url: route('dashboard.admin.settings'),
                 route: 'dashboard.admin.settings',
-                icon: null,
+                icon: Settings,
             },
         ];
     } else {
@@ -70,8 +70,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-10">
-                <aside className="w-full max-w-xl lg:w-60 border rounded-lg p-3">
-                    <nav className="flex flex-col space-y-1 space-x-0">
+                <aside className="w-full max-w-xl lg:w-60 ">
+                    <nav className="flex flex-col space-y-1 space-x-0 border rounded-lg p-3">
                         {sidebarNavItems.map((item, index) => (
                             <Button
                                 key={`${item.url}-${index}`}
@@ -79,7 +79,9 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                 variant="ghost"
                                 asChild
                                 className={cn("w-full justify-start", {
-                                    "bg-muted": currentPath === item.url,
+                                    "bg-muted": route().current(
+                                        item.route,
+                                    ),
                                 })}
                             >
                                 <Link href={item.url}>

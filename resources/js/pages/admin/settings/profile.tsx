@@ -16,11 +16,11 @@ import AppLayout from "@/layouts/app/app-layout";
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("admin.dashboard"),
+        href: route("dashboard.admin.dashboard"),
     },
     {
         title: "Settings",
-        href: route("admin.index.account"),
+        href: route("dashboard.admin.index.account"),
     },
     {
         title: "Profile",
@@ -50,7 +50,7 @@ export default function Profile() {
                     />
 
                     <Form
-                        action={route("admin.update.account")}
+                        action={route("dashboard.admin.update.account")}
                         method="post"
                         encType="multipart/form-data"
                         resetOnSuccess={false}

@@ -17,11 +17,11 @@ import AppLayout from "@/layouts/app/app-layout";
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("admin.dashboard"),
+        href: route("dashboard.admin.dashboard"),
     },
     {
         title: "Settings",
-        href: route("admin.index.account"),
+        href: route("dashboard.admin.index.account"),
     },
     {
         title: "System Settings",
@@ -116,7 +116,7 @@ export default function SystemSetting() {
                     />
 
                     <Form
-                        action={route("admin.change.general.settings")}
+                        action={route("dashboard.admin.change.general.settings")}
                         method="post"
                         resetOnSuccess={false}
                         className="space-y-6"

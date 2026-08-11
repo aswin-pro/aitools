@@ -5,9 +5,9 @@ use App\Http\Controllers\Admin\PluginController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-    Route::group(['as' => 'admin', 'prefix' => 'dashboard/admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
+    Route::group(['as' => 'dashboard.admin.', 'prefix' => 'dashboard/admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
         // Dashboard
-        Route::get('dashboard', function () {
+        Route::get('overview', function () {
             return Inertia::render('admin/dashboard');
         })->name('dashboard');
         

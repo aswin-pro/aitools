@@ -33,13 +33,13 @@ export function NavMain() {
                 items: [
                     {
                         title: "Overview",
-                        url: "admin.dashboard",
+                        url: "dashboard.admin.dashboard",
                         icon: LayoutGrid,
                         isActive: route().current("admin.dashboard"),
                     },
                     {
                         title: "Settings",
-                        url: "admin.edit.account",
+                        url: "dashboard.admin.edit.account",
                         icon: Settings,
                         isActive: route().current("admin.index.*"),
                     },

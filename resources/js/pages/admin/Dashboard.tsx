@@ -6,7 +6,7 @@ import { Head, usePage } from '@inertiajs/react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
-        href: route('admin.dashboard'),
+        href: route('dashboard.admin.dashboard'),
     },
         {
         title: 'Overview',

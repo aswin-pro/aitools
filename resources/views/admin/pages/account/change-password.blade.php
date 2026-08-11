@@ -22,7 +22,7 @@
             <div class="row row-deck row-cards">
                 {{-- Change Password --}}
                 <div class="col-sm-12 col-lg-12">
-                    <form action="{{ route('admin.update.password') }}" method="post" class="card">
+                    <form action="{{ route('dashboard.admin.update.password') }}" method="post" class="card">
                         @csrf
                         <div class="card-body">
 

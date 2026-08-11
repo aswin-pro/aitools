@@ -66,7 +66,7 @@ export function SearchableSelect({
                         type="button"
                         variant="outline"
                         role="combobox"
-                        className="w-full md:max-w-[280px] justify-between font-normal"
+                        className="w-full min-w-[100px] justify-between font-normal"
                     >
                         <span className="truncate">
                             {selectedOption?.label || placeholder}

@@ -136,7 +136,7 @@ class AccountController extends Controller
             'profile_picture' => [
                 'nullable',
                 'image',
-                'mimes:jpeg,jpg,png,gif,svg,webp',
+                'mimes:jpeg,jpg,png,svg,webp',
                 'max:1024',
             ],
         ]);
@@ -178,7 +178,7 @@ class AccountController extends Controller
         $user->save();
 
         return redirect()
-            ->route('admin.edit.account')
+            ->route('dashboard.admin.edit.account')
             ->with('success', __('Profile updated successfully!'));
     }
 
@@ -233,7 +233,7 @@ class AccountController extends Controller
     ]);
 
     return redirect()
-        ->route('admin.change.password')
+        ->route('dashboard.admin.change.password')
         ->with('success', __('Password updated successfully!'));
     }
 
@@ -245,6 +245,6 @@ class AccountController extends Controller
             'choosed_theme' => $id
         ]);
 
-        return redirect()->route('admin.dashboard');
+        return redirect()->route('dashboard.admin.dashboard');
     }
 }
