@@ -16,6 +16,7 @@ export interface BreadcrumbItem {
 
 export interface NavItem {
     title: string;
+    route: string;
     url: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
@@ -31,6 +32,8 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     [key: string]: unknown;
+
+    role: number;
 
     flash: {
         success?: string;
@@ -66,6 +69,7 @@ export interface ProfileForm {
 
 export interface User {
     id: number;
+    role_id: number;
     name: string;
     email: string;
     profile_picture?: string;

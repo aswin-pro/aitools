@@ -82,12 +82,12 @@ class UpdateSystemSettingRequest extends FormRequest
                 'in:monthly,yearly'
             ],
 
-            'image_limit' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:102400'
-            ],
+            // 'image_limit' => [
+            //     'required',
+            //     'integer',
+            //     'min:1',
+            //     'max:102400'
+            // ],
         ];
     }
 }

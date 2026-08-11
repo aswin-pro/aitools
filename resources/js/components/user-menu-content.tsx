@@ -1,18 +1,31 @@
-import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { UserInfo } from '@/components/user-info';
-import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { type User } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
-import { LogOut, Settings } from 'lucide-react';
-import { route } from 'ziggy-js';
+import {
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { UserInfo } from "@/components/user-info";
+import { useMobileNavigation } from "@/hooks/use-mobile-navigation";
+import { SharedData, type User } from "@/types";
+import { Link, router, usePage } from "@inertiajs/react";
+import { LogOut, Settings } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface UserMenuContentProps {
     user: User;
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
-
     const cleanup = useMobileNavigation();
+
+    const handleLogout = () => {
+        cleanup();
+        router.flushAll();
+    };
+
+    const { t } = useTranslation();
+    const role = usePage<SharedData>().props.role;
+
+    const profileRoute = role == 1 ? route('admin.edit.account') : route('user.settings.profile');
 
     return (
         <>
@@ -22,19 +35,29 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                 </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link className="block w-full" href={route('admin.index.account')} as="button" prefetch onClick={cleanup} >
-                        <Settings className="mr-2" />
-                        My Account
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-                <Link className="block w-full" method="post" href={route('logout')} as="button" onClick={cleanup}>
-                    <LogOut className="mr-2" />
-                    Log out
+                <Link
+                    className="block w-full"
+                    href={profileRoute}
+                    as="button"
+                >
+                    <Settings />
+                    {t("Profile")}
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+                <Link
+                    className="block w-full text-red-600"
+                    method="post"
+                    href={route("logout")}
+                    as="button"
+                    onClick={handleLogout}
+                    data-test="logout-button"
+                >
+                    <LogOut className="text-red-600" />
+                    {t("Log out")}
                 </Link>
             </DropdownMenuItem>
         </>

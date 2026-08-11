@@ -1,16 +1,15 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import react from '@vitejs/plugin-react';
-import { resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
-
+import react from '@vitejs/plugin-react';
+import laravel from 'laravel-vite-plugin';
+import { resolve } from 'node:path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
     plugins: [
         laravel({
-        input: ['resources/css/app.css', 'resources/js/app.tsx'],
-        ssr: 'resources/js/ssr.tsx',
-        refresh: true,
+            input: ['resources/css/app.css', 'resources/js/app.tsx'],
+            ssr: 'resources/js/ssr.tsx',
+            refresh: true,
         }),
         react({
             babel: {
@@ -19,24 +18,13 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-
-    resolve: {
-        alias: {
-            '@': '/resources/js',
-        },   
-    },
-
-    build: {
-        chunkSizeWarningLimit: 1000,
-    },
-        esbuild: {
+    esbuild: {
         jsx: 'automatic',
     },
-     server: {
-        host: "127.0.0.1",
-        hmr: {
-            host: "127.0.0.1",
+    resolve: {
+        alias: {
+            // "@/*": "./resources/js/*",
+            'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
-
 });

@@ -1,18 +1,18 @@
 import { type BreadcrumbItem, type SharedData } from "@/types";
 import { Form, Head, usePage } from "@inertiajs/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import HeadingSmall from "@/components/heading-small";
 import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AppLayout from "@/layouts/app-layout";
+
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
-import { LanguageMultiSelect } from "@/components/language-multi-select";
-import { SearchableSelect } from "@/components/searchable-select";
-import { router } from "@inertiajs/react";
-import { adminSettingsNav } from "@/config/admin/setting-nav";
+
+import { SearchableSelect } from "@/components/admin/searchable-select";
+import { LanguageMultiSelect } from "@/components/admin/language-multi-select";
+import AppLayout from "@/layouts/app/app-layout";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -108,7 +108,7 @@ export default function SystemSetting() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="System Settings" />
 
-            <SettingsLayout items={adminSettingsNav}>
+            <SettingsLayout >
                 <div className="space-y-6 max-w-[5xl]">
                     <HeadingSmall
                         title="System Settings"
@@ -319,8 +319,8 @@ export default function SystemSetting() {
                                         error={errors.term}
                                         searchable={false}
                                     />
-{/* 
-                                    <div className="grid gap-2">
+
+                                    {/* <div className="grid gap-2">
                                         <Label htmlFor="image_limit" required>
                                             Default Image Upload Size
                                         </Label>

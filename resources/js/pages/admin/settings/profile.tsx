@@ -9,10 +9,9 @@ import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
-import { adminSettingsNav } from "@/config/admin/setting-nav";
+import AppLayout from "@/layouts/app/app-layout";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,7 +42,7 @@ export default function Profile() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile Settings" />
 
-            <SettingsLayout items={adminSettingsNav}>
+            <SettingsLayout >
                 <div className="space-y-6">
                     <HeadingSmall
                         title="Profile information"
@@ -183,7 +182,6 @@ export default function Profile() {
                     </Form>
                 </div>
 
-                <DeleteUser />
             </SettingsLayout>
         </AppLayout>
     );

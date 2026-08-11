@@ -5,16 +5,18 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { type BreadcrumbItem as BreadcrumbItemType } from "@/types";
-import { Link } from "@inertiajs/react";
-import { Fragment } from "react";
+} from '@/components/ui/breadcrumb';
+import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
+import { Link } from '@inertiajs/react';
+import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function Breadcrumbs({
     breadcrumbs,
 }: {
     breadcrumbs: BreadcrumbItemType[];
 }) {
+    const { t } = useTranslation();
     return (
         <>
             {breadcrumbs.length > 0 && (
@@ -27,12 +29,12 @@ export function Breadcrumbs({
                                     <BreadcrumbItem>
                                         {isLast ? (
                                             <BreadcrumbPage>
-                                                {item.title}
+                                                { t(item.title) }
                                             </BreadcrumbPage>
                                         ) : (
                                             <BreadcrumbLink asChild>
                                                 <Link href={item.href}>
-                                                    {item.title}
+                                                    { t(item.title) }
                                                 </Link>
                                             </BreadcrumbLink>
                                         )}

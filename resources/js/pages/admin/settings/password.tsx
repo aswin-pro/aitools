@@ -3,19 +3,19 @@ import HeadingSmall from "@/components/heading-small";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/settings/layout";
 import { SharedData, type BreadcrumbItem } from "@/types";
 import { Transition } from "@headlessui/react";
 import { Form, Head, usePage } from "@inertiajs/react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { adminSettingsNav } from "@/config/admin/setting-nav";
+import AppLayout from "@/layouts/app/app-layout";
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("admin.dashboard"),
+        href: route("dahsboard.admin.dashboard"),
     },
     {
         title: "Settings",
@@ -42,7 +42,7 @@ export default function Password() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Password Settings" />
 
-            <SettingsLayout items={adminSettingsNav}>
+            <SettingsLayout >
                 <div className="space-y-6">
                     <HeadingSmall
                         title="Update password"

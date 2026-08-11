@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-
+use Illuminate\Support\Facades\Log; 
 class SettingController extends Controller
 {
     /**
@@ -63,7 +63,7 @@ class SettingController extends Controller
         // Get the default language
         $defaultLanguage = config('app.locale');
 
-        return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage', 'image_limit'));
+        return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage'));
     }
 
     // Update General Setting
@@ -104,22 +104,21 @@ class SettingController extends Controller
         Config::where('config_key', 'term')->update([
             'config_value' => $request->term,
         ]);
-
+ 
         // Set new values using putenv
         $this->updateEnvFile('TIMEZONE', $request->timezone);
         $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
 
-        // Page redirect
-        // return back()->with(
-        //     'success',
-        //     'General Settings Updated Successfully!'
-        // );
+        return to_route(
+            'admin.settings'
+        );
 
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'General Settings Updated Successfully!',
-        // ]);
+        // return redirect()
+        //     ->route('admin.settings')
+        //     ->with('success', __('Settings updated successfully!'));
     }
+
+ 
 
 
 
