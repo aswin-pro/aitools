@@ -19,7 +19,7 @@ export function AppSidebar() {
 
     const dashboardRoute =
         role === 1
-            ? route("dashboard.admin.dashboard")
+            ? route("dashboard.admin.overview")
             : route("dashboard.user.dashboard");
     return (
         <Sidebar collapsible="icon" variant="inset">

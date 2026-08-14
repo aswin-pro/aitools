@@ -14,18 +14,19 @@ import AppLayout from "@/layouts/app/app-layout";
 import { useTranslation } from "react-i18next";
 import FormInput from "@/components/admin/form-input";
 import { systemSetting } from "@/types/admin";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("dashboard.admin.dashboard"),
+        href: route("dashboard.admin.overview"),
     },
     {
         title: "Settings",
         href: route("dashboard.admin.index.account"),
     },
     {
-        title: "System Settings",
+        title: "System Configuration",
         href: "#",
     },
 ];
@@ -85,8 +86,8 @@ export default function SystemSetting() {
             <SettingsLayout>
                 <div className="space-y-6 max-w-[5xl]">
                     <HeadingSmall
-                        title={t("System Settings")}
-                        description={"General Website configuration settings"}
+                        title={t("System Configuration")}
+                        description={"General System configuration settings"}
                     />
 
                     <Form
@@ -354,7 +355,9 @@ export default function SystemSetting() {
 
                                 <div className="flex items-center mt-4 gap-4">
                                     <Button type="submit" disabled={processing}>
-                                        Update
+                                        <LoadingSwap isLoading={processing}>
+                                            Update
+                                        </LoadingSwap>
                                     </Button>
                                 </div>
                             </div>
@@ -365,3 +368,4 @@ export default function SystemSetting() {
         </AppLayout>
     );
 }
+

@@ -137,7 +137,7 @@ class AccountController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpeg,jpg,png,svg,webp',
-                'max:1024',
+                'max:' . env('SIZE_LIMIT'),
             ],
         ]);
 
@@ -245,6 +245,6 @@ class AccountController extends Controller
             'choosed_theme' => $id
         ]);
 
-        return redirect()->route('dashboard.admin.dashboard');
+        return redirect()->route('dashboard.admin.overview');
     }
 }

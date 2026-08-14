@@ -44,63 +44,7 @@ export function LanguageMultiSelect({
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            {/* <PopoverTrigger asChild>
-    <div
-        role="combobox"
-        aria-expanded={open}
-        className={cn(
-            "flex min-h-10 w-full cursor-pointer items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm",
-            "ring-offset-background focus-within:outline-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
-        )}
-    >
-        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
-            {value.length === 0 ? (
-                <span className="text-muted-foreground">
-                    Select languages
-                </span>
-            ) : (
-                <>
-                    {value.slice(0, 10).map((code) => (
-                        <span
-                            key={code}
-                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium"
-                        >
-                            <span className="max-w-20 truncate">
-                                {languages[code]}
-                            </span>
-
-                            <button
-                                type="button"
-                                className="rounded-sm opacity-60 hover:opacity-100"
-                                onPointerDown={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-
-                                    removeLanguage(code);
-                                }}
-                            >
-                                <X className="h-3 w-3 cursor-pointer" />
-                            </button>
-                        </span>
-                    ))}
-
-                    {value.length > 10 && (
-                        <span className="shrink-0 text-xs text-muted-foreground">
-                            +{value.length - 10} more
-                        </span>
-                    )}
-                </>
-            )}
-        </div>
-
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-    </div>
-</PopoverTrigger> */}
-
+    
             <PopoverTrigger asChild>
                 <div
                     role="combobox"
@@ -186,3 +130,6 @@ export function LanguageMultiSelect({
         </Popover>
     );
 }
+
+
+

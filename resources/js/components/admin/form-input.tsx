@@ -8,7 +8,10 @@ interface FormInputProps extends ComponentProps<typeof Input> {
     label: string;
     error?: string;
     required?: boolean;
+    subLable?: string;
     containerClassName?: string; //for className eg: grid grid-cols-2
+    multiline?: boolean;
+    rows?: number;
 }
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
@@ -18,15 +21,24 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             error,
             required = false,
             containerClassName = "",
+            subLable,
             ...props
         },
         ref,
     ) => {
         return (
             <div className={`grid gap-2 ${containerClassName}`}>
-                <Label htmlFor={props.id} required={required}>
-                    {label}
-                </Label>
+                <div className="flex items-center gap-2">
+                    <Label htmlFor={props.id} required={required}>
+                        {label}
+                    </Label>
+                    {subLable && (
+                        <div className="text-xs text-muted-foreground">
+                            ({subLable})
+                        </div>
+                    )}
+                    
+                </div>
 
                 <Input ref={ref} {...props} />
 

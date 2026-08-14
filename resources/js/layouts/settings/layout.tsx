@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LockKeyhole, Settings, User, UserKey, UserPen } from 'lucide-react';
+import { Bot, Calculator, ClockFading, CloudCog, Globe, LockKeyhole, Settings, User, UserKey, UserPen } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,10 +31,40 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 icon: LockKeyhole,
             },
             {
-                title: 'System Settings',
+                title: 'System Configuration',
                 url: route('dashboard.admin.settings'),
                 route: 'dashboard.admin.settings',
                 icon: Settings,
+            },
+            {
+                title: 'Website Configuration',
+                url: route('dashboard.admin.website.settings'),
+                route: 'dashboard.admin.website.settings',
+                icon: Globe,
+            },
+            {
+                title: 'AI Tools Configuration',
+                url: route('dashboard.admin.ai.settings'),
+                route: 'dashboard.admin.ai.settings',
+                icon: Bot,
+            },
+            {
+                title: 'AWS S3 Configuration',
+                url: route('dashboard.admin.awss3.settings'),
+                route: 'dashboard.admin.awss3.settings',
+                icon: CloudCog,
+            },
+            {
+                title: 'Cron Jobs',
+                url: route('dashboard.admin.cron.jobs'),
+                route: 'dashboard.admin.cron.jobs',
+                icon: ClockFading,
+            },
+            {
+                title: 'Invoice & Tax',
+                url: route('dashboard.admin.tax.setting'),
+                route: 'dashboard.admin.tax.setting',
+                icon: Calculator,
             },
         ];
     } else {

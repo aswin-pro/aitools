@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\UpdateTaxSettingsRequest;
+use App\Http\Requests\Admin\WebsiteSettingsRequest;
 use DateTimeZone;
 use App\Models\Theme;
 use App\Models\Config;
@@ -16,7 +18,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
+
 class SettingController extends Controller
 {
     /**
@@ -104,7 +107,7 @@ class SettingController extends Controller
         Config::where('config_key', 'term')->update([
             'config_value' => $request->term,
         ]);
- 
+
         // Set new values using putenv
         $this->updateEnvFile('TIMEZONE', $request->timezone);
         $this->updateEnvFile('SIZE_LIMIT', $request->image_limit);
@@ -114,9 +117,23 @@ class SettingController extends Controller
         );
     }
 
- 
+
+    public function websiteSettings()
+    {
+
+        $themes = Theme::get();
+        $settings = Setting::first();
+        $config = Config::get();
+        $appName = env('APP_NAME', '');
+
+
+        $customizableThemeIds = ["513402991882314"];
+
+        return Inertia::render('admin/settings/website-configuration/index', compact('settings', 'themes', 'config', 'customizableThemeIds', 'appName'));
+    }
+
     // Update Website Setting
-    public function changeWebsiteSettings(Request $request)
+    public function changeWebsiteSettings(WebsiteSettingsRequest $request)
     {
 
         Setting::where('id', '1')->update([
@@ -146,7 +163,7 @@ class SettingController extends Controller
         // Check website logo
         if (isset($request->site_logo)) {
             $validator = $request->validate([
-                'site_logo' => 'mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
+                'site_logo' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
             ]);
 
             $site_logo = '/images/web/elements/' . uniqid() . '.' . $request->site_logo->extension();
@@ -162,7 +179,7 @@ class SettingController extends Controller
         // Check site logo light
         if (isset($request->site_logo_light)) {
             $validator = $request->validate([
-                'site_logo_light' => 'mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
+                'site_logo_light' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
             ]);
 
             $site_logo_light = '/images/web/elements/' . uniqid() . '.' . $request->site_logo_light->extension();
@@ -178,7 +195,7 @@ class SettingController extends Controller
         // Check favicon
         if (isset($request->favi_icon)) {
             $validator = $request->validate([
-                'favi_icon' => 'mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
+                'favi_icon' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
             ]);
 
             $favi_icon = '/images/web/elements/' . uniqid() . '.' . $request->favi_icon->extension();
@@ -192,22 +209,28 @@ class SettingController extends Controller
         }
 
         // Check primary image for website banner
-        if (isset($request->primary_image)) {
-            $validator = $request->validate([
-                'primary_image' => 'mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
+        if ($request->hasFile('primary_image')) {
+
+            $request->validate([
+                'primary_image' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env('SIZE_LIMIT'),
             ]);
 
-            $primary_image = '/images/web/elements/' . uniqid() . '.' . $request->primary_image->extension();
-            $request->primary_image->move(public_path('/images/web/elements'), $primary_image);
+            $fileName = uniqid() . '.' . $request->file('primary_image')->extension();
 
-            // Update image
+            $request->file('primary_image')->move(
+                public_path('images/web/elements'),
+                $fileName
+            );
+
+            $primaryImage = '/images/web/elements/' . $fileName;
+
             Config::where('config_key', 'primary_image')->update([
-                'config_value' => $primary_image,
+                'config_value' => $primaryImage,
             ]);
         }
 
         // Page redirect
-        return redirect()->route('admin.settings')->with('success', trans('Website Settings Updated Successfully!'));
+        // return redirect()->route('dahsboard.admin.settings')->with('success', trans('Website Settings Updated Successfully!'));
     }
 
     // Update Payments Setting
@@ -298,9 +321,27 @@ class SettingController extends Controller
         return redirect()->route('admin.settings')->with('success', trans('Payment Settings Updated Successfully!'));
     }
 
+
+    public function getAISettings()
+    {
+        $config = Config::get();
+
+        return Inertia::render('admin/settings/aitools-configuration/index', compact('config'));
+    }
+
+
     // Update AI Tools Setting
     public function changeAISettings(Request $request)
     {
+        $request->validate([
+            'ai_model' => 'required|string',
+            'image_model' => 'required|string',
+            'text_speech_model' => 'required|string',
+            'openai_api_key' => 'required|string',
+            'share_content' => 'required|string',
+            'image_length' => 'required|string',
+        ]);
+
         Config::where('config_key', 'openai_model')->update([
             'config_value' => $request->ai_model,
         ]);
@@ -318,24 +359,47 @@ class SettingController extends Controller
         ]);
 
         Config::where('config_key', 'share_content')->update([
-            'config_value' => $request->word_length,
+            'config_value' => $request->share_content,
         ]);
 
         Config::where('config_key', 'image_length')->update([
             'config_value' => $request->image_length,
         ]);
 
-        Config::where('config_key', 'tiny_api_key')->update([
-            'config_value' => $request->tiny_api_key,
-        ]);
 
         // Page redirect
-        return redirect()->route('admin.settings')->with('success', trans('AI Settings Updated Successfully!'));
+        // return redirect()->route('admin.settings')->with('success', trans('AI Settings Updated Successfully!'));
+    }
+
+
+    public function getS3Settings()
+    {
+        $s3Settings = [
+            'aws_enable' => env('AWS_ENABLE', 'false'),
+            'access_key' => env('AWS_ACCESS_KEY_ID', ''),
+            'secret_key' => env('AWS_SECRET_ACCESS_KEY', ''),
+            'default_region' => env('AWS_DEFAULT_REGION', ''),
+            'bucket' => env('AWS_BUCKET', ''),
+            'end_point' => env('AWS_USE_PATH_STYLE_ENDPOINT', 'false'),
+        ];
+
+        return Inertia::render(
+            'admin/settings/aws-s3-configuration/index',
+            compact('s3Settings')
+        );
     }
 
     // Update S3 Setting
     public function changeS3Settings(Request $request)
     {
+        $request->validate([
+            'aws_enable' => 'required',
+            'access_key' => 'required',
+            'secret_key' => 'required',
+            'default_region' => 'required',
+            'bucket' => 'required',
+            'end_point' => 'required',
+        ]);
         // Access Key
         $awsAccessKey = str_replace('"', "", $request->access_key);
         $awsAccessKey = str_replace("'", "", $awsAccessKey);
@@ -361,7 +425,7 @@ class SettingController extends Controller
         $this->updateEnvFile('AWS_USE_PATH_STYLE_ENDPOINT', $request->end_point);
 
         // Page redirect
-        return redirect()->route('admin.settings')->with('success', trans('AWS configuration settings updated successfully!'));
+        // return redirect()->route('admin.settings')->with('success', trans('AWS configuration settings updated successfully!'));
     }
 
     // Tax settings
@@ -372,13 +436,15 @@ class SettingController extends Controller
         $settings = Setting::first();
 
         // Page view
-        return view('admin.pages.tax.index', compact('config', 'settings'));
+        // return view('admin.pages.tax.index', compact('config', 'settings'));
+        return Inertia::render('admin/settings/invoice-tax/index', compact('config', 'settings'));
     }
 
     // Update tax setting
-    public function updateTaxSetting(Request $request)
+    public function updateTaxSetting(UpdateTaxSettingsRequest $request)
     {
-        // Update
+
+
         Config::where('config_key', 'invoice_prefix')->update([
             'config_value' => $request->invoice_prefix,
         ]);
@@ -424,20 +490,21 @@ class SettingController extends Controller
         ]);
 
         Config::where('config_key', 'tax_value')->update([
-            'config_value' => $request->tax_value,
+            'config_value' => $request->tax_value ?? 0,
         ]);
 
         Config::where('config_key', 'invoice_footer')->update([
             'config_value' => $request->invoice_footer,
         ]);
-
-        // Page redirect
-        return redirect()->route('admin.tax.setting')->with('success', trans('Invoice Setting Updated Successfully!'));
     }
 
     // Update email setting
     public function updateEmailSetting(Request $request)
     {
+        $request->validate([
+            'email_heading' => 'required|string|max:500',
+            'email_footer' => 'required|string|max:1000',
+        ]);
         // Update
         Config::where('config_key', 'email_heading')->update([
             'config_value' => $request->email_heading,
@@ -448,7 +515,7 @@ class SettingController extends Controller
         ]);
 
         // Page redirect
-        return redirect()->route('admin.tax.setting')->with('success', trans('Email Setting Updated Successfully!'));
+        // return redirect()->route('admin.tax.setting')->with('success', trans('Email Setting Updated Successfully!'));
     }
 
     // Clear cache

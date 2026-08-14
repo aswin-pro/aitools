@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -51,7 +52,15 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'upload' => [
+                'size_limit' => env('SIZE_LIMIT', 5012),
+            ],
             'role' => $request->user()->role_id ?? 2,
+            'settings' => fn() => Setting::query()-> select([
+                'site_logo',
+                'site_logo_light',
+                'favicon',
+            ])->first(),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

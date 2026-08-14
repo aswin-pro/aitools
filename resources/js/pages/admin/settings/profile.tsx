@@ -9,15 +9,16 @@ import { toast } from "sonner";
 import AppLayout from "@/layouts/app/app-layout";
 import FormInput from "@/components/admin/form-input";
 import { useTranslation } from "react-i18next";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("dashboard.admin.dashboard"),
+        href: route("dashboard.admin.overview"),
     },
     {
         title: "Settings",
-        href: route("dashboard.admin.index.account"),
+        href: route("dashboard.admin.edit.account"),
     },
     {
         title: "Profile",
@@ -28,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Profile() {
     const { t } = useTranslation();
 
-    const { auth, flash } = usePage<SharedData>().props;
+    const { auth,  upload } = usePage<SharedData>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -45,6 +46,7 @@ export default function Profile() {
                         action={route("dashboard.admin.update.account")}
                         method="post"
                         encType="multipart/form-data"
+                        options={{ preserveScroll: true }}
                         resetOnSuccess={false}
                         className="space-y-6"
                         onSuccess={() => {
@@ -68,17 +70,23 @@ export default function Profile() {
 
                                 if (!file) return;
 
-                                if (file.size > 1024 * 1024) {
+                                if (file.size > upload.size_limit * 1024) {
                                     toast.error(
                                         t(
-                                            "Profile photo must be less than 1 MB.",
+                                            "Profile photo must be less than {{size}} KB.",
+                                            {
+                                                size: upload.size_limit,
+                                            },
                                         ),
                                     );
 
                                     setError(
                                         "profile_picture",
                                         t(
-                                            "Profile photo must be less than 1 MB.",
+                                            "Profile photo must be less than {{size}} KB.",
+                                            {
+                                                size: upload.size_limit,
+                                            },
                                         ),
                                     );
 
@@ -132,20 +140,10 @@ export default function Profile() {
 
                                     <div className="flex items-center gap-4">
                                         <Button disabled={processing}>
-                                            {t("Save")}
+                                            <LoadingSwap isLoading={processing}>
+                                                {t("Save")}
+                                            </LoadingSwap>
                                         </Button>
-
-                                        <Transition
-                                            show={recentlySuccessful}
-                                            enter="transition ease-in-out"
-                                            enterFrom="opacity-0"
-                                            leave="transition ease-in-out"
-                                            leaveTo="opacity-0"
-                                        >
-                                            <p className="text-sm text-muted-foreground">
-                                                {t("Saved.")}
-                                            </p>
-                                        </Transition>
                                     </div>
                                 </>
                             );

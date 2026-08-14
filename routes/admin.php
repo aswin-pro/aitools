@@ -9,7 +9,7 @@ use Inertia\Inertia;
         // Dashboard
         Route::get('overview', function () {
             return Inertia::render('admin/dashboard');
-        })->name('dashboard');
+        })->name('overview');
         
         // Users
         Route::get('users', [App\Http\Controllers\Admin\UserController::class, "index"])->name('users');
@@ -82,9 +82,38 @@ use Inertia\Inertia;
         Route::post('update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-        //general settings
-        Route::get('settings/system-settings', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
 
+
+
+
+        //general settings
+        Route::get('settings/system-configuration', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
+        Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
+        
+        Route::get('settings/website-configuration', [App\Http\Controllers\Admin\SettingController::class, "websiteSettings"])->name('website.settings')->middleware(['demo.mode']);
+        Route::post('settings/update-website-settings', [App\Http\Controllers\Admin\SettingController::class, "changeWebsiteSettings"])->name('change.website.settings')->middleware(['demo.mode']);
+
+        Route::get('settings/aitools-configuration', [App\Http\Controllers\Admin\SettingController::class, "getAISettings"])->name('ai.settings');
+        Route::post('settings/update-ai-settings', [App\Http\Controllers\Admin\SettingController::class, "changeAISettings"])->name('update.ai.settings')->middleware(['demo.mode']);
+
+        Route::get('settings/aws-s3-configuration', [App\Http\Controllers\Admin\SettingController::class, "getS3Settings"])->name('awss3.settings');
+        Route::post('settings/update-aws-s3-settings', [App\Http\Controllers\Admin\SettingController::class, "changeS3Settings"])->name('update.awss3.settings')->middleware(['demo.mode']);
+
+        // Settingup cron jobs
+        Route::get('settings/cron-jobs', [App\Http\Controllers\Admin\CronJobController::class, 'index'])->name('cron.jobs');
+        Route::post('settings/cron-jobs/update', [App\Http\Controllers\Admin\CronJobController::class, 'update'])->name('update.cron.jobs')->middleware(['demo.mode']);
+        // Test Reminder
+        Route::get('settings/test-reminder', [App\Http\Controllers\Admin\CronJobController::class, 'testReminder'])->name('test.reminder');
+        
+
+        Route::get('settings/tax-setting', [App\Http\Controllers\Admin\SettingController::class, "taxSetting"])->name('tax.setting');
+        Route::post('settings/update-tex-setting', [App\Http\Controllers\Admin\SettingController::class, "updateTaxSetting"])->name('update.tax.setting')->middleware(['demo.mode']);
+        Route::post('settings/update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
+
+
+        // Generating a sitemap
+        Route::get('sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'index'])->name('sitemap');
+        Route::post('generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('generate.sitemap')->middleware(['demo.mode']);
 
         // Plugins
         Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
@@ -122,16 +151,8 @@ use Inertia\Inertia;
         Route::post('update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
         Route::get('action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
 
-        // Setting
-        Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
-        Route::post('change-aws-s3-settings', [App\Http\Controllers\Admin\SettingController::class, "changeS3Settings"])->name('change.aws.s3.settings')->middleware(['demo.mode']);
-        Route::post('change-ai-settings', [App\Http\Controllers\Admin\SettingController::class, "changeAISettings"])->name('change.ai.settings')->middleware(['demo.mode']);
-        Route::post('change-website-settings', [App\Http\Controllers\Admin\SettingController::class, "changeWebsiteSettings"])->name('change.website.settings')->middleware(['demo.mode']);
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
-
-        Route::get('tax-setting', [App\Http\Controllers\Admin\SettingController::class, "taxSetting"])->name('tax.setting');
-        Route::post('update-tex-setting', [App\Http\Controllers\Admin\SettingController::class, "updateTaxSetting"])->name('update.tax.setting')->middleware(['demo.mode']);
-        Route::post('update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
+        
 
         // Currencies
         Route::get('currencies', [CurrencyController::class, 'currencies'])->name('currencies');
@@ -146,22 +167,14 @@ use Inertia\Inertia;
         // Log Authentication
         Route::get('logs', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('logs');
 
-        // Settingup cron jobs
-        Route::get('cron/cron-jobs', [App\Http\Controllers\Admin\CronJobController::class, 'index'])->name('cron.jobs');
-        Route::post('cron/cron-jobs/update', [App\Http\Controllers\Admin\CronJobController::class, 'update'])->name('update.cron.jobs')->middleware(['demo.mode']);
 
-        // Test Reminder
-        Route::get('cron/test-reminder', [App\Http\Controllers\Admin\CronJobController::class, 'testReminder'])->name('test.reminder');
 
-        // Set cronjob time
-        Route::post('cron/set-cronjob-time', [App\Http\Controllers\Admin\CronJobController::class, 'setCronjobTime'])->name('set.cronjob.time')->middleware(['demo.mode']);
+       
 
         // Clear cache
         Route::get('clear/cache', [App\Http\Controllers\Admin\SettingController::class, 'clearCache'])->name('clear.cache')->middleware(['demo.mode']);
 
-        // Generating a sitemap
-        Route::get('sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'index'])->name('sitemap');
-        Route::post('generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('generate.sitemap')->middleware(['demo.mode']);
+
 
         // Backup
         Route::get('backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups');

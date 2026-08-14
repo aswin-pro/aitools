@@ -172,9 +172,6 @@
 
 
 
-
-
-
     @yield('scripts')
     <script type="text/javascript">
         var x = document.getElementById('error_alert');

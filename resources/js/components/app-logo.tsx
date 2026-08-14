@@ -1,16 +1,25 @@
-import AppLogoIcon from './app-logo-icon';
+import { SharedData } from "@/types";
+import AppLogoIcon from "./app-logo-icon";
+import { usePage } from "@inertiajs/react";
+import { assetUrl } from "@/helpers/asset-url";
 
 export default function AppLogo() {
+    const { settings } = usePage<SharedData>().props;
+
     return (
         <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
-            </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
-                    AI Tools
-                </span>
-            </div>
+            <img
+                src={assetUrl(settings?.site_logo_light)}
+                alt="Logo"
+                className="h-8 w-auto max-w-[140px] object-contain dark:hidden"
+            />
+
+            {/* Dark mode logo */}
+            <img
+                src={assetUrl(settings?.site_logo)}
+                alt="Logo"
+                className="hidden h-8 w-auto max-w-[140px] object-contain dark:block"
+            />
         </>
     );
 }

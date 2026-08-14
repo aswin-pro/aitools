@@ -9,15 +9,16 @@ import { toast } from "sonner";
 import AppLayout from "@/layouts/app/app-layout";
 import FormInput from "@/components/admin/form-input";
 import { useTranslation } from "react-i18next";
+import { LoadingSwap } from "@/components/ui/loading-swap";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
-        href: route("dashboard.admin.dashboard"),
+        href: route("dashboard.admin.overview"),
     },
     {
         title: "Settings",
-        href: route("dashboard.admin.index.account"),
+        href: route("dashboard.admin.edit.account"),
     },
     {
         title: "Password",
@@ -74,6 +75,7 @@ export default function Password() {
                                         placeholder={t("Current password")}
                                         error={errors.current_password}
                                         containerClassName="md:col-span-2"
+                                        required
                                         onChange={() =>
                                             clearErrors("current_password")
                                         }
@@ -88,6 +90,7 @@ export default function Password() {
                                         autoComplete="new-password"
                                         placeholder={t("New password")}
                                         error={errors.new_password}
+                                        required
                                         onChange={() =>
                                             clearErrors("new_password")
                                         }
@@ -101,6 +104,7 @@ export default function Password() {
                                         autoComplete="new-password"
                                         placeholder={t("Confirm password")}
                                         error={errors.confirm_password}
+                                        required
                                         onChange={() =>
                                             clearErrors("confirm_password")
                                         }
@@ -109,20 +113,13 @@ export default function Password() {
 
                                 <div className="flex items-center gap-4">
                                     <Button disabled={processing}>
-                                        {t("Save Password")}
+                                        <LoadingSwap isLoading={processing}>
+                                            {t("Save Password")}
+                                        </LoadingSwap>
+                                        
                                     </Button>
 
-                                    <Transition
-                                        show={recentlySuccessful}
-                                        enter="transition ease-in-out"
-                                        enterFrom="opacity-0"
-                                        leave="transition ease-in-out"
-                                        leaveTo="opacity-0"
-                                    >
-                                        <p className="text-sm text-muted-foreground">
-                                            {t("Saved.")}
-                                        </p>
-                                    </Transition>
+
                                 </div>
                             </>
                         )}

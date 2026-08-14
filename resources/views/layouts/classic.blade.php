@@ -20,7 +20,7 @@
 
     @if (isset($setting))
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset($setting->favicon) }}" sizes="96x96" type="image/png" />
+    <link rel="icon" href="{{ asset($setting->favicon) }}" sizes="96x96"  />
     @endif
 
     <!-- Styles -->

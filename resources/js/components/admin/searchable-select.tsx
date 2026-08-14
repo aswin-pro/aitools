@@ -115,3 +115,161 @@ export function SearchableSelect({
         </div>
     );
 }
+
+
+
+
+// import { useState } from "react";
+// import { Check, ChevronsUpDown } from "lucide-react";
+
+// import { cn } from "@/lib/utils";
+// import { Button } from "@/components/ui/button";
+// import {
+//     Command,
+//     CommandEmpty,
+//     CommandGroup,
+//     CommandInput,
+//     CommandItem,
+//     CommandList,
+// } from "@/components/ui/command";
+// import {
+//     Popover,
+//     PopoverContent,
+//     PopoverTrigger,
+// } from "@/components/ui/popover";
+// import { Label } from "@/components/ui/label";
+// import { Input } from "@/components/ui/input";
+
+
+// type SearchableSelectOption = {
+//     value: string;
+//     label: string;
+//     searchValue?: string;
+// };
+
+// type SearchableSelectProps = {
+//     label?: string;
+//     defaultValue?: string;
+//     options: SearchableSelectOption[];
+//     placeholder?: string;
+//     searchPlaceholder?: string;
+//     emptyMessage?: string;
+//     name?: string;
+//     error?: string;
+//     searchable?: boolean;
+// };
+
+// export function SearchableSelect({
+//     label,
+//     defaultValue = "",
+//     options,
+//     placeholder = "Select an option",
+//     searchPlaceholder = "Search...",
+//     emptyMessage = "No results found.",
+//     name,
+//     error,
+//     searchable = true,
+// }: SearchableSelectProps) {
+//     const [selectedValue, setSelectedValue] =
+//         useState(defaultValue);
+
+//     const [open, setOpen] = useState(false);
+
+//     const selectedOption = options.find(
+//         (option) => option.value === selectedValue,
+//     );
+
+//     const handleSelect = (value: string) => {
+//         setSelectedValue(value);
+//         setOpen(false);
+//     };
+
+//     return (
+//         <div className="grid gap-2">
+//             {label && (
+//                 <Label htmlFor={name} required>
+//                     {label}
+//                 </Label>
+//             )}
+
+//             <Popover open={open} onOpenChange={setOpen}>
+//                 <PopoverTrigger asChild>
+//                     <div className="relative">
+//                         <Input
+//                             id={name}
+//                             value={selectedOption?.label || ""}
+//                             placeholder={placeholder}
+//                             readOnly
+//                             className="cursor-pointer pr-10"
+//                         />
+
+//                         <ChevronsUpDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
+//                     </div>
+//                 </PopoverTrigger>
+
+//                 <PopoverContent
+//                     className="w-[var(--radix-popover-trigger-width)] p-0"
+//                     align="start"
+//                 >
+//                     <Command>
+//                         {searchable && (
+//                             <CommandInput
+//                                 placeholder={searchPlaceholder}
+//                             />
+//                         )}
+
+//                         <CommandList>
+//                             <CommandEmpty>
+//                                 {emptyMessage}
+//                             </CommandEmpty>
+
+//                             <CommandGroup>
+//                                 {options.map((option) => (
+//                                     <CommandItem
+//                                         key={option.value}
+//                                         value={
+//                                             option.searchValue ??
+//                                             option.label
+//                                         }
+//                                         onSelect={() =>
+//                                             handleSelect(
+//                                                 option.value,
+//                                             )
+//                                         }
+//                                     >
+//                                         <Check
+//                                             className={cn(
+//                                                 "mr-2 h-4 w-4",
+//                                                 selectedValue ===
+//                                                     option.value
+//                                                     ? "opacity-100"
+//                                                     : "opacity-0",
+//                                             )}
+//                                         />
+
+//                                         {option.label}
+//                                     </CommandItem>
+//                                 ))}
+//                             </CommandGroup>
+//                         </CommandList>
+//                     </Command>
+//                 </PopoverContent>
+//             </Popover>
+
+//             {/* Value submitted to Laravel */}
+//             {name && (
+//                 <input
+//                     type="hidden"
+//                     name={name}
+//                     value={selectedValue}
+//                 />
+//             )}
+
+//             {error && (
+//                 <p className="text-sm text-destructive">
+//                     {error}
+//                 </p>
+//             )}
+//         </div>
+//     );
+// }
