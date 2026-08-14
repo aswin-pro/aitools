@@ -136,7 +136,7 @@ export default function Index() {
                                     <FormInput
                                         id="secret_key"
                                         name="secret_key"
-                                        type="password"
+                                        type="text"
                                         label={t("Secret Access Key")}
                                         defaultValue={settings.secretKey}
                                         placeholder={t("Secret Access Key")}
