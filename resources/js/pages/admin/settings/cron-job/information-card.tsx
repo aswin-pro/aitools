@@ -1,28 +1,25 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-
 export default function InformationCard() {
-
     const { t } = useTranslation();
 
     return (
-        <div className="rounded-lg border bg-muted/40 p-4">
-            <div className="flex gap-3">
-                <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        <Alert>
+            <Info className="size-4" />
 
-                <div className="space-y-2 text-sm">
-                    <p className="font-medium">
-                        {t("How reminder dates work")}
-                    </p>
+            <AlertTitle>{t("How reminder dates work")}</AlertTitle>
 
-                    <p className="text-muted-foreground">
+            <AlertDescription>
+                <div className="space-y-2">
+                    <p>
                         {t(
                             "Enter comma-separated day values relative to today.",
                         )}
                     </p>
 
-                    <div className="grid gap-1 text-muted-foreground">
+                    <div className="grid gap-1 bg-green-100 p-5 rounded-2xl w-max">
                         <p>
                             <code className="rounded bg-background px-1.5 py-0.5 font-mono text-xs">
                                 30
@@ -45,20 +42,26 @@ export default function InformationCard() {
                         </p>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">
+                    <p>
                         {t("Allowed range")}:{" "}
-                        <code className="font-mono">-30</code> {t("to")}{" "}
-                        <code className="font-mono">366</code> {t("days")}.
+                        <code className="rounded bg-background px-1.5 py-0.5 font-mono text-xs">
+                            -30
+                        </code>{" "}
+                        {t("to")}{" "}
+                        <code className="rounded bg-background px-1.5 py-0.5 font-mono text-xs">
+                            366
+                        </code>{" "}
+                        {t("days")}.
                     </p>
 
-                    <p className="text-sm text-muted-foreground">
+                    <p>
                         {t("Example")}:{" "}
-                        <code className="rounded bg-background px-1.5 py-0.5 font-mono">
+                        <code className="rounded bg-background px-1.5 py-0.5 font-mono text-xs">
                             30,10,3,1,0,-1
                         </code>
                     </p>
                 </div>
-            </div>
-        </div>
+            </AlertDescription>
+        </Alert>
     );
 }

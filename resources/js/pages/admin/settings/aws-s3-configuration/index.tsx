@@ -48,12 +48,12 @@ export default function Index() {
     const { t } = useTranslation();
 
     const [settings, setSettings] = useState({
-        awsEnable: s3Settings.aws_enable || "Disable",
+        awsEnable: String(s3Settings.aws_enable || "false"),
         accessKey: s3Settings.access_key || "",
         secretKey: s3Settings.secret_key || "",
         defaultRegion: s3Settings.default_region || "",
         bucket: s3Settings.bucket || "",
-        endPoint: s3Settings.end_point || "Disable",
+        endPoint: String(s3Settings.end_point || "false"),
     });
 
     const updateSetting = (key: string, value: string) => {

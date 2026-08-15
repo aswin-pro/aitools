@@ -47,15 +47,6 @@ export default function SystemSetting() {
         config.map((item) => [item.config_key, item.config_value]),
     );
 
-    //accessing the config values
-    configValues.show_website;
-    configValues.timezone;
-    configValues.currency;
-    configValues.currency_format_type;
-    configValues.currency_decimals_place;
-    configValues.date_time_format;
-    configValues.term;
-
     const [settings, setSettings] = useState({
         websiteVisibility: configValues.show_website || "yes",
         timezone: configValues.timezone || "",
@@ -68,7 +59,8 @@ export default function SystemSetting() {
         term: configValues.term || "",
     });
 
-    const [imageLimitValue, setImageLimitValue] = useState(image_limit.SIZE_LIMIT);
+    const imagelimit = image_limit.SIZE_LIMIT;
+
 
     const updateSetting = (key: string, value: any) => {
         setSettings((prev) => ({
@@ -344,10 +336,7 @@ export default function SystemSetting() {
                                         name="image_limit"
                                         type="number"
                                         label={t("Default Image Upload Size")}
-                                        value={imageLimitValue}
-                                        onChange={(e) =>
-                                            setImageLimitValue(e.target.value)
-                                        }
+                                        defaultValue={imagelimit}
                                         placeholder={t("Enter image size")}
                                         error={errors.image_limit}
                                     />

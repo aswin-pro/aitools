@@ -57,68 +57,6 @@ class AccountController extends Controller
         // return view('admin.pages.profile', compact('account_details', 'settings', 'config'));
     }
 
-    // Update account
-    // public function updateAccount(Request $request)
-    // {
-    //     // Validation
-    //     $validated = $request->validate([
-    //         'name' => 'required|min:3',
-    //         'email' => 'required'
-    //     ]);
-
-    //     // Check profile image
-    //     if (isset($request->profile_picture)) {
-    //         $validator = $request->validate([
-    //             'profile_picture' => 'required|mimes:jpeg,png,jpg,gif,svg|max:' . env("SIZE_LIMIT") . '',
-    //         ]);
-
-    //         // get profile image
-    //         $profile_picture = $request->profile_picture->getClientOriginalName();
-    //         $UploadProfile = pathinfo($profile_picture, PATHINFO_FILENAME);
-    //         $UploadExtension = pathinfo($profile_picture, PATHINFO_EXTENSION);
-
-    //         // Upload image
-    //         if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "gif" || $UploadExtension == "svg") {
-    //             // Upload image
-    //             $profile_picture = 'images/admin/profile_images/' . $UploadProfile . '_' . uniqid() . '.' . $UploadExtension;
-    //             $request->profile_picture->move(public_path('images/admin/profile_images'), $profile_picture);
-
-    //             // Update user profile image
-    //             User::where('id', auth()->user()->id)->update([
-    //                 'profile_image' => $profile_picture
-    //             ]);
-    //         }
-
-    //         return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
-    //     } else {
-    //         // Update user profile data
-    //         User::where('id', auth()->user()->id)->update([
-    //             'name' => $request->name
-    //         ]);
-
-    //         // Get register user data
-    //         $registerUserData = User::where('id', auth()->user()->id)->first();
-
-    //         if ($request->email != $registerUserData->email) {
-    //             // Check already register count
-    //             $alreadyRegister = User::where('email', $request->email)->count();
-
-    //             // Check already register
-    //             if ($alreadyRegister <= 0) {
-    //                 // Update user profile data
-    //                 User::where('id', auth()->user()->id)->update([
-    //                     'email' => $request->email
-    //                 ]);
-    //                 return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
-    //             } else {
-    //                 return redirect()->route('admin.edit.account')->with('failed', trans('This email address already registered.'));
-    //             }
-    //         }
-
-    //         return redirect()->route('admin.edit.account')->with('success', trans('Profile Updated Successfully!'));
-    //     }
-    // }
-
     public function updateAccount(Request $request)
     {
         

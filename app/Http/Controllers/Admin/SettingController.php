@@ -443,8 +443,6 @@ class SettingController extends Controller
     // Update tax setting
     public function updateTaxSetting(UpdateTaxSettingsRequest $request)
     {
-
-
         Config::where('config_key', 'invoice_prefix')->update([
             'config_value' => $request->invoice_prefix,
         ]);
