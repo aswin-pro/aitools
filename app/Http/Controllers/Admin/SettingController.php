@@ -556,9 +556,13 @@ class SettingController extends Controller
                 }
             }
 
-            return redirect()->route('admin.dashboard')->with('success', trans('Application Cache Cleared Successfully!'));
+            return redirect()
+                ->route('dashboard.admin.overview')
+                ->with('success', 'Application cache cleared successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.dashboard')->with('failed', trans('Failed to Clear Cache. Due to the following error: ') . ' ' . $e->getMessage());
+            return redirect()
+                ->route('dashboard.admin.overview')
+                ->with('error', 'Failed to clear cache. ' . $e->getMessage());
         }
     }
 

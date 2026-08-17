@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
-import { ChevronRight, LayoutGrid, Settings } from "lucide-react";
+import { ChevronRight, FolderCog, LayoutGrid, Settings } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +43,36 @@ export function NavMain() {
                         icon: Settings,
                         isActive: route().current("dashboard.admin.edit.*"),
                     },
+                    {
+                        title: "System",
+                        icon: FolderCog,
+                        isActive: route().current(
+                            "dashboard.admin.system.*",
+                        ),
+                        children: [
+                            {
+                                title: "Login Activity",
+                                url: "dashboard.admin.system.login-activity",
+                                isActive: route().current(
+                                    "dashboard.admin.system.login-activity",
+                                ),
+                            },
+                            {
+                                title: "Clear Cache",
+                                url: "dashboard.admin.system.clear-cache",
+                                isActive: route().current(
+                                    "dashboard.admin.system.clear-cache",
+                                ),
+                            },
+                            {
+                                title: "Sitemap",
+                                url: "dashboard.admin.system.sitemap",
+                                isActive: route().current(
+                                    "dashboard.admin.system.sitemap",
+                                ),
+                            },
+                        ],
+                    }   
                 ],
             },
         ];
@@ -104,14 +134,10 @@ export function NavMain() {
                                                 </SidebarMenuButton>
                                             </CollapsibleTrigger>
 
-                                            <CollapsibleContent>
+                                                                                        <CollapsibleContent>
                                                 <SidebarMenuSub>
-                                                    {item
-                                                        .children!.filter(
-                                                            (child) =>
-                                                                child.condition,
-                                                        )
-                                                        .map((child) => (
+                                                    {item.children!.map(
+                                                        (child) => (
                                                             <SidebarMenuSubItem
                                                                 key={
                                                                     child.title
@@ -136,9 +162,11 @@ export function NavMain() {
                                                                     </Link>
                                                                 </SidebarMenuSubButton>
                                                             </SidebarMenuSubItem>
-                                                        ))}
+                                                        ),
+                                                    )}
                                                 </SidebarMenuSub>
                                             </CollapsibleContent>
+
                                         </SidebarMenuItem>
                                     </Collapsible>
                                 );

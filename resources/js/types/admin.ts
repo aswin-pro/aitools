@@ -48,3 +48,24 @@ export interface systemSetting {
     };
 
 }
+
+
+export interface AuthenticationLog {
+    id: number;
+    ip_address: string;
+    user_agent: string | null;
+
+    location: string | null;
+    state_name: string | null;
+    city: string | null;
+    country: string | null;
+    postal_code: string | null;
+
+    platform: string | null;
+    browser: string | null;
+
+    login_at: string | null;
+    login_successful: number;
+    logout_at: string | null;
+    cleared_by_user: number;
+}

@@ -104,16 +104,19 @@ use Inertia\Inertia;
         Route::post('settings/cron-jobs/update', [App\Http\Controllers\Admin\CronJobController::class, 'update'])->name('update.cron.jobs')->middleware(['demo.mode']);
         // Test Reminder
         Route::get('settings/test-reminder', [App\Http\Controllers\Admin\CronJobController::class, 'testReminder'])->name('test.reminder');
-        
-
         Route::get('settings/tax-setting', [App\Http\Controllers\Admin\SettingController::class, "taxSetting"])->name('tax.setting');
         Route::post('settings/update-tex-setting', [App\Http\Controllers\Admin\SettingController::class, "updateTaxSetting"])->name('update.tax.setting')->middleware(['demo.mode']);
         Route::post('settings/update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
-
-
         // Generating a sitemap
-        Route::get('sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'index'])->name('sitemap');
-        Route::post('generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('generate.sitemap')->middleware(['demo.mode']);
+        
+
+
+        //system - login activity | clear cache | generate sitemap
+        Route::get('system/login-activity', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('system.login-activity');
+        Route::get('system/clear-cache', [App\Http\Controllers\Admin\SettingController::class, 'clearCache'])->name('system.clear-cache')->middleware(['demo.mode']);
+        Route::get('system/sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'index'])->name('system.sitemap');
+        Route::post('system/generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('system.generate.sitemap')->middleware(['demo.mode']);
+
 
         // Plugins
         Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
@@ -164,18 +167,10 @@ use Inertia\Inertia;
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');
         Route::post('verify-license', [App\Http\Controllers\Admin\LicenseController::class, "verifyLicense"])->name('verify.license')->middleware(['demo.mode']);
 
-        // Log Authentication
-        Route::get('logs', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('logs');
 
 
-
+        
        
-
-        // Clear cache
-        Route::get('clear/cache', [App\Http\Controllers\Admin\SettingController::class, 'clearCache'])->name('clear.cache')->middleware(['demo.mode']);
-
-
-
         // Backup
         Route::get('backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups');
         Route::get('backups/get-database-backup', [App\Http\Controllers\Admin\BackupController::class, 'getDatabaseBackup'])->name('get.database.backup');
@@ -184,6 +179,9 @@ use Inertia\Inertia;
         Route::get('backups/restore-backup', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backup.restore')->middleware(['demo.mode']);
         Route::get('backups/download-backup', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download')->middleware(['demo.mode']);
         Route::get('backups/delete-backup', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backup.delete')->middleware(['demo.mode']);
+
+
+
 
         // Check update
         Route::get('check', [App\Http\Controllers\Admin\UpdateController::class, 'check'])->name('check');
