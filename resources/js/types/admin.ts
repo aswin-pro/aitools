@@ -69,3 +69,13 @@ export interface AuthenticationLog {
     logout_at: string | null;
     cleared_by_user: number;
 }
+
+export interface Currencies {
+    id: number;
+    priority: number;
+    iso_code: string | null;
+    name: string | null;
+    symbol: string | null;
+    subunit: string | null;
+    symbol_first: string | null;
+}

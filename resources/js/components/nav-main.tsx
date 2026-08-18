@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
-import { ChevronRight, FolderCog, LayoutGrid, Settings } from "lucide-react";
+import { ChevronRight, CircleDollarSign, Coins, FolderCog, LayoutGrid, Settings } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -72,7 +72,14 @@ export function NavMain() {
                                 ),
                             },
                         ],
-                    }   
+                    },
+                    {
+                        title: "Currencies",
+                        url: "dashboard.admin.currencies",
+                        icon: CircleDollarSign,
+                        isActive: route().current("dashboard.admin.currencies"),
+                    },
+
                 ],
             },
         ];
