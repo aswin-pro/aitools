@@ -15,6 +15,7 @@ export const getColumns = ({
     pageSize,
     t,
     onEdit
+    onDelete
 }: {
     pageIndex: number;
     pageSize: number;
@@ -34,19 +35,19 @@ export const getColumns = ({
     },
 
     {
-        accessorKey: t("ISO_Code"),
+        accessorKey: t("ISO Code"),
         header: t("ISO Code"),
         cell: ({ row }) => row.original.iso_code,
     },
 
     {
-        accessorKey: t("Currency_sign"),
+        accessorKey: t("Currency sign"),
         header: t("Currencty Sign"),
         cell: ({ row }) => row.original.symbol,
     },
 
     {
-        accessorKey: "symbol_first",
+        accessorKey: "Symbol first",
         header: t("Sign First"),
         cell: ({ row }) =>
             CustomBadge(
@@ -58,7 +59,7 @@ export const getColumns = ({
     },
 
     {
-        id: "actions",
+        id: "Actions",
         header: t("Actions"),
         cell: ({ row }) => {
             const currency = row.original;
@@ -85,9 +86,7 @@ export const getColumns = ({
 
                         <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            onClick={() => {
-                                // Delete logic
-                            }}
+                                onClick={() => onDelete(row.original.id)}
                         >
                             <Trash2 className="mr-2 size-4" />
                             {t("Delete")}

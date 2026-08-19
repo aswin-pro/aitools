@@ -118,6 +118,13 @@ use Inertia\Inertia;
         Route::post('system/generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('system.generate.sitemap')->middleware(['demo.mode']);
 
 
+        // Currencies
+        Route::get('currencies', [CurrencyController::class, 'currencies'])->name('currencies');
+        Route::post('create-currency', [CurrencyController::class, 'createCurrency'])->name('create.currency');
+        Route::post('update-currency', [CurrencyController::class, 'updateCurrency'])->name('update.currency')->middleware(['demo.mode']);
+        Route::get('delete-currency', [CurrencyController::class, 'deleteCurrency'])->name('delete.currency');
+
+
         // Plugins
         Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
         Route::delete('/plugins/{pluginName}', [PluginController::class, 'deletePlugin'])->name('plugins.delete');
@@ -157,11 +164,6 @@ use Inertia\Inertia;
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
         
 
-        // Currencies
-        Route::get('currencies', [CurrencyController::class, 'currencies'])->name('currencies');
-        Route::get('edit-currency/{id}', [CurrencyController::class, 'editCurrency'])->name('edit.currency');
-        Route::post('update-currency', [CurrencyController::class, 'updateCurrency'])->name('update.currency')->middleware(['demo.mode']);
-        Route::get('delete-currency', [CurrencyController::class, 'deleteCurrency'])->name('delete.currency');
 
         // License
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');

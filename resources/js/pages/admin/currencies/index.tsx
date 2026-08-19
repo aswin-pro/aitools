@@ -1,31 +1,17 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
-import { BreadcrumbItem, LaravelPagination, NavigateParams } from "@/types";
-import { Form, Head, router } from "@inertiajs/react";
-import { useMemo, useState } from "react";
+import { BreadcrumbItem, LaravelPagination, NavigateParams, SharedData } from "@/types";
+import { Form, Head, router, usePage } from "@inertiajs/react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/table/data-table";
 import { Currencies, Currency } from "@/types/admin";
 import { getColumns } from "./columns";
 import { useForm } from "@inertiajs/react";
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { FormSheet } from "@/components/admin/form-sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CircleDollarSign } from "lucide-react";
+import { toast } from "sonner";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,16 +33,34 @@ export default function Index({
 
     //for sheet......
     const [sheetOpen, setSheetOpen] = useState(false);
-    const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(
-        null,
-    );
+
+    const [createSheetOpen, setCreateSheetOpen] = useState(false);
 
     const form = useForm({
-        id: "",
+        id: '',
         name: "",
         iso_code: "",
+        iso_numeric: "",
         symbol: "",
-        symbol_first: "false",
+        subunit: "",
+        subunit_to_unit: "",
+        symbol_first: "true",
+        html_entity: "",
+        decimal_mark: "",
+        thousands_separator: "",
+    });
+
+    const createForm = useForm({
+        name: "",
+        iso_code: "",
+        iso_numeric: "",
+        symbol: "",
+        subunit: "",
+        subunit_to_unit: "",
+        symbol_first: "true",
+        html_entity: "",
+        decimal_mark: "",
+        thousands_separator: "",
     });
 
     const navigate = (params: NavigateParams) => {
@@ -73,25 +77,89 @@ export default function Index({
                 pageSize: currencies.per_page,
                 t,
                 onEdit: (currency) => {
-                    setSelectedCurrency(currency);
+                    form.setData({
+                        id: String(currency.id),
+                        name: currency.name,
+                        iso_code: currency.iso_code,
+                        symbol: currency.symbol,
+                        symbol_first: currency.symbol_first,
+                        iso_numeric: currency.iso_numeric,
+                        subunit: currency.subunit,
+                        subunit_to_unit: currency.subunit_to_unit,
+                        html_entity: currency.html_entity,
+                        decimal_mark: currency.decimal_mark,
+                        thousands_separator: currency.thousands_separator
+                    });
+
+                    form.clearErrors();
+
                     setSheetOpen(true);
                 },
             }),
         [currencies.current_page, currencies.per_page, t],
     );
 
+    const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        createForm.post(route("dashboard.admin.create.currency"), {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                setCreateSheetOpen(false);
+                createForm.reset();
+            },
+        });
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        form.post(route("dashboard.admin.update.currency"), {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                setSheetOpen(false);
+                form.reset();
+            },
+        });
+    };
+
+    const { flash } = usePage<SharedData>().props;
+
+    const lastMessage = useRef<string | null>(null);
+
+    useEffect(() => {
+        if (flash?.success && lastMessage.current !== flash.success) {
+            toast.success(flash.success);
+            lastMessage.current = flash.success;
+        }
+
+        if (flash?.error && lastMessage.current !== flash.error) {
+            toast.error(flash.error);
+            lastMessage.current = flash.error;
+        }
+    }, [flash]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t("Currencies")} />
 
-            <Heading
-                title={t("Currencies")}
-                description={t(
-                    "Manage supported currencies, symbols, and currency formatting settings",
-                )}
-            />
+            <div className="flex justify-between items-center">
+                <Heading
+                    title={t("Currencies")}
+                    description={t(
+                        "Manage supported currencies, symbols, and currency formatting settings",
+                    )}
+                />
 
-            <div className="mt-4">
+                <Button onClick={() => setCreateSheetOpen(true)}>
+                    <CircleDollarSign />
+                    {t("Create Currency")}
+                </Button>
+            </div>
+
+            <div className="">
                 <DataTable
                     columns={columns}
                     data={currencies.data}
@@ -120,167 +188,181 @@ export default function Index({
                         })
                     }
                 />
-
-<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-    <SheetContent className="flex flex-col sm:max-w-lg">
-        <SheetHeader>
-            <SheetTitle>{t("Update Currency")}</SheetTitle>
-
-            <SheetDescription>
-                {t(
-                    "Update the currency details and formatting preferences.",
-                )}
-            </SheetDescription>
-        </SheetHeader>
-
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-
-                form.post(route("dashboard.admin.update.currency"), {
-                    preserveScroll: true,
-
-                    onSuccess: () => {
-                        setSheetOpen(false);
-                        form.reset();
-                    },
-                });
-            }}
-            className="flex h-full flex-col"
-        >
-            <div className="flex-1 space-y-5 overflow-y-auto px-4 py-6">
-                {/* Name */}
-                <div className="grid gap-2">
-                    <Label htmlFor="currency-name">
-                        {t("Name")}
-                    </Label>
-
-                    <Input
-                        id="currency-name"
-                        value={form.data.name}
-                        onChange={(e) =>
-                            form.setData("name", e.target.value)
-                        }
-                        placeholder={t("Currency name")}
-                        disabled={form.processing}
-                    />
-
-                    {form.errors.name && (
-                        <p className="text-sm text-destructive">
-                            {form.errors.name}
-                        </p>
+                <FormSheet
+                    open={sheetOpen}
+                    onOpenChange={setSheetOpen}
+                    title={t("Update Currency")}
+                    description={t(
+                        "Update the currency details and formatting preferences.",
                     )}
-                </div>
+                    form={form}
+                    onSubmit={handleSubmit}
+                    fields={[
+                        {
+                            type: "input",
+                            name: "name",
+                            label: t("Name"),
+                            placeholder: t("Currency name"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "iso_code",
+                            label: t("ISO Code"),
+                            placeholder: t("Example: INR"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "iso_numeric",
+                            label: t("ISO Numeric"),
+                            placeholder: t("Example: 356"),
+                        },
+                        {
+                            type: "input",
+                            name: "symbol",
+                            label: t("Symbol"),
+                            placeholder: t("Example: ₹"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "subunit",
+                            label: t("Subunit"),
+                            placeholder: t("Example: Paise"),
+                        },
+                        {
+                            type: "input",
+                            name: "subunit_to_unit",
+                            label: t("Subunit to Unit"),
+                            placeholder: t("Example: 100"),
+                        },
+                        {
+                            type: "select",
+                            name: "symbol_first",
+                            label: t("Symbol First"),
+                            placeholder: t("Select symbol position"),
+                            searchable: false,
+                            options: [
+                                {
+                                    value: "true",
+                                    label: t("Yes"),
+                                },
+                                {
+                                    value: "false",
+                                    label: t("No"),
+                                },
+                            ],
+                        },
+                        {
+                            type: "input",
+                            name: "html_entity",
+                            label: t("HTML Entity"),
+                            placeholder: t("Example: &#8377;"),
+                        },
+                        {
+                            type: "input",
+                            name: "decimal_mark",
+                            label: t("Decimal Mark"),
+                            placeholder: t("Enter decimal places. E.g., ."),
+                        },
+                        {
+                            type: "input",
+                            name: "thousands_separator",
+                            label: t("Thousands Separator"),
+                            placeholder: t("Enter thousand separator. E.g., ,"),
+                        },
+                    ]}
+                />
 
-                {/* ISO Code */}
-                <div className="grid gap-2">
-                    <Label htmlFor="currency-iso-code">
-                        {t("ISO Code")}
-                    </Label>
-
-                    <Input
-                        id="currency-iso-code"
-                        value={form.data.iso_code}
-                        onChange={(e) =>
-                            form.setData("iso_code", e.target.value)
-                        }
-                        placeholder={t("ISO Code")}
-                        disabled={form.processing}
-                    />
-
-                    {form.errors.iso_code && (
-                        <p className="text-sm text-destructive">
-                            {form.errors.iso_code}
-                        </p>
+                <FormSheet
+                    open={createSheetOpen}
+                    onOpenChange={setCreateSheetOpen}
+                    title={t("Create Currency")}
+                    description={t(
+                        "Add a new currency and configure its formatting preferences.",
                     )}
-                </div>
-
-                {/* Symbol */}
-                <div className="grid gap-2">
-                    <Label htmlFor="currency-symbol">
-                        {t("Symbol")}
-                    </Label>
-
-                    <Input
-                        id="currency-symbol"
-                        value={form.data.symbol}
-                        onChange={(e) =>
-                            form.setData("symbol", e.target.value)
-                        }
-                        placeholder={t("Currency symbol")}
-                        disabled={form.processing}
-                    />
-
-                    {form.errors.symbol && (
-                        <p className="text-sm text-destructive">
-                            {form.errors.symbol}
-                        </p>
-                    )}
-                </div>
-
-                {/* Symbol First */}
-                <div className="grid gap-2">
-                    <Label htmlFor="currency-symbol-first">
-                        {t("Symbol First")}
-                    </Label>
-
-                    <Select
-                        value={form.data.symbol_first}
-                        onValueChange={(value) =>
-                            form.setData("symbol_first", value)
-                        }
-                        disabled={form.processing}
-                    >
-                        <SelectTrigger id="currency-symbol-first">
-                            <SelectValue
-                                placeholder={t("Select option")}
-                            />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            <SelectItem value="true">
-                                {t("Yes")}
-                            </SelectItem>
-
-                            <SelectItem value="false">
-                                {t("No")}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-
-                    {form.errors.symbol_first && (
-                        <p className="text-sm text-destructive">
-                            {form.errors.symbol_first}
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            <SheetFooter className="w-full">
-                <div className="flex flex-col w-full gap-4">
-                <Button
-                    type="submit"
-                    disabled={form.processing}
-                >
-                    {form.processing
-                        ? t("Updating...")
-                        : t("Update")}
-                </Button>
-
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setSheetOpen(false)}
-                    disabled={form.processing}
-                >
-                    {t("Cancel")}
-                </Button>
-                </div>
-                
-            </SheetFooter>
-        </form>
-    </SheetContent>
-</Sheet>
+                    form={createForm}
+                    onSubmit={handleCreate}
+                    submitLabel={t("Create")}
+                    cancelLabel={t("Cancel")}
+                    fields={[
+                        {
+                            type: "input",
+                            name: "name",
+                            label: t("Name"),
+                            placeholder: t("Currency name"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "iso_code",
+                            label: t("ISO Code"),
+                            placeholder: t("Example: INR"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "iso_numeric",
+                            label: t("ISO Numeric"),
+                            placeholder: t("Example: 356"),
+                        },
+                        {
+                            type: "input",
+                            name: "symbol",
+                            label: t("Symbol"),
+                            placeholder: t("Example: ₹"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "subunit",
+                            label: t("Subunit"),
+                            placeholder: t("Example: Paise"),
+                        },
+                        {
+                            type: "input",
+                            name: "subunit_to_unit",
+                            label: t("Subunit to Unit"),
+                            placeholder: t("Example: 100"),
+                        },
+                        {
+                            type: "select",
+                            name: "symbol_first",
+                            label: t("Symbol First"),
+                            placeholder: t("Select symbol position"),
+                            searchable: false,
+                            options: [
+                                {
+                                    value: "true",
+                                    label: t("Yes"),
+                                },
+                                {
+                                    value: "false",
+                                    label: t("No"),
+                                },
+                            ],
+                        },
+                        {
+                            type: "input",
+                            name: "html_entity",
+                            label: t("HTML Entity"),
+                            placeholder: t("Example: &#8377;"),
+                        },
+                        {
+                            type: "input",
+                            name: "decimal_mark",
+                            label: t("Decimal Mark"),
+                            placeholder: t("Enter decimal places. E.g., ."),
+                        },
+                        {
+                            type: "input",
+                            name: "thousands_separator",
+                            label: t("Thousands Separator"),
+                            placeholder: t("Enter thousand separator. E.g., ,"),
+                        },
+                    ]}
+                />
             </div>
         </AppLayout>
     );
