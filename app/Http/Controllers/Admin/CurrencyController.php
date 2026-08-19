@@ -134,7 +134,7 @@ class CurrencyController extends Controller
         // Soft delete (set status = 0)
         Currency::where('id', $id)->update(['status' => 0]);
 
-        return redirect()->route('admin.currencies')
+        return redirect()->route('dashboard.admin.currencies')
             ->with('success', __('Currency deleted successfully.'));
     }
 }

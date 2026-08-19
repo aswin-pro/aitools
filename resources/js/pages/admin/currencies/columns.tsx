@@ -6,21 +6,26 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthenticationLog, Currencies } from "@/types/admin";
+import { Currencies } from "@/types/admin";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import {
+    MoreVertical,
+    Pencil,
+    Trash2,
+} from "lucide-react";
 
 export const getColumns = ({
     pageIndex,
     pageSize,
     t,
-    onEdit
-    onDelete
+    onEdit,
+    onDelete,
 }: {
     pageIndex: number;
     pageSize: number;
     t: (key: string) => string;
-    onEdit: (currency: Currency) => void;
+    onEdit: (currency: Currencies) => void;
+    onDelete: (currency: Currencies) => void;
 }): ColumnDef<Currencies>[] => [
     {
         accessorKey: t("S.No"),
@@ -42,7 +47,7 @@ export const getColumns = ({
 
     {
         accessorKey: t("Currency sign"),
-        header: t("Currencty Sign"),
+        header: t("Currency Sign"),
         cell: ({ row }) => row.original.symbol,
     },
 
@@ -51,7 +56,9 @@ export const getColumns = ({
         header: t("Sign First"),
         cell: ({ row }) =>
             CustomBadge(
-                row.original.symbol_first === "true" ? t("Yes") : t("No"),
+                row.original.symbol_first === "true"
+                    ? t("Yes")
+                    : t("No"),
                 row.original.symbol_first === "true"
                     ? "bg-green-500 text-white dark:bg-green-800"
                     : "bg-red-500 text-white dark:bg-red-800",
@@ -70,7 +77,7 @@ export const getColumns = ({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="size-8 cursor-pointer  border  shadow-sm outline-none hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="size-8 cursor-pointer border shadow-sm outline-none hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                         >
                             <MoreVertical className="size-4" />
                         </Button>
@@ -86,7 +93,7 @@ export const getColumns = ({
 
                         <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                                onClick={() => onDelete(row.original.id)}
+                            onClick={() => onDelete(currency)}
                         >
                             <Trash2 className="mr-2 size-4" />
                             {t("Delete")}

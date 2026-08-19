@@ -70,12 +70,21 @@ export interface AuthenticationLog {
     cleared_by_user: number;
 }
 
+
+
 export interface Currencies {
     id: number;
     priority: number;
+
     iso_code: string | null;
-    name: string | null;
+    name: string ;
     symbol: string | null;
     subunit: string | null;
     symbol_first: string | null;
+
+    iso_numeric: string | null;
+    subunit_to_unit: string | null;
+    html_entity: string | null;
+    decimal_mark: string | null;
+    thousands_separator: string | null;
 }

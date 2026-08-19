@@ -1,17 +1,23 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
-import { BreadcrumbItem, LaravelPagination, NavigateParams, SharedData } from "@/types";
+import {
+    BreadcrumbItem,
+    LaravelPagination,
+    NavigateParams,
+    SharedData,
+} from "@/types";
 import { Form, Head, router, usePage } from "@inertiajs/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/table/data-table";
-import { Currencies, Currency } from "@/types/admin";
+import { Currencies } from "@/types/admin";
 import { getColumns } from "./columns";
 import { useForm } from "@inertiajs/react";
 import { FormSheet } from "@/components/admin/form-sheet";
 import { Button } from "@/components/ui/button";
-import { CircleDollarSign } from "lucide-react";
+import { CircleDollarSign, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,11 +39,14 @@ export default function Index({
 
     //for sheet......
     const [sheetOpen, setSheetOpen] = useState(false);
-
     const [createSheetOpen, setCreateSheetOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [currencyToDelete, setCurrencyToDelete] = useState<Currencies | null>(
+        null,
+    );
 
     const form = useForm({
-        id: '',
+        id: "",
         name: "",
         iso_code: "",
         iso_numeric: "",
@@ -76,24 +85,37 @@ export default function Index({
                 pageIndex: currencies.current_page - 1,
                 pageSize: currencies.per_page,
                 t,
+
                 onEdit: (currency) => {
-                    form.setData({
-                        id: String(currency.id),
-                        name: currency.name,
-                        iso_code: currency.iso_code,
-                        symbol: currency.symbol,
-                        symbol_first: currency.symbol_first,
-                        iso_numeric: currency.iso_numeric,
-                        subunit: currency.subunit,
-                        subunit_to_unit: currency.subunit_to_unit,
-                        html_entity: currency.html_entity,
-                        decimal_mark: currency.decimal_mark,
-                        thousands_separator: currency.thousands_separator
-                    });
+                    form.setData("id", String(currency.id));
+                    form.setData("name", currency.name);
+                    form.setData("iso_code", currency.iso_code ?? "");
+                    form.setData("iso_numeric", currency.iso_numeric ?? "");
+                    form.setData("symbol", currency.symbol ?? "");
+                    form.setData("subunit", currency.subunit ?? "");
+                    form.setData(
+                        "subunit_to_unit",
+                        currency.subunit_to_unit ?? "",
+                    );
+                    form.setData(
+                        "symbol_first",
+                        currency.symbol_first ?? "true",
+                    );
+                    form.setData("html_entity", currency.html_entity ?? "");
+                    form.setData("decimal_mark", currency.decimal_mark ?? "");
+                    form.setData(
+                        "thousands_separator",
+                        currency.thousands_separator ?? "",
+                    );
 
                     form.clearErrors();
 
                     setSheetOpen(true);
+                },
+
+                onDelete: (currency) => {
+                    setCurrencyToDelete(currency);
+                    setDeleteDialogOpen(true);
                 },
             }),
         [currencies.current_page, currencies.per_page, t],
@@ -123,6 +145,27 @@ export default function Index({
                 form.reset();
             },
         });
+    };
+
+    const handleDelete = () => {
+        if (!currencyToDelete) {
+            return;
+        }
+
+        router.get(
+            route("dashboard.admin.delete.currency"),
+            {
+                id: currencyToDelete.id,
+            },
+            {
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    setCurrencyToDelete(null);
+                },
+            },
+        );
     };
 
     const { flash } = usePage<SharedData>().props;
@@ -362,6 +405,25 @@ export default function Index({
                             placeholder: t("Enter thousand separator. E.g., ,"),
                         },
                     ]}
+                />
+
+                <ConfirmDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    title={t("Delete Currency")}
+                    icon={<Trash2 className="size-6" />}
+                    description={
+                        currencyToDelete
+                            ? t(
+                                  `Are you sure you want to delete ${currencyToDelete.name}? This action cannot be undone.`,
+                              )
+                            : t(
+                                  "Are you sure you want to delete this currency?",
+                              )
+                    }
+                    confirmLabel={t("Delete")}
+                    cancelLabel={t("Cancel")}
+                    onConfirm={handleDelete}
                 />
             </div>
         </AppLayout>

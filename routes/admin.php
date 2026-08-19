@@ -83,9 +83,6 @@ use Inertia\Inertia;
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 
-
-
-
         //general settings
         Route::get('settings/system-configuration', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
         Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
