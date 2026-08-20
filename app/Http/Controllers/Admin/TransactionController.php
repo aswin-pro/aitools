@@ -32,7 +32,7 @@ class TransactionController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    
+
 
     public function index(Request $request)
     {
@@ -69,18 +69,66 @@ class TransactionController extends Controller
     }
 
     // View transaction invoice
-    public function viewInvoice($id)
-    {
-        // Get transaction details
-        $transaction = Transaction::where('id', $id)->first();
-        $settings = Setting::where('status', 1)->first();
-        $config = Config::get();
-        $currencies = Currency::get();
-        $transaction['billing_details'] = json_decode($transaction['invoice_details'], true);
+    // public function viewInvoice($id)
+    // {
+    //     // Get transaction details
+    //     $transaction = Transaction::where('id', $id)->first();
+    //     $settings = Setting::where('status', 1)->first();
+    //     $config = Config::get();
+    //     $currencies = Currency::get();
+    //     $transaction['billing_details'] = json_decode($transaction['invoice_details'], true);
 
-        // View invoice page
-        return view('admin.pages.transactions.view-invoice', compact('transaction', 'settings', 'config', 'currencies'));
+    //     // View invoice page
+    //     return Inertia::render('admin/transactions/invoice', [
+    //         'transaction' => $transaction,
+    //         'settings' => $settings,
+    //         'config' => $config,
+    //         'currencies' => $currencies,
+    //     ]);
+    // }
+
+
+public function viewInvoice($id)
+{
+    // Transaction details
+    $transaction = Transaction::where('id', $id)->first();
+
+    // Settings
+    $settings = Setting::where('status', 1)->first();
+
+    // Config
+    $config = Config::get();
+
+    // Currencies
+    $currencies = Currency::get();
+
+    // Plan details
+    $planDetails = Plan::where('id', $transaction->plan_id)->first();
+
+    // Payment term
+    if ($planDetails->validity >= 30 && $planDetails->validity <= 31) {
+        $term = 'Monthly';
+    } elseif ($planDetails->validity >= 365 && $planDetails->validity <= 366) {
+        $term = 'Yearly';
+    } else {
+        $term = $planDetails->validity . ' days';
     }
+
+    // Billing details
+    $transaction['billing_details'] = json_decode(
+        $transaction->invoice_details,
+        true
+    );
+
+    return Inertia::render('admin/transactions/invoice', [
+        'transaction' => $transaction,
+        'settings' => $settings,
+        'config' => $config,
+        'currencies' => $currencies,
+        'planDetails' => $planDetails,
+        'term' => $term,
+    ]);
+}
 
     // Offline transactions
     public function offlineTransactions()

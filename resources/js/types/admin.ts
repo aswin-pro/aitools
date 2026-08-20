@@ -1,20 +1,20 @@
-export interface Currency {
-    id: number;
-    priority: number;
-    iso_code: string;
-    name: string;
-    symbol: string;
-    subunit: string;
-    subunit_to_unit: number;
-    symbol_first: number;
-    html_entity: string;
-    decimal_mark: string;
-    thousands_separator: string;
-    iso_numeric: string;
-    status: number;
-    created_at: string;
-    updated_at: string;
-};
+// export interface Currency {
+//     id: number;
+//     priority: number;
+//     iso_code: string;
+//     name: string;
+//     symbol: string;
+//     subunit: string;
+//     subunit_to_unit: number;
+//     symbol_first: number;
+//     html_entity: string;
+//     decimal_mark: string;
+//     thousands_separator: string;
+//     iso_numeric: string;
+//     status: number;
+//     created_at: string;
+//     updated_at: string;
+// };
 
 type ConfigItem = {
     id: number;
@@ -33,7 +33,7 @@ export interface systemSetting {
 
     timezonelist: string[];
 
-    currencies: Currency[];
+    currencies: Currencies[];
 
     dateTimeFormats: Record<string, string>;
 
@@ -87,4 +87,39 @@ export interface Currencies {
     html_entity: string | null;
     decimal_mark: string | null;
     thousands_separator: string | null;
+}
+
+export interface InvoiceBillingDetails {
+    from_billing_name: string;
+    from_billing_address: string;
+    from_billing_city: string;
+    from_billing_state: string;
+    from_billing_country: string;
+    from_billing_email: string;
+    from_billing_phone: string | null;
+    from_vat_number: string | null;
+
+    to_billing_name: string;
+    to_billing_address: string;
+    to_billing_city: string;
+    to_billing_state: string;
+    to_billing_country: string;
+    to_billing_email: string;
+    to_billing_phone: string | null;
+    to_vat_number: string | null;
+
+    subtotal: number;
+    tax_amount: number;
+    tax_name: string | null;
+    tax_value: number | null;
+    applied_coupon?: string | null;
+    discounted_price?: number | null;
+    invoice_amount: number;
+}
+
+export interface InvoicePlan {
+    id: number;
+    name: string;
+    price: number;
+    validity: number;
 }

@@ -12,7 +12,6 @@ import {
 import FormInput from "./form-input";
 import { SearchableSelect } from "./searchable-select";
 import { LoadingSwap } from "../ui/loading-swap";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SelectOption {
     value: string;

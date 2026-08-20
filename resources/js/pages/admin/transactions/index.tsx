@@ -34,7 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: "Transactions",
-        href: "#",  
+        href: "#",
     },
 ];
 
@@ -47,13 +47,22 @@ export default function Index({
 }) {
     const { t } = useTranslation();
 
-    const navigate = (params: NavigateParams) => {
+    // Navigation
+    const navigate = (
+        params: NavigateParams,
+        transactionTypeOverride?: string,
+    ) => {
         router.reload({
-            only: ["transactions"],
-            data: params,
+            only: ["transactions", "transactionType"],
+            data: {
+                ...params,
+                transaction_type:
+                    transactionTypeOverride ?? transactionType,
+            },
         });
     };
 
+    // Data table columns
     const columns = useMemo(
         () =>
             getColumns({
@@ -67,6 +76,7 @@ export default function Index({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transactions" />
 
+            {/* Heading */}
             <div className="mb-4">
                 <Heading
                     title="Transactions"
@@ -74,114 +84,130 @@ export default function Index({
                 />
             </div>
 
+            {/* Transaction Type Filter */}
             <div className="mb-4 flex justify-end">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className="px-3"
+                        >
+                            <SlidersHorizontal />
+                            {t("Transaction Type")}
+                        </Button>
+                    </PopoverTrigger>
 
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="outline" className="px-3">
-                    <SlidersHorizontal />
-                    {t("Transaction Type")}
-                </Button>
-            </PopoverTrigger>
-
-            <PopoverContent align="end" className="w-44 p-0">
-                <Command>
-                    <CommandList>
-                        <CommandEmpty>
-                            {t("No transaction types found.")}
-                        </CommandEmpty>
-
-                        <CommandGroup>
-                            <CommandItem
-                                onSelect={() => {
-                                    router.reload({
-                                        only: [
-                                            "transactions",
-                                            "transactionType",
-                                        ],
-                                        data: {
-                                            transaction_type: "all",
-                                            page: 1,
-                                            per_page: transactions.per_page,
-                                            search: route().params.search,
-                                        },
-                                    });
-                                }}
-                            >
-                                <span>{t("All")}</span>
-
-                                <CheckIcon
-                                    className={cn(
-                                        "ml-auto size-4",
-                                        transactionType === "all"
-                                            ? "opacity-100"
-                                            : "opacity-0",
+                    <PopoverContent
+                        align="end"
+                        className="w-44 p-0"
+                    >
+                        <Command>
+                            <CommandList>
+                                <CommandEmpty>
+                                    {t(
+                                        "No transaction types found.",
                                     )}
-                                />
-                            </CommandItem>
+                                </CommandEmpty>
 
-                            <CommandItem
-                                onSelect={() => {
-                                    router.reload({
-                                        only: [
-                                            "transactions",
-                                            "transactionType",
-                                        ],
-                                        data: {
-                                            transaction_type: "online",
-                                            page: 1,
-                                            per_page: transactions.per_page,
-                                            search: route().params.search,
-                                        },
-                                    });
-                                }}
-                            >
-                                <span>{t("Online")}</span>
+                                <CommandGroup>
+                                    {/* All */}
+                                    <CommandItem
+                                        onSelect={() => {
+                                            navigate(
+                                                {
+                                                    page: 1,
+                                                    per_page:
+                                                        transactions.per_page,
+                                                    search:
+                                                        route().params
+                                                            .search,
+                                                },
+                                                "all",
+                                            );
+                                        }}
+                                    >
+                                        <span>
+                                            {t("All")}
+                                        </span>
 
-                                <CheckIcon
-                                    className={cn(
-                                        "ml-auto size-4",
-                                        transactionType === "online"
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                    )}
-                                />
-                            </CommandItem>
+                                        <CheckIcon
+                                            className={cn(
+                                                "ml-auto size-4",
+                                                transactionType ===
+                                                    "all"
+                                                    ? "opacity-100"
+                                                    : "opacity-0",
+                                            )}
+                                        />
+                                    </CommandItem>
 
-                            <CommandItem
-                                onSelect={() => {
-                                    router.reload({
-                                        only: [
-                                            "transactions",
-                                            "transactionType",
-                                        ],
-                                        data: {
-                                            transaction_type: "offline",
-                                            page: 1,
-                                            per_page: transactions.per_page,
-                                            search: route().params.search,
-                                        },
-                                    });
-                                }}
-                            >
-                                <span>{t("Offline")}</span>
+                                    {/* Online */}
+                                    <CommandItem
+                                        onSelect={() => {
+                                            navigate(
+                                                {
+                                                    page: 1,
+                                                    per_page:
+                                                        transactions.per_page,
+                                                    search:
+                                                        route().params
+                                                            .search,
+                                                },
+                                                "online",
+                                            );
+                                        }}
+                                    >
+                                        <span>
+                                            {t("Online")}
+                                        </span>
 
-                                <CheckIcon
-                                    className={cn(
-                                        "ml-auto size-4",
-                                        transactionType === "offline"
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                    )}
-                                />
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                                        <CheckIcon
+                                            className={cn(
+                                                "ml-auto size-4",
+                                                transactionType ===
+                                                    "online"
+                                                    ? "opacity-100"
+                                                    : "opacity-0",
+                                            )}
+                                        />
+                                    </CommandItem>
 
-</div>
+                                    {/* Offline */}
+                                    <CommandItem
+                                        onSelect={() => {
+                                            navigate(
+                                                {
+                                                    page: 1,
+                                                    per_page:
+                                                        transactions.per_page,
+                                                    search:
+                                                        route().params
+                                                            .search,
+                                                },
+                                                "offline",
+                                            );
+                                        }}
+                                    >
+                                        <span>
+                                            {t("Offline")}
+                                        </span>
+
+                                        <CheckIcon
+                                            className={cn(
+                                                "ml-auto size-4",
+                                                transactionType ===
+                                                    "offline"
+                                                    ? "opacity-100"
+                                                    : "opacity-0",
+                                            )}
+                                        />
+                                    </CommandItem>
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </PopoverContent>
+                </Popover>
+            </div>
 
             <DataTable
                 columns={columns}
