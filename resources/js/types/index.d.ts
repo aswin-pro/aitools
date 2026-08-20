@@ -89,6 +89,25 @@ export interface LaravelPagination<T> {
     total: number;
 }
 
+export interface Transaction {
+    id: number;
+    transaction_id: string;
+    user_id: number;
+    plan_id: number;
+    description: string;
+    payment_gateway_name: string;
+    transaction_currency: string;
+    transaction_amount: number;
+    invoice_number: number;
+    invoice_prefix: string;
+    invoice_details: string;
+    payment_status: string;
+    status: string;
+    formatted_created_at: string;
+    user: User;
+    plan: Plan;
+    currency: Currency;
+}
 
 
 

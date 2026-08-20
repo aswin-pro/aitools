@@ -81,8 +81,7 @@ use Inertia\Inertia;
         Route::get('settings/password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
         Route::post('update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-
-
+        
         //general settings
         Route::get('settings/system-configuration', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
         Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
@@ -106,20 +105,20 @@ use Inertia\Inertia;
         Route::post('settings/update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
         // Generating a sitemap
         
-
-
         //system - login activity | clear cache | generate sitemap
         Route::get('system/login-activity', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('system.login-activity');
         Route::get('system/clear-cache', [App\Http\Controllers\Admin\SettingController::class, 'clearCache'])->name('system.clear-cache')->middleware(['demo.mode']);
         Route::get('system/sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'index'])->name('system.sitemap');
         Route::post('system/generate-sitemap', [App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('system.generate.sitemap')->middleware(['demo.mode']);
 
-
         // Currencies
         Route::get('currencies', [CurrencyController::class, 'currencies'])->name('currencies');
         Route::post('create-currency', [CurrencyController::class, 'createCurrency'])->name('create.currency');
         Route::post('update-currency', [CurrencyController::class, 'updateCurrency'])->name('update.currency')->middleware(['demo.mode']);
         Route::get('delete-currency', [CurrencyController::class, 'deleteCurrency'])->name('delete.currency');
+
+
+
 
 
         // Plugins

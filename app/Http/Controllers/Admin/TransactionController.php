@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
@@ -31,31 +32,29 @@ class TransactionController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    //  Transactions
-    public function index()
+    
+
+    public function index(Request $request)
     {
-        // Queries
-        $transactions = Transaction::where('payment_gateway_name', '!=', 'Offline')->orderBy('id', 'desc')->get();
+        $transactions = Transaction::dataWithPagination(
+            $request->transaction_type,
+            $request->search,
+            $request->integer('per_page', 10),
+            ['user', 'plan', 'currency'],
+            'admin'
+        );
+
         $settings = Setting::where('status', 1)->first();
         $currencies = Currency::get();
 
-        // Get user transactions
-        for ($i = 0; $i < count($transactions); $i++) {
-            $user_details = User::where('id', $transactions[$i]->user_id)->first();
-
-            // Check user details
-            if ($user_details) {
-                $transactions[$i]['name'] = $user_details->name;
-                $transactions[$i]['userId'] = $user_details->id;
-            } else {
-                $transactions[$i]['name'] = 'User not found';
-                $transactions[$i]['userId'] = '#';
-            }
-        }
-
-        // View page
-        return view('admin.pages.transactions.index', compact('transactions', 'settings', 'currencies'));
+        return Inertia::render('admin/transactions/index', [
+            'transactions' => $transactions,
+            'settings' => $settings,
+            'currencies' => $currencies,
+            'transactionType' => $request->transaction_type,
+        ]);
     }
+
 
     // Update transaction status
     public function transactionStatus($id, $status)
