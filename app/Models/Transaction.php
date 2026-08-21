@@ -20,15 +20,16 @@ class Transaction extends Model
     // append formatted created at
     protected $appends = [
         'formatted_created_at',
+        'formatted_amount'
     ];
 
 
     public static function dataWithPagination(
-        ?string $transactionType,
         ?string $search,
         int $perPage,
         array $with,
-        string $for
+        string $for,
+        ?string $transactionType,
     ): LengthAwarePaginator {
         return self::query()
             ->with($with)
@@ -44,11 +45,11 @@ class Transaction extends Model
             //online - offline -> Admin 
             ->when(
                 $for == 'admin' && $transactionType == 'online',
-                fn($query) => $query->where('payment_gateway_name', '!=', 'Offline')
+                fn($query) => $query->where('payment_gateway_name', '!=', 'Bank Transfer')
             )
             ->when(
                 $for == 'admin' && $transactionType == 'offline',
-                fn($query) => $query->where('payment_gateway_name', 'Offline')
+                fn($query) => $query->where('payment_gateway_name', 'Bank Transfer')
             )
 
             ->where('status', self::$ACTIVE)
@@ -63,6 +64,13 @@ class Transaction extends Model
     {
         return Attribute::make(
             get: fn() => formatDateForUser($this->created_at),
+        );
+    }
+
+        protected function formattedAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => formatCurrency($this->transaction_amount, $this->transaction_currency),
         );
     }
 

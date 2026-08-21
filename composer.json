@@ -62,7 +62,9 @@
         },
         "files": [
             "app/helpers.php",
-            "app/Helpers/DateHelper.php"
+            "app/Helpers/DateHelper.php",
+            "app/Helpers/CommonHelper.php"
+
         ],
         "classmap": [
             "app/Classes",

@@ -117,6 +117,65 @@ export interface InvoiceBillingDetails {
     invoice_amount: number;
 }
 
+export interface Plan {
+    id: number;
+    is_private: number;
+    name: string;
+    description: string | null;
+    price: number;
+    validity: number;
+    template_counts: number;
+    templates: Record<string, number>;
+    max_words: number;
+    max_images: number;
+    ai_speech_to_text: number;
+    ai_text_to_speech: number;
+    ai_code: number;
+    ai_chatgenius: number;
+    ai_docsassist: number;
+    ai_webchat: number;
+    additional_tools: number;
+    recommended: number;
+    support: number;
+}
+
+
+export interface Transaction {
+    id: number;
+    transaction_id: string;
+    user_id: number;
+    plan_id: number;
+    description: string;
+    payment_gateway_name: string;
+    transaction_currency: string;
+    transaction_amount: number;
+    invoice_number: number;
+    invoice_prefix: string;
+    invoice_details: string;
+    payment_status: string;
+    status: string;
+    formatted_created_at: string;
+    user: User;
+    plan: Plan;
+    currency: Currencies;
+}
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    profile_image?: string;
+    role_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface InvoiceTransaction extends Transaction {
+    transaction_date: string;
+    invoice_details: string;
+    billing_details: InvoiceBillingDetails;
+}
+
 export interface InvoicePlan {
     id: number;
     name: string;

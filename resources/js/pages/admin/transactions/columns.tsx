@@ -195,9 +195,7 @@ export const getColumns = ({
         accessorKey: t("Amount"),
         header: t("Amount"),
         cell: ({ row }) =>
-            row.original.currency?.symbol +
-            " " +
-            row.original.transaction_amount,
+          row.original.formatted_amount
     },
 
     {

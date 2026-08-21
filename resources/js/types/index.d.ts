@@ -107,6 +107,7 @@ export interface Transaction {
     user: User;
     plan: Plan;
     currency: Currency;
+    formatted_amount: string;
 }
 
 

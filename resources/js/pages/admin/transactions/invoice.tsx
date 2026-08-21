@@ -2,7 +2,7 @@ import AppLayout from "@/layouts/app/app-layout";
 import { Head } from "@inertiajs/react";
 
 import { assetUrl } from "@/helpers/asset-url";
-import { Currencies, InvoicePlan } from "@/types/admin";
+import { Currencies, InvoicePlan, InvoiceTransaction } from "@/types/admin";
 import { useRef } from "react";
 
 import {
@@ -11,8 +11,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Download, MoreVertical, Printer } from "lucide-react";
+import { Download, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
+import { BreadcrumbItem } from "@/types";
+import Heading from "@/components/heading";
 
 interface InvoiceProps {
     transaction: InvoiceTransaction;
@@ -22,6 +26,21 @@ interface InvoiceProps {
     planDetails: InvoicePlan;
     term: string;
 }
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: "Dashboard",
+        href: route("dashboard.admin.overview"),
+    },
+    {
+        title: "Transactions",
+        href: "dashboard.admin.transactions",
+    },
+    {
+        title: "Invoice",
+        href: "#",
+    },
+];
 
 export default function Invoice({
     transaction,
@@ -40,37 +59,74 @@ export default function Invoice({
     };
 
     const handleDownload = async () => {
-        if (!invoiceRef.current) return;
+        if (!invoiceRef.current) {
+            return;
+        }
 
-        const html2pdf = (await import("html2pdf.js")).default;
+        try {
+            const canvas = await html2canvas(invoiceRef.current, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#ffffff",
+            });
 
-        const filename = `${
-            transaction.invoice_prefix || "TR"
-        }${transaction.invoice_number || transaction.transaction_id}.pdf`;
+            const imageData = canvas.toDataURL("image/jpeg", 0.98);
 
-        html2pdf()
-            .set({
-                margin: 0,
-                filename,
-                image: {
-                    type: "jpeg",
-                    quality: 0.98,
-                },
-                html2canvas: {
-                    scale: 4,
-                },
-                jsPDF: {
-                    unit: "mm",
-                    format: "a4",
-                    orientation: "portrait",
-                },
-            })
-            .from(invoiceRef.current)
-            .save();
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: "a4",
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const imageWidth = pageWidth;
+            const imageHeight = (canvas.height * imageWidth) / canvas.width;
+
+            let heightLeft = imageHeight;
+            let position = 0;
+
+            pdf.addImage(
+                imageData,
+                "JPEG",
+                0,
+                position,
+                imageWidth,
+                imageHeight,
+            );
+
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - imageHeight;
+
+                pdf.addPage();
+
+                pdf.addImage(
+                    imageData,
+                    "JPEG",
+                    0,
+                    position,
+                    imageWidth,
+                    imageHeight,
+                );
+
+                heightLeft -= pageHeight;
+            }
+
+            const filename = `${transaction.invoice_prefix || "TR"}${
+                transaction.invoice_number || transaction.transaction_id
+            }.pdf`;
+
+            pdf.save(filename);
+        } catch (error) {
+            console.error("PDF DOWNLOAD ERROR:", error);
+        }
     };
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Invoice" />
 
             <div className="page-wrapper">
@@ -78,7 +134,10 @@ export default function Invoice({
                     {/* Page Header */}
                     <div className="flex items-center justify-between py-4">
                         <div>
-                            <h2 className="text-2xl font-semibold">Invoice</h2>
+                            <Heading
+                                title="Invoice"
+                                description="View and download invoice details"
+                            />
                         </div>
 
                         <DropdownMenu>
@@ -105,7 +164,8 @@ export default function Invoice({
 
                     {/* Invoice */}
                     <div className="rounded-lg border bg-background shadow-sm">
-                        <div id="invoice" className="p-6">
+                        <div ref={invoiceRef} id="invoice" className="p-6">
+                            {" "}
                             {/* Header Section */}
                             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                                 {/* Company */}
@@ -161,7 +221,6 @@ export default function Invoice({
                                     </h4>
                                 </div>
                             </div>
-
                             {/* Billing Information */}
                             <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                                 {/* Bill To */}
@@ -226,7 +285,6 @@ export default function Invoice({
                                     </h5>
                                 </div>
                             </div>
-
                             {/* Items */}
                             <div className="overflow-x-auto">
                                 <table className="w-full border text-sm">
@@ -352,7 +410,6 @@ export default function Invoice({
                                     </tfoot>
                                 </table>
                             </div>
-
                             {/* Notes */}
                             <div className="mt-8">
                                 <strong>Notes</strong>
@@ -365,7 +422,6 @@ export default function Invoice({
                                     {transaction.transaction_id || "-"}
                                 </p>
                             </div>
-
                             {/* Footer Message */}
                             <p className="mt-8 text-center text-sm text-muted-foreground">
                                 {config?.[29]?.config_value ??

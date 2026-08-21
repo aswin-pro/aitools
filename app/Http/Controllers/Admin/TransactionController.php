@@ -37,11 +37,12 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $transactions = Transaction::dataWithPagination(
-            $request->transaction_type,
+            
             $request->search,
             $request->integer('per_page', 10),
             ['user', 'plan', 'currency'],
-            'admin'
+            'admin',
+            $request->transaction_type,
         );
 
         $settings = Setting::where('status', 1)->first();
