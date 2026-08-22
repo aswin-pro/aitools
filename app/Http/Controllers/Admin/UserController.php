@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -48,40 +49,70 @@ class UserController extends Controller
     }
 
     // View User
-    public function viewUser(Request $request, $id)
-    {
-        // Get user details
-        $user_details = User::where('id', $id)->first();
+public function viewUser(Request $request, $id)
+{
+    // Get user details
+    $user_details = User::where('id', $id)->first();
 
-        // Check user
-        if ($user_details == null) {
-            return view('errors.404');
-        } else {
-            // Queries (Contents)
-            $allContents = Generate::where('generate_by', $user_details->id)->orderBy('id', 'desc')->get();
-
-            $currentContentsPage = LengthAwarePaginator::resolveCurrentPage();
-            $perContentPage = 6; // Number of items per page
-
-            $currentContentsPageItems = $allContents->slice(($currentContentsPage - 1) * $perContentPage, $perContentPage)->all();
-            $contents = new LengthAwarePaginator($currentContentsPageItems, count($allContents), $perContentPage);
-
-
-            // Queries (Images)
-            $allImages = AiImages::where('generate_by', $user_details->id)->orderBy('id', 'desc')->get();
-
-            $currentImagesPage = LengthAwarePaginator::resolveCurrentPage();
-            $perImagePage = 6; // Number of items per page
-
-            $currentImagesPageItems = $allImages->slice(($currentImagesPage - 1) * $perImagePage, $perImagePage)->all();
-            $images = new LengthAwarePaginator($currentImagesPageItems, count($allImages), $perImagePage);
-
-
-            $settings = Setting::where('status', 1)->first();
-
-            return view('admin.pages.users.view', compact('user_details', 'settings', 'contents', 'images'));
-        }
+    // Check user
+    if ($user_details == null) {
+        abort(404);
     }
+
+    // Queries (Contents)
+    $allContents = Generate::where('generate_by', $user_details->id)
+        ->orderBy('id', 'desc')
+        ->get();
+
+    $currentContentsPage = LengthAwarePaginator::resolveCurrentPage();
+    $perContentPage = 6;
+
+    $currentContentsPageItems = $allContents
+        ->slice(
+            ($currentContentsPage - 1) * $perContentPage,
+            $perContentPage
+        )
+        ->all();
+
+    $contents = new LengthAwarePaginator(
+        $currentContentsPageItems,
+        count($allContents),
+        $perContentPage,
+        $currentContentsPage
+    );
+
+    // Queries (Images)
+    $allImages = AiImages::where('generate_by', $user_details->id)
+        ->orderBy('id', 'desc')
+        ->get();
+
+    $currentImagesPage = LengthAwarePaginator::resolveCurrentPage();
+    $perImagePage = 6;
+
+    $currentImagesPageItems = $allImages
+        ->slice(
+            ($currentImagesPage - 1) * $perImagePage,
+            $perImagePage
+        )
+        ->all();
+
+    $images = new LengthAwarePaginator(
+        $currentImagesPageItems,
+        count($allImages),
+        $perImagePage,
+        $currentImagesPage
+    );
+
+    // Settings
+    $settings = Setting::where('status', 1)->first();
+
+    return Inertia::render('admin/users/index', [
+        'user_details' => $user_details,
+        'settings' => $settings,
+        'contents' => $contents,
+        'images' => $images,
+    ]);
+}
 
     // Edit User
     public function editUser(Request $request, $id)
@@ -101,7 +132,7 @@ class UserController extends Controller
     // Update User
     public function updateUser(Request $request)
     {
-        // Validation
+        // Validation 
         $validator = $request->validate([
             'user_id' => 'required',
             'full_name' => 'required',
