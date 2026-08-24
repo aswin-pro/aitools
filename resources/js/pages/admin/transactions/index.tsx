@@ -37,7 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: "#",
     },
 ];
-
+    
 export default function Index({
     transactions,
     transactionType,
@@ -57,7 +57,7 @@ export default function Index({
             data: {
                 ...params,
                 transaction_type:
-                    transactionTypeOverride ?? transactionType,
+                    (transactionTypeOverride ?? transactionType) || "all",
             },
         });
     };
@@ -76,37 +76,27 @@ export default function Index({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transactions" />
 
-            {/* Heading */}
-            <div className="mb-4">
+            <div className="flex items-center justify-between">
+                            
                 <Heading
                     title="Transactions"
                     description="View and manage customer transactions"
                 />
-            </div>
 
-            {/* Transaction Type Filter */}
             <div className="mb-4 flex justify-end">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className="px-3"
-                        >
+                        <Button  className="px-3">
                             <SlidersHorizontal />
                             {t("Transaction Type")}
                         </Button>
                     </PopoverTrigger>
 
-                    <PopoverContent
-                        align="end"
-                        className="w-44 p-0"
-                    >
+                    <PopoverContent align="end" className="w-44 p-0">
                         <Command>
                             <CommandList>
                                 <CommandEmpty>
-                                    {t(
-                                        "No transaction types found.",
-                                    )}
+                                    {t("No transaction types found.")}
                                 </CommandEmpty>
 
                                 <CommandGroup>
@@ -118,23 +108,19 @@ export default function Index({
                                                     page: 1,
                                                     per_page:
                                                         transactions.per_page,
-                                                    search:
-                                                        route().params
-                                                            .search,
+                                                    search: route().params
+                                                        .search,
                                                 },
                                                 "all",
                                             );
                                         }}
                                     >
-                                        <span>
-                                            {t("All")}
-                                        </span>
+                                        <span>{t("All")}</span>
 
                                         <CheckIcon
                                             className={cn(
                                                 "ml-auto size-4",
-                                                transactionType ===
-                                                    "all"
+                                                transactionType === "all"
                                                     ? "opacity-100"
                                                     : "opacity-0",
                                             )}
@@ -149,23 +135,19 @@ export default function Index({
                                                     page: 1,
                                                     per_page:
                                                         transactions.per_page,
-                                                    search:
-                                                        route().params
-                                                            .search,
+                                                    search: route().params
+                                                        .search,
                                                 },
                                                 "online",
                                             );
                                         }}
                                     >
-                                        <span>
-                                            {t("Online")}
-                                        </span>
+                                        <span>{t("Online")}</span>
 
                                         <CheckIcon
                                             className={cn(
                                                 "ml-auto size-4",
-                                                transactionType ===
-                                                    "online"
+                                                transactionType === "online"
                                                     ? "opacity-100"
                                                     : "opacity-0",
                                             )}
@@ -180,23 +162,19 @@ export default function Index({
                                                     page: 1,
                                                     per_page:
                                                         transactions.per_page,
-                                                    search:
-                                                        route().params
-                                                            .search,
+                                                    search: route().params
+                                                        .search,
                                                 },
                                                 "offline",
                                             );
                                         }}
                                     >
-                                        <span>
-                                            {t("Offline")}
-                                        </span>
+                                        <span>{t("Offline")}</span>
 
                                         <CheckIcon
                                             className={cn(
                                                 "ml-auto size-4",
-                                                transactionType ===
-                                                    "offline"
+                                                transactionType === "offline"
                                                     ? "opacity-100"
                                                     : "opacity-0",
                                             )}
@@ -208,6 +186,9 @@ export default function Index({
                     </PopoverContent>
                 </Popover>
             </div>
+            </div>
+            
+
 
             <DataTable
                 columns={columns}

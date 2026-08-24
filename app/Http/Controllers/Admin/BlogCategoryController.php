@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class BlogCategoryController extends Controller
 {
@@ -27,31 +29,51 @@ class BlogCategoryController extends Controller
      */
 
     // Blogs Category
-    public function index()
+    public function index(Request $request)
     {
-        // Queries
-        $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
 
-        // View
-        return view('admin.pages.blogs.categories.index', compact('blogsCategories'));
+        $blogsCategories = BlogCategory::query()
+            ->where('status', '!=', 2)
+            ->when($search, function ($query) use ($search) {
+                $query->where('blog_category_title', 'like', "%{$search}%")
+                    ->orWhere('blog_category_slug', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return Inertia::render('admin/blogs/categories/index', [
+            'blogsCategories' => $blogsCategories,
+        ]);
     }
 
-    // Add Blog Category
-    public function createBlogCategory()
-    {
-        // View
-        return view('admin.pages.blogs.categories.create');
-    }
+    //Add Blog Category
+    // public function createBlogCategory()
+    // {   
+    //     return Inertia::render('admin/blogs/categories/create');
+    // }
 
     // Create Blog Category
     public function publishBlogCategory(Request $request)
     {
-        // Validation
         $validator = Validator::make($request->all(), [
-            'category_name' => 'required|min:3',
-            'category_slug' => 'required|min:3'
+            'category_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:100',
+            ],
+            'category_slug' => [
+                'required',
+                'string',
+                'min:3',
+                'max:100',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                'unique:blog_categories,blog_category_slug',
+            ],
         ]);
-
         if ($validator->fails()) {
             return back()->with('failed', $validator->messages()->all()[0])->withInput();
         }
@@ -65,40 +87,54 @@ class BlogCategoryController extends Controller
         $blogCategory->save();
 
         // Redirect
-        return redirect()->route('admin.create.blog.category')->with('success', trans('Category created successfully!'));
+        return redirect()->route('dashboard.admin.blog.categories')->with('success', trans('Category created successfully!'));
     }
 
     // Edit Blog Category
-    public function editBlogCategory($id)
-    {
-        // Get page details
-        $blogCategoryDetails = BlogCategory::where('blog_category_id', $id)->where('status', 1)->first();
+    // public function editBlogCategory($id)
+    // {
+    //     // Get page details
+    //     $blogCategoryDetails = BlogCategory::where('blog_category_id', $id)->where('status', 1)->first();
 
-        // View
-        return view('admin.pages.blogs.categories.edit', compact('blogCategoryDetails'));
-    }
+    //     // View
+    //     return view('admin.pages.blogs.categories.edit', compact('blogCategoryDetails'));
+    // }
 
     // Update Blog Category
-    public function updateBlogCategory(Request $request)
+    public function updateBlogCategory(Request $request, $id)
     {
-        // Validation
         $validator = Validator::make($request->all(), [
-            'category_name' => 'required|min:3',
-            'category_slug' => 'required|min:3'
+            'category_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:100',
+            ],
+            'category_slug' => [
+                'required',
+                'string',
+                'min:3',
+                'max:100',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                Rule::unique('blog_categories', 'blog_category_slug')
+                    ->ignore($id, 'blog_category_id'),
+            ],
         ]);
 
         if ($validator->fails()) {
-            return back()->with('failed', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->with('failed', $validator->messages()->all()[0])
+                ->withInput();
         }
 
-        // Blog category id
-        $blogCategoryId = $request->segment(3);
-        
-        // Update query
-        BlogCategory::where('blog_category_id', $blogCategoryId)->update(['blog_category_title' => ucfirst($request->category_name), 'blog_category_slug' => $request->category_slug]);
+        BlogCategory::where('blog_category_id', $id)->update([
+            'blog_category_title' => ucfirst($request->category_name),
+            'blog_category_slug' => $request->category_slug,
+        ]);
 
-        // Redirect
-        return redirect()->route('admin.edit.blog.category', $blogCategoryId)->with('success', trans('Category details update successfully!'));
+        return redirect()
+            ->route('dashboard.admin.blog.categories')
+            ->with('success', trans('Category details update successfully!'));
     }
 
     // Actions
@@ -109,11 +145,11 @@ class BlogCategoryController extends Controller
             case 'unpublish':
                 $status = 0;
                 break;
-            
+
             case 'delete':
                 $status = 2;
                 break;
-            
+
             default:
                 $status = 1;
                 break;

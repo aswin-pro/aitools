@@ -182,3 +182,14 @@ export interface InvoicePlan {
     price: number;
     validity: number;
 }
+
+export interface BlogCategory {
+    blog_category_id: string;
+    blog_category_title: string;
+    blog_category_slug: string;
+    published_by: number;
+    status: number;
+    created_at: string;
+    updated_at: string;
+    formatted_created_at: string;
+}

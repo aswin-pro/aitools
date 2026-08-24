@@ -48,63 +48,80 @@ class UserController extends Controller
         return view('admin.pages.users.index', compact('users', 'settings', 'config'));
     }
 
-    // View User
+
 public function viewUser(Request $request, $id)
 {
     // Get user details
     $user_details = User::where('id', $id)->first();
 
-    // Check user
     if ($user_details == null) {
         abort(404);
     }
 
-    // Queries (Contents)
+    $paginateType = $request->input('paginate', 'content');
+
     $allContents = Generate::where('generate_by', $user_details->id)
         ->orderBy('id', 'desc')
         ->get();
 
-    $currentContentsPage = LengthAwarePaginator::resolveCurrentPage();
-    $perContentPage = 6;
+    $contentPage = $paginateType === 'content'
+        ? (int) $request->input('page', 1)
+        : 1;
 
-    $currentContentsPageItems = $allContents
+    $perContentPage = $request->integer('per_page', 6);
+
+    $contentItems = $allContents
         ->slice(
-            ($currentContentsPage - 1) * $perContentPage,
+            ($contentPage - 1) * $perContentPage,
             $perContentPage
         )
+        ->values()
         ->all();
 
     $contents = new LengthAwarePaginator(
-        $currentContentsPageItems,
-        count($allContents),
+        $contentItems,
+        $allContents->count(),
         $perContentPage,
-        $currentContentsPage
+        $contentPage,
+        [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]
     );
 
-    // Queries (Images)
     $allImages = AiImages::where('generate_by', $user_details->id)
         ->orderBy('id', 'desc')
         ->get();
 
-    $currentImagesPage = LengthAwarePaginator::resolveCurrentPage();
-    $perImagePage = 6;
+    $imagePage = $paginateType === 'image'
+        ? (int) $request->input('page', 1)
+        : 1;
 
-    $currentImagesPageItems = $allImages
+    $perImagePage = $request->integer('per_page', 3);
+
+    $imageItems = $allImages
         ->slice(
-            ($currentImagesPage - 1) * $perImagePage,
+            ($imagePage - 1) * $perImagePage,
             $perImagePage
         )
+        ->values()
         ->all();
 
     $images = new LengthAwarePaginator(
-        $currentImagesPageItems,
-        count($allImages),
+        $imageItems,
+        $allImages->count(),
         $perImagePage,
-        $currentImagesPage
+        $imagePage,
+        [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]
     );
 
-    // Settings
+
     $settings = Setting::where('status', 1)->first();
+
+
 
     return Inertia::render('admin/users/index', [
         'user_details' => $user_details,

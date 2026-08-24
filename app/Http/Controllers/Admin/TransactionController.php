@@ -42,7 +42,7 @@ class TransactionController extends Controller
             $request->integer('per_page', 10),
             ['user', 'plan', 'currency'],
             'admin',
-            $request->transaction_type,
+            $request->transaction_type ?? 'all',
         );
 
         $settings = Setting::where('status', 1)->first();
@@ -69,24 +69,6 @@ class TransactionController extends Controller
         return redirect()->back()->with('success', trans('Transaction Status Updated Successfully!'));
     }
 
-    // View transaction invoice
-    // public function viewInvoice($id)
-    // {
-    //     // Get transaction details
-    //     $transaction = Transaction::where('id', $id)->first();
-    //     $settings = Setting::where('status', 1)->first();
-    //     $config = Config::get();
-    //     $currencies = Currency::get();
-    //     $transaction['billing_details'] = json_decode($transaction['invoice_details'], true);
-
-    //     // View invoice page
-    //     return Inertia::render('admin/transactions/invoice', [
-    //         'transaction' => $transaction,
-    //         'settings' => $settings,
-    //         'config' => $config,
-    //         'currencies' => $currencies,
-    //     ]);
-    // }
 
 
 public function viewInvoice($id)

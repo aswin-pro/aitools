@@ -29,7 +29,7 @@ class Transaction extends Model
         int $perPage,
         array $with,
         string $for,
-        ?string $transactionType,
+        string $transactionType,
     ): LengthAwarePaginator {
         return self::query()
             ->with($with)
@@ -38,7 +38,10 @@ class Transaction extends Model
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('transaction_id', 'like', "%{$search}%")
-                        ->orWhere('payment_gateway_name', 'like', "%{$search}%");
+                        ->orWhere('payment_gateway_name', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%");
+                        });
                 });
             })
 
@@ -67,7 +70,7 @@ class Transaction extends Model
         );
     }
 
-        protected function formattedAmount(): Attribute
+    protected function formattedAmount(): Attribute
     {
         return Attribute::make(
             get: fn() => formatCurrency($this->transaction_amount, $this->transaction_currency),

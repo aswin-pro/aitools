@@ -15,7 +15,16 @@ import {
 } from "@/components/ui/sidebar";
 import { SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
-import { ArrowRightLeft, ChevronRight, CircleDollarSign, Coins, FolderCog, LayoutGrid, Settings } from "lucide-react";
+import {
+    ArrowRightLeft,
+    ChevronRight,
+    CircleDollarSign,
+    Coins,
+    FilePenLine,
+    FolderCog,
+    LayoutGrid,
+    Settings,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -38,17 +47,32 @@ export function NavMain() {
                         isActive: route().current("dashboard.admin.overview"),
                     },
                     {
-                        title: "Settings",
-                        url: "dashboard.admin.edit.account",
-                        icon: Settings,
-                        isActive: route().current("dashboard.admin.edit.*"),
+                        title: "Blogs",
+                        url: "dashboard.admin.blog.categories",
+                        icon: FilePenLine,
+                        isActive: route().current("dashboard.admin.currencies"),
                     },
+
+                    {
+                        title: "Transactions",
+                        url: "dashboard.admin.transactions",
+                        icon: ArrowRightLeft,
+                        isActive: route().current(
+                            "dashboard.admin.transactions",
+                        ),
+                    },
+
+                    {
+                        title: "Currencies",
+                        url: "dashboard.admin.currencies",
+                        icon: CircleDollarSign,
+                        isActive: route().current("dashboard.admin.currencies"),
+                    },
+
                     {
                         title: "System",
                         icon: FolderCog,
-                        isActive: route().current(
-                            "dashboard.admin.system.*",
-                        ),
+                        isActive: route().current("dashboard.admin.system.*"),
                         children: [
                             {
                                 title: "Login Activity",
@@ -73,25 +97,19 @@ export function NavMain() {
                             },
                         ],
                     },
-                    {
-                        title: "Currencies",
-                        url: "dashboard.admin.currencies",
-                        icon: CircleDollarSign,
-                        isActive: route().current("dashboard.admin.currencies"),
-                    },
-                    {
-                        title: "Transactions",
-                        url: "dashboard.admin.transactions",
-                        icon: ArrowRightLeft,
-                        isActive: route().current("dashboard.admin.transactions"),
-                    },
 
+                    {
+                        title: "Settings",
+                        url: "dashboard.admin.edit.account",
+                        icon: Settings,
+                        isActive: route().current("dashboard.admin.edit.*"),
+                    },
                 ],
             },
         ];
     } else {
         navItems = [
-             {
+            {
                 title: t("Dashboard"),
                 items: [
                     {
@@ -147,7 +165,7 @@ export function NavMain() {
                                                 </SidebarMenuButton>
                                             </CollapsibleTrigger>
 
-                                                                                        <CollapsibleContent>
+                                            <CollapsibleContent>
                                                 <SidebarMenuSub>
                                                     {item.children!.map(
                                                         (child) => (
@@ -179,7 +197,6 @@ export function NavMain() {
                                                     )}
                                                 </SidebarMenuSub>
                                             </CollapsibleContent>
-
                                         </SidebarMenuItem>
                                     </Collapsible>
                                 );

@@ -1,15 +1,16 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
 import { Head } from "@inertiajs/react";
-import type { BreadcrumbItem } from "@/types";
+import type { BreadcrumbItem, LaravelPagination } from "@/types";
 import { Mail, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { assetUrl } from "@/helpers/asset-url";
 import { useInitials } from "@/hooks/use-initials";
-
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import GeneratedContents from "./generated-contents";
+import GeneratedImages from "./generated-images";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -34,12 +35,42 @@ interface UserDetails {
     role_id: number;
 }
 
+interface GeneratedContent {
+    id: number;
+    name: string;
+    word_count: number;
+    updated_at: string;
+}
+
+interface GeneratedImage {
+    id: number;
+    generate_id: string;
+    generate_by: string;
+    name: string;
+    type: string;
+    prompt: string;
+    n: number;
+    size: string;
+    format: string;
+    result: string;
+    bookmark: boolean;
+    status: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
 interface ViewUserProps {
     user_details: UserDetails;
     settings: any;
+    contents: LaravelPagination<GeneratedContent>;
+    images: LaravelPagination<GeneratedImage>;
 }
 
-export default function ViewUser({ user_details }: ViewUserProps) {
+export default function ViewUser({
+    user_details,
+    contents,
+    images,
+}: ViewUserProps) {
     const email = user_details.email || "Not Available";
     const getInitials = useInitials();
 
@@ -122,20 +153,28 @@ export default function ViewUser({ user_details }: ViewUserProps) {
                             </Button>
                         </div>
                     </div>
+
                 </div>
             </div>
 
-<ConfirmDialog
-    open={loginDialogOpen}
-    onOpenChange={setLoginDialogOpen}
-    icon={<LogIn className="size-7" />}
-    title="Login as User?"
-    description="If you proceed, you will leave your current admin session and login as this user."
-    cancelLabel="Cancel"
-    confirmLabel="Yes, proceed"
-    onConfirm={handleLoginAsUser}
-/>
+                    <div className="mt-6">
+                        <GeneratedContents contents={contents} />
+                    </div>
 
+                    <div className="mt-6">
+                        <GeneratedImages images={images} />
+                    </div>
+
+            <ConfirmDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+                icon={<LogIn className="size-7" />}
+                title="Login as User?"
+                description="If you proceed, you will leave your current admin session and login as this user."
+                cancelLabel="Cancel"
+                confirmLabel="Yes, proceed"
+                onConfirm={handleLoginAsUser}
+            />
         </AppLayout>
     );
 }

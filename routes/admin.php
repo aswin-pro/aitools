@@ -118,9 +118,6 @@ use Inertia\Inertia;
         Route::get('delete-currency', [CurrencyController::class, 'deleteCurrency'])->name('delete.currency');
 
 
-
-
-
         // Plugins
         Route::get('plugins', [PluginController::class, 'index'])->name('plugins.index');
         Route::delete('/plugins/{pluginName}', [PluginController::class, 'deletePlugin'])->name('plugins.delete');
@@ -143,11 +140,11 @@ use Inertia\Inertia;
 
         // Blogs Categories
         Route::get('blog-categories', [App\Http\Controllers\Admin\BlogCategoryController::class, "index"])->name('blog.categories');
-        Route::get('create-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "createBlogCategory"])->name('create.blog.category');
         Route::post('publish-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "publishBlogCategory"])->name('publish.blog.category')->middleware(['demo.mode']);
-        Route::get('edit-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "editBlogCategory"])->name('edit.blog.category');
+        // Route::get('edit-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "editBlogCategory"])->name('edit.blog.category');
         Route::post('update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']);
         Route::get('action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlogCategory"])->name('action.blog.category')->middleware(['demo.mode']);
+        // Route::get('create-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "createBlogCategory"])->name('create.blog.category');
 
         // Blogs
         Route::get('blogs', [App\Http\Controllers\Admin\BlogController::class, "index"])->name('blogs');

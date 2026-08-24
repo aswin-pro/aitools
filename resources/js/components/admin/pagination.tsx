@@ -41,7 +41,7 @@
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            {[10, 20, 30, 40, 50].map((size) => (
+                            {[3, 6, 10, 20, 30, 40, 50].map((size) => (
                                 <SelectItem key={size} value={size.toString()}>
                                     {size}
                                 </SelectItem>
