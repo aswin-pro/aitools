@@ -49,11 +49,6 @@ class BlogCategoryController extends Controller
         ]);
     }
 
-    //Add Blog Category
-    // public function createBlogCategory()
-    // {   
-    //     return Inertia::render('admin/blogs/categories/create');
-    // }
 
     // Create Blog Category
     public function publishBlogCategory(Request $request)
@@ -74,8 +69,11 @@ class BlogCategoryController extends Controller
                 'unique:blog_categories,blog_category_slug',
             ],
         ]);
+
         if ($validator->fails()) {
-            return back()->with('failed', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         // Save Blog Category
@@ -90,17 +88,6 @@ class BlogCategoryController extends Controller
         return redirect()->route('dashboard.admin.blog.categories')->with('success', trans('Category created successfully!'));
     }
 
-    // Edit Blog Category
-    // public function editBlogCategory($id)
-    // {
-    //     // Get page details
-    //     $blogCategoryDetails = BlogCategory::where('blog_category_id', $id)->where('status', 1)->first();
-
-    //     // View
-    //     return view('admin.pages.blogs.categories.edit', compact('blogCategoryDetails'));
-    // }
-
-    // Update Blog Category
     public function updateBlogCategory(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -123,7 +110,7 @@ class BlogCategoryController extends Controller
 
         if ($validator->fails()) {
             return back()
-                ->with('failed', $validator->messages()->all()[0])
+                ->withErrors($validator)
                 ->withInput();
         }
 
@@ -159,6 +146,6 @@ class BlogCategoryController extends Controller
         BlogCategory::where('blog_category_id', $request->query('id'))->update(['status' => $status]);
 
         // Redirect
-        return redirect()->route('admin.blog.categories')->with('success', trans('Status updated successfully!'));
+        // return redirect()->route('admin.blog.categories')->with('success', trans('Status updated successfully!'));
     }
 }

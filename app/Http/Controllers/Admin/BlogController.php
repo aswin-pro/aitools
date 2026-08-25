@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class BlogController extends Controller
 {
@@ -53,25 +54,48 @@ class BlogController extends Controller
      */
 
     // Blogs
-    public function index()
+    public function index(Request $request)
     {
-        // Queries
-        $blogs = Blog::where('status', '!=', 2)->orderBy('created_at', 'desc')->get();
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
 
-        // View
-        return view('admin.pages.blogs.index', compact('blogs'));
+        $query = Blog::with('blogCategory')
+            ->where('status', '!=', 2)
+            ->orderBy('created_at', 'desc');
+
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('heading', 'like', "%{$search}%")
+                    ->orWhere('short_description', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%")
+                    ->orWhereHas('blogCategory', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where(
+                            'blog_category_title',
+                            'like',
+                            "%{$search}%"
+                        );
+                    });
+            });
+        }
+
+        $blogs = $query->paginate($perPage)->withQueryString();
+
+        return Inertia::render(
+            'admin/blogs/blog-posts/index',
+            compact('blogs')
+        );
     }
 
     // Add Blog
-    public function createBlog()
-    {
-        // Queries
-        $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
-        $config = Config::get();
+public function createBlog()
+{
+    $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
 
-        // View
-        return view('admin.pages.blogs.create', compact('blogsCategories', 'config'));
-    }
+    return Inertia::render(
+        'admin/blogs/blog-posts/create',
+        compact('blogsCategories')
+    );
+}
 
     // Publish Blog
     public function publishBlog(Request $request)
@@ -207,9 +231,15 @@ class BlogController extends Controller
 
         // Update blog details
         Blog::where('blog_id', $blogId)->update([
-            'heading' => ucfirst($request->blog_name), 'slug' => $blogSlug, 'short_description' => $request->short_description,
-            'long_description' => $request->long_description, 'category' => $request->category_id, 'tags' => ucfirst($request->tags), 'title' => ucfirst($request->seo_title),
-            'description' => ucfirst($request->seo_description), 'keywords' => $request->seo_keywords
+            'heading' => ucfirst($request->blog_name),
+            'slug' => $blogSlug,
+            'short_description' => $request->short_description,
+            'long_description' => $request->long_description,
+            'category' => $request->category_id,
+            'tags' => ucfirst($request->tags),
+            'title' => ucfirst($request->seo_title),
+            'description' => ucfirst($request->seo_description),
+            'keywords' => $request->seo_keywords
         ]);
 
         // Redirect

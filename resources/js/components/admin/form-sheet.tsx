@@ -20,7 +20,6 @@ interface SelectOption {
 
 interface FormField {
     type: "input" | "select";
-
     id?: string;
     name: string;
     label: string;
@@ -48,7 +47,7 @@ interface FormSheetProps {
     cancelLabel?: string;
 }
 
-export function FormSheet({
+export function                                                                                                                                         FormSheet({
     open,
     onOpenChange,
     title,
@@ -61,7 +60,10 @@ export function FormSheet({
 }: FormSheetProps) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent className="flex w-full max-w-full flex-col sm:max-w-lg">
+            <SheetContent
+                className="flex w-full max-w-full flex-col sm:max-w-lg"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <SheetHeader>
                     <SheetTitle>{title}</SheetTitle>
 
@@ -138,7 +140,7 @@ export function FormSheet({
                                 onClick={() => onOpenChange(false)}
                                 disabled={form.processing}
                             >
-                                <LoadingSwap isLoading={form.processing}>
+                                <LoadingSwap isLoading={false}>
                                     {cancelLabel}
                                 </LoadingSwap>
                             </Button>

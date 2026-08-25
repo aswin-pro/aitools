@@ -33,6 +33,7 @@ function TransactionActions({
             status: "SUCCESS",
         });
     };
+const [actionLoading, setActionLoading] = useState(false);
 
     return (
         <>

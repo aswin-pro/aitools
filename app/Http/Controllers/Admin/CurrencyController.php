@@ -61,7 +61,7 @@ class CurrencyController extends Controller
             'priority' => $priority,
             'name' => $validated['name'],
             'iso_code' => strtoupper($validated['iso_code']),
-            'iso_numeric' => $validated['iso_numeric'],
+            'iso_numeric' => $validated['iso_numeric']?? '',
             'symbol' => $validated['symbol'],
             'subunit' => $validated['subunit'] ?? '',
             'subunit_to_unit' => $validated['subunit_to_unit'] ?? '',

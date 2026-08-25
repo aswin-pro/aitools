@@ -193,3 +193,27 @@ export interface BlogCategory {
     updated_at: string;
     formatted_created_at: string;
 }
+
+export interface Blog {
+    id: number;
+    blog_id: string;
+    published_by: string;
+    cover_image: string;
+    heading: string;
+    slug: string;
+    short_description: string;
+    long_description: string;
+    category: string;
+    tags: string;
+    title: string;
+    description: string;
+    keywords: string;
+    status: number;
+    created_at: string;
+    updated_at: string;
+    formatted_created_at: string;
+    blog_category?: {
+        blog_category_id: string;
+        blog_category_title: string;
+    };
+}

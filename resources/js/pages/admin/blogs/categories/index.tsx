@@ -1,7 +1,7 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
 import { LaravelPagination, type BreadcrumbItem } from "@/types";
-import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Head, router, useForm } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/table/data-table";
@@ -12,11 +12,16 @@ import { CheckCircle, Trash2, XCircle } from "lucide-react";
 import { getColumns } from "./columns";
 import { BlogCategory } from "@/types/admin";
 import { FormSheet } from "@/components/admin/form-sheet";
+import { toast } from "sonner";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
         href: route("dashboard.admin.overview"),
+    },
+    {
+        title: "Blogs",
+        href: route("dashboard.admin.blogs.post"),
     },
     {
         title: "Categories",
@@ -30,6 +35,8 @@ export default function Index({
     blogsCategories: LaravelPagination<BlogCategory>;
 }) {
     const { t } = useTranslation();
+
+    const [actionLoading, setActionLoading] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [createOpen, setCreateOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
@@ -66,8 +73,12 @@ export default function Index({
         form.post(route("dashboard.admin.publish.blog.category"), {
             preserveScroll: true,
             onSuccess: () => {
+                toast.success(t("Category created successfully!"));
                 setCreateOpen(false);
                 form.reset();
+            },
+            onError: () => {
+                toast.error(t("Failed to create category."));
             },
         });
     };
@@ -77,10 +88,40 @@ export default function Index({
             return;
         }
 
-        window.location.href = route("dashboard.admin.action.blog.category", {
-            id: selectedCategory.blog_category_id,
-            mode: selectedAction,
-        });
+        setActionLoading(true);
+
+        router.get(
+            route("dashboard.admin.action.blog.category"),
+            {
+                id: selectedCategory.blog_category_id,
+                mode: selectedAction,
+            },
+            {
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    const messages = {
+                        publish: t("Category published successfully!"),
+                        unpublish: t("Category unpublished successfully!"),
+                        delete: t("Category deleted successfully!"),
+                    };
+
+                    toast.success(messages[selectedAction]);
+
+                    setConfirmOpen(false);
+                    setSelectedCategory(null);
+                    setSelectedAction(null);
+                },  
+
+            onError: () => {
+                setActionLoading(false);
+            },    
+
+            onFinish: () => {
+                setActionLoading(false);
+            },
+            },
+        );
     };
 
     const handleEdit = (category: BlogCategory) => {
@@ -110,9 +151,14 @@ export default function Index({
                 preserveScroll: true,
 
                 onSuccess: () => {
+                    toast.success(t("Category updated successfully!"));
                     setEditOpen(false);
                     setSelectedCategory(null);
                     editForm.reset();
+                },
+
+                onError: () => {
+                    toast.error(t("Failed to update category."));
                 },
             },
         );
@@ -239,6 +285,7 @@ export default function Index({
                     cancelLabel={t("Cancel")}
                     confirmLabel={currentDialog.confirmLabel}
                     onConfirm={handleAction}
+                    loading={actionLoading}
                 />
             )}
 
@@ -266,7 +313,7 @@ export default function Index({
                 ]}
                 onSubmit={handleCreate}
                 submitLabel={t("Create")}
-                // cancelLabel={t("Cancel")}
+                cancelLabel={t("Cancel")}
             />
 
             <FormSheet
@@ -293,7 +340,7 @@ export default function Index({
                 ]}
                 onSubmit={handleEditSubmit}
                 submitLabel={t("Edit")}
-                // cancelLabel={t("Cancel")}
+                cancelLabel={t("Cancel")}
             />
         </AppLayout>
     );

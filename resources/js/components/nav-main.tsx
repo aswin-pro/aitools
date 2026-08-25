@@ -46,13 +46,27 @@ export function NavMain() {
                         icon: LayoutGrid,
                         isActive: route().current("dashboard.admin.overview"),
                     },
+                    //blogs 
                     {
                         title: "Blogs",
-                        url: "dashboard.admin.blog.categories",
                         icon: FilePenLine,
-                        isActive: route().current("dashboard.admin.currencies"),
+                        isActive: route().current("dashboard.admin.blog.*"),
+                        children: [
+                            {
+                                title: "Blog Posts",
+                                url: "dashboard.admin.blogs.post",
+                                isActive: route().current( "dashboard.admin.blogs.post"),
+                            },
+                            {
+                                title: "Categories",
+                                url: "dashboard.admin.blog.categories",
+                                isActive: route().current(
+                                    "dashboard.admin.blog.categories",
+                                ),
+                            },
+                        ],
                     },
-
+                    
                     {
                         title: "Transactions",
                         url: "dashboard.admin.transactions",
@@ -69,6 +83,7 @@ export function NavMain() {
                         isActive: route().current("dashboard.admin.currencies"),
                     },
 
+                    //system
                     {
                         title: "System",
                         icon: FolderCog,

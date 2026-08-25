@@ -22,6 +22,7 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer";
+import { LoadingSwap } from "../ui/loading-swap";
 
 interface ConfirmDialogProps {
     open: boolean;
@@ -98,7 +99,9 @@ export function ConfirmDialog({
                                 onClick={onConfirm}
                                 disabled={loading}
                             >
-                                {confirmLabel}
+                                <LoadingSwap isLoading={loading}>
+                                    {confirmLabel}
+                                </LoadingSwap>
                             </Button>
                         </DialogFooter>
                     </div>
@@ -146,7 +149,9 @@ export function ConfirmDialog({
                         onClick={onConfirm}
                         disabled={loading}
                     >
-                        {confirmLabel}
+                        <LoadingSwap isLoading={loading}>
+                            {confirmLabel}
+                        </LoadingSwap>
                     </Button>
                 </DrawerFooter>
             </DrawerContent>

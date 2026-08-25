@@ -45,6 +45,8 @@ export default function Index({
         null,
     );
 
+    const [actionLoading, setActionLoading] = useState(false);
+
     const form = useForm({
         id: "",
         name: "",
@@ -151,6 +153,7 @@ export default function Index({
         if (!currencyToDelete) {
             return;
         }
+        setActionLoading(true);
 
         router.get(
             route("dashboard.admin.delete.currency"),
@@ -163,6 +166,14 @@ export default function Index({
                 onSuccess: () => {
                     setDeleteDialogOpen(false);
                     setCurrencyToDelete(null);
+                },
+
+                onError: () => {
+                    setActionLoading(false);
+                },
+
+                onFinish: () => {
+                    setActionLoading(false);
                 },
             },
         );
@@ -424,6 +435,7 @@ export default function Index({
                     confirmLabel={t("Delete")}
                     cancelLabel={t("Cancel")}
                     onConfirm={handleDelete}
+                    loading={actionLoading}
                 />
             </div>
         </AppLayout>

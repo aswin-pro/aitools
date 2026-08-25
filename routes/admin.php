@@ -139,15 +139,15 @@ use Inertia\Inertia;
         Route::get('delete-page', [App\Http\Controllers\Admin\PageController::class, "deletePage"])->name('delete.page')->middleware(['demo.mode']);
 
         // Blogs Categories
-        Route::get('blog-categories', [App\Http\Controllers\Admin\BlogCategoryController::class, "index"])->name('blog.categories');
-        Route::post('publish-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "publishBlogCategory"])->name('publish.blog.category')->middleware(['demo.mode']);
+        Route::get('blog/blog-categories', [App\Http\Controllers\Admin\BlogCategoryController::class, "index"])->name('blog.categories');
+        Route::post('blog/publish-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "publishBlogCategory"])->name('publish.blog.category')->middleware(['demo.mode']);
         // Route::get('edit-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "editBlogCategory"])->name('edit.blog.category');
-        Route::post('update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']);
-        Route::get('action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlogCategory"])->name('action.blog.category')->middleware(['demo.mode']);
+        Route::post('blog/update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']); 
+        Route::get('blog/action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlogCategory"])->name('action.blog.category')->middleware(['demo.mode']); //actions for unplish/publish
         // Route::get('create-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "createBlogCategory"])->name('create.blog.category');
 
         // Blogs
-        Route::get('blogs', [App\Http\Controllers\Admin\BlogController::class, "index"])->name('blogs');
+        Route::get('blog/blog-posts', [App\Http\Controllers\Admin\BlogController::class, "index"])->name('blogs.post');
         Route::get('create-blog', [App\Http\Controllers\Admin\BlogController::class, "createBlog"])->name('create.blog');
         Route::post('publish-blog', [App\Http\Controllers\Admin\BlogController::class, "publishBlog"])->name('publish.blog')->middleware(['demo.mode']);
         Route::get('edit-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "editBlog"])->name('edit.blog');
@@ -158,13 +158,16 @@ use Inertia\Inertia;
         
 
 
+
+
+
+
+
+
+
         // License
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');
         Route::post('verify-license', [App\Http\Controllers\Admin\LicenseController::class, "verifyLicense"])->name('verify.license')->middleware(['demo.mode']);
-
-
-
-        
        
         // Backup
         Route::get('backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups');
@@ -174,9 +177,6 @@ use Inertia\Inertia;
         Route::get('backups/restore-backup', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backup.restore')->middleware(['demo.mode']);
         Route::get('backups/download-backup', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backup.download')->middleware(['demo.mode']);
         Route::get('backups/delete-backup', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backup.delete')->middleware(['demo.mode']);
-
-
-
 
         // Check update
         Route::get('check', [App\Http\Controllers\Admin\UpdateController::class, 'check'])->name('check');

@@ -1,1 +1,0 @@
-import{c as r,j as s}from"./app-CCwXVjq0.js";/* empty css            */function i(){const t=r.c(1);let e;return t[0]===Symbol.for("react.memo_cache_sentinel")?(e=s.jsx("div",{className:"h-screen flex justify-center items-center p-10",children:s.jsx("h1",{children:"AI Tools"})}),t[0]=e):e=t[0],e}export{i as default};
