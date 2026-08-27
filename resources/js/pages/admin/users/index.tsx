@@ -1,16 +1,21 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
-import { Head } from "@inertiajs/react";
-import type { BreadcrumbItem, LaravelPagination } from "@/types";
-import { Mail, LogIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { assetUrl } from "@/helpers/asset-url";
-import { useInitials } from "@/hooks/use-initials";
-import { useState } from "react";
+import {
+    BreadcrumbItem,
+    LaravelPagination,
+    NavigateParams,
+    SharedData,
+} from "@/types";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DataTable } from "@/components/table/data-table";
+import { Currencies, Plan, User } from "@/types/admin";
+import { toast } from "sonner";
+import { getColumns } from "./columns";
+import { FormSheet } from "@/components/admin/form-sheet";
+import { Trash2, UserCheck, UserX } from "lucide-react";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
-import GeneratedContents from "./generated-contents";
-import GeneratedImages from "./generated-images";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,163 +23,326 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route("dashboard.admin.overview"),
     },
     {
-        title: "Users",
-        href: route("dashboard.admin.users"),
-    },
-    {
-        title: "View User",
+        title: "Currencies",
         href: "#",
     },
 ];
 
-interface UserDetails {
-    id: number;
-    name: string;
-    email: string | null;
-    profile_image: string | null;
-    role_id: number;
-}
+export default function Index({
+    users,
+    plans,
+}: {
+    users: LaravelPagination<User>;
+    plans: Plan[];
+}) {
+    const { t } = useTranslation();
 
-interface GeneratedContent {
-    id: number;
-    name: string;
-    word_count: number;
-    updated_at: string;
-}
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [selectedAction, setSelectedAction] = useState<
+        "activate" | "deactivate" | "delete" | null
+    >(null);
+    //for sheet......
+    const [editOpen, setEditOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-interface GeneratedImage {
-    id: number;
-    generate_id: string;
-    generate_by: string;
-    name: string;
-    type: string;
-    prompt: string;
-    n: number;
-    size: string;
-    format: string;
-    result: string;
-    bookmark: boolean;
-    status: boolean;
-    created_at: string;
-    updated_at: string;
-}
+    const [planOpen, setPlanOpen] = useState(false);
 
-interface ViewUserProps {
-    user_details: UserDetails;
-    settings: any;
-    contents: LaravelPagination<GeneratedContent>;
-    images: LaravelPagination<GeneratedImage>;
-}
+    const [actionLoading, setActionLoading] = useState(false);
 
-export default function ViewUser({
-    user_details,
-    contents,
-    images,
-}: ViewUserProps) {
-    const email = user_details.email || "Not Available";
-    const getInitials = useInitials();
+    const handleEdit = (user: User) => {
+        setSelectedUser(user);
 
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+        form.setData({
+            user_id: String(user.id),
+            full_name: user.name,
+            email: user.email,
+            password: "",
+        });
 
-    const handleLoginAsUser = () => {
-        window.location.href = route(
-            "dashboard.admin.login-as.user",
-            user_details.id,
+        form.clearErrors();
+        setEditOpen(true);
+    };
+
+    const openActionDialog = (
+        user: User,
+        action: "activate" | "deactivate" | "delete",
+    ) => {
+        setSelectedUser(user);
+        setSelectedAction(action);
+        setConfirmOpen(true);
+    };
+
+    const handleAction = () => {
+        if (!selectedUser || !selectedAction) {
+            return;
+        }
+
+        setActionLoading(true);
+
+        const routeName =
+            selectedAction === "delete"
+                ? "dashboard.admin.delete.user"
+                : "dashboard.admin.update.status";
+
+        router.get(
+            route(routeName),
+            {
+                id: selectedUser.id,
+                ...(selectedAction !== "delete" && {
+                    mode: selectedAction,
+                }),
+            },
+            {
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    setConfirmOpen(false);
+                    setSelectedUser(null);
+                    setSelectedAction(null);
+                },
+
+                onError: () => {
+                    toast.error(t("Unable to complete the action."));
+                },
+
+                onFinish: () => {
+                    setActionLoading(false);
+                },
+            },
         );
     };
 
+    const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        form.post(route("dashboard.admin.update.user"), {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                setEditOpen(false);
+                setSelectedUser(null);
+
+                form.reset("password");
+
+                toast.success(t("User updated successfully!"));
+            },
+
+            onError: () => {
+                toast.error(t("Please check the form errors."));
+            },
+        });
+    };
+
+    const handleChangePlan = (user: User) => {
+        setSelectedUser(user);
+
+        planForm.setData({
+            user_id: String(user.id),
+            plan_id: user.plan_id ? String(user.plan_id) : "",
+        });
+
+        planForm.clearErrors();
+
+        setPlanOpen(true);
+    };
+
+    const handleChangePlanSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        planForm.post(route("dashboard.admin.update.user.plan"), {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                setPlanOpen(false);
+                setSelectedUser(null);
+
+                planForm.reset();
+
+                toast.success(t("Plan changed successfully!"));
+            },
+
+            onError: () => {
+                toast.error(t("Please check the form errors."));
+            },
+        });
+    };
+
+    const navigate = (params: NavigateParams) => {
+        router.reload({
+            only: ["users"],
+            data: params,
+        });
+    };
+
+    const dialogContent = {
+        activate: {
+            icon: <UserCheck className="size-7 text-green-600" />,
+            title: t("Activate user?"),
+            description: t("If you proceed, this user will be activated."),
+            confirmLabel: t("Yes, activate"),
+        },
+
+        deactivate: {
+            icon: <UserX className="size-7 text-destructive" />,
+            title: t("Deactivate user?"),
+            description: t("If you proceed, this user will be deactivated."),
+            confirmLabel: t("Yes, deactivate"),
+        },
+        delete: {
+            icon: <Trash2 className="size-7 text-destructive" />,
+            title: t("Delete user?"),
+            description: t(
+                "This will permanently delete the user and their related data. This action cannot be undone.",
+            ),
+            confirmLabel: t("Yes, delete"),
+        },
+    };
+
+    const currentDialog = selectedAction ? dialogContent[selectedAction] : null;
+
+    const columns = useMemo(
+        () =>
+            getColumns({
+                pageIndex: users.current_page - 1,
+                pageSize: users.per_page,
+                t,
+                onEdit: handleEdit,
+                onChangePlan: handleChangePlan,
+                onAction: openActionDialog,
+            }),
+        [users.current_page, users.per_page, t],
+    );
+
+    const form = useForm({
+        user_id: "",
+        full_name: "",
+        email: "",
+        password: "",
+    });
+
+    const planForm = useForm({
+        user_id: "",
+        plan_id: "",
+    });
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="View User" />
+            <Head title={t("Currencies")} />
 
-            <div className="mb-6">
-                <Heading
-                    title="View User"
-                    description="View customer details and activity"
+            <Heading
+                title={t("Users")}
+                description={t(
+                    "Manage registered users, plans, and account details",
+                )}
+            />
+
+            <div className="">
+                <DataTable
+                    columns={columns}
+                    data={users.data}
+                    pageIndex={users.current_page - 1}
+                    pageSize={users.per_page}
+                    totalCount={users.total}
+                    initialSearch={route().params.search ?? ""}
+                    onPageChange={(page) =>
+                        navigate({
+                            page: page + 1,
+                            per_page: users.per_page,
+                            search: route().params.search,
+                        })
+                    }
+                    onPageSizeChange={(size) =>
+                        navigate({
+                            page: 1,
+                            per_page: size,
+                            search: route().params.search,
+                        })
+                    }
+                    onSearch={(search) =>
+                        navigate({
+                            page: 1,
+                            search,
+                        })
+                    }
                 />
             </div>
 
-            <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-                <div className="p-6 md:p-8">
-                    <div className="flex flex-col gap-6 md:flex-row md:items-center">
-                        <div className="flex min-w-0 flex-1 items-center gap-5">
-                            <div className="shrink-0">
-                                <Avatar className="size-20 md:size-24">
-                                    <AvatarImage
-                                        src={assetUrl(
-                                            user_details.profile_image,
-                                        )}
-                                        alt={user_details.name}
-                                    />
-
-                                    <AvatarFallback className="bg-neutral-200 text-xl font-semibold text-black dark:bg-neutral-700 dark:text-white">
-                                        {getInitials(user_details.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </div>
-
-                            {/* User Information */}
-                            <div className="min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h2 className="truncate text-xl font-semibold tracking-tight md:text-2xl">
-                                        {user_details.name}
-                                    </h2>
-
-                                    {user_details.role_id === 2 && (
-                                        <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                            Customer
-                                        </span>
-                                    )}
-                                </div>
-
-                                <p className="mt-1 truncate text-sm text-muted-foreground">
-                                    {email}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2 sm:flex-row">
-                            <Button variant="outline" asChild>
-                                <a
-                                    href={
-                                        user_details.email
-                                            ? `mailto:${user_details.email}`
-                                            : "#"
-                                    }
-                                >
-                                    <Mail className="size-4" />
-                                    Email
-                                </a>
-                            </Button>
-
-                            <Button onClick={() => setLoginDialogOpen(true)}>
-                                <LogIn className="size-4" />
-                                Login via Admin
-                            </Button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-                    <div className="mt-6">
-                        <GeneratedContents contents={contents} />
-                    </div>
-
-                    <div className="mt-6">
-                        <GeneratedImages images={images} />
-                    </div>
-
-            <ConfirmDialog
-                open={loginDialogOpen}
-                onOpenChange={setLoginDialogOpen}
-                icon={<LogIn className="size-7" />}
-                title="Login as User?"
-                description="If you proceed, you will leave your current admin session and login as this user."
-                cancelLabel="Cancel"
-                confirmLabel="Yes, proceed"
-                onConfirm={handleLoginAsUser}
+            <FormSheet
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title={t("Edit User")}
+                description={t("Update user account details")}
+                form={form}
+                fields={[
+                    {
+                        type: "input",
+                        name: "full_name",
+                        label: t("Full Name"),
+                        placeholder: t("Enter full name"),
+                        required: true,
+                        inputType: "text",
+                    },
+                    {
+                        type: "input",
+                        name: "email",
+                        label: t("Email"),
+                        placeholder: t("Enter email address"),
+                        required: true,
+                        inputType: "email",
+                    },
+                    {
+                        type: "input",
+                        name: "password",
+                        label: t("Password"),
+                        placeholder: t("Leave blank to keep current password"),
+                        required: false,
+                        inputType: "password",
+                    },
+                ]}
+                onSubmit={handleUpdate}
+                submitLabel={t("Update")}
+                cancelLabel={t("Cancel")}
             />
+
+            {/* This is for change plan  */}
+            <FormSheet
+                open={planOpen}
+                onOpenChange={setPlanOpen}
+                title={t("Change Plan")}
+                description={t("Update the subscription plan for this user")}
+                form={planForm}
+                fields={[
+                    {
+                        type: "select",
+                        name: "plan_id",
+                        label: t("Plan"),
+                        placeholder: t("Select a plan"),
+                        required: true,
+                        searchable: true,
+                        options: plans.map((plan) => ({
+                            value: String(plan.id),
+                            label: plan.name,
+                        })),
+                    },
+                ]}
+                onSubmit={handleChangePlanSubmit}
+                submitLabel={t("Update Plan")}
+                cancelLabel={t("Cancel")}
+            />
+
+            {selectedAction && currentDialog && (
+                <ConfirmDialog
+                    open={confirmOpen}
+                    onOpenChange={setConfirmOpen}
+                    icon={currentDialog.icon}
+                    title={currentDialog.title}
+                    description={currentDialog.description}
+                    cancelLabel={t("Cancel")}
+                    confirmLabel={currentDialog.confirmLabel}
+                    onConfirm={handleAction}
+                    loading={actionLoading}
+                />
+            )}
         </AppLayout>
     );
 }

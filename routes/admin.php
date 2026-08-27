@@ -13,10 +13,10 @@ use Inertia\Inertia;
         
         // Users
         Route::get('users', [App\Http\Controllers\Admin\UserController::class, "index"])->name('users');
-        Route::get('edit-user/{id}', [App\Http\Controllers\Admin\UserController::class, "editUser"])->name('edit.user');
+        // Route::get('edit-user/{id}', [App\Http\Controllers\Admin\UserController::class, "editUser"])->name('edit.user');
         Route::post('update-user', [App\Http\Controllers\Admin\UserController::class, "updateUser"])->name('update.user')->middleware(['demo.mode']);
         Route::get('view-user/{id}', [App\Http\Controllers\Admin\UserController::class, "viewUser"])->name('view.user');
-        Route::get('change-user-plan/{id}', [App\Http\Controllers\Admin\UserController::class, "ChangeUserPlan"])->name('change.user.plan')->middleware(['demo.mode']);
+        // Route::get('change-user-plan/{id}', [App\Http\Controllers\Admin\UserController::class, "ChangeUserPlan"])->name('change.user.plan')->middleware(['demo.mode']);
         Route::post('update-user-plan', [App\Http\Controllers\Admin\UserController::class, "UpdateUserPlan"])->name('update.user.plan')->middleware(['demo.mode']);
         Route::get('update-status', [App\Http\Controllers\Admin\UserController::class, "updateStatus"])->name('update.status')->middleware(['demo.mode']);
         Route::get('delete-user', [App\Http\Controllers\Admin\UserController::class, "deleteUser"])->name('delete.user')->middleware(['demo.mode']);
@@ -143,7 +143,7 @@ use Inertia\Inertia;
         Route::post('blog/publish-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "publishBlogCategory"])->name('publish.blog.category')->middleware(['demo.mode']);
         // Route::get('edit-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "editBlogCategory"])->name('edit.blog.category');
         Route::post('blog/update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']); 
-        Route::get('blog/action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlogCategory"])->name('action.blog.category')->middleware(['demo.mode']); //actions for unplish/publish
+        Route::get('blog/action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlog"])->name('action.blog.category')->middleware(['demo.mode']); //actions for unplish/publish
         // Route::get('create-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "createBlogCategory"])->name('create.blog.category');
 
         // Blogs
@@ -154,16 +154,11 @@ use Inertia\Inertia;
         Route::post('blog/update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
         Route::get('blog/action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
 
+
+
+
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
         
-
-
-
-
-
-
-
-
 
         // License
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');

@@ -19,11 +19,12 @@ import {
     ArrowRightLeft,
     ChevronRight,
     CircleDollarSign,
-    Coins,
     FilePenLine,
     FolderCog,
     LayoutGrid,
+    MessagesSquare,
     Settings,
+    UsersRound,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -45,6 +46,19 @@ export function NavMain() {
                         url: "dashboard.admin.overview",
                         icon: LayoutGrid,
                         isActive: route().current("dashboard.admin.overview"),
+                    },
+                    {
+                        title: "Chat Assistants",
+                        url: "dashboard.admin.users",
+                        icon: MessagesSquare,
+                        isActive: route().current("dashboard.admin.users"),
+                    },
+                    //users 
+                    {
+                        title: "Users",
+                        url: "dashboard.admin.users",
+                        icon: UsersRound,
+                        isActive: route().current("dashboard.admin.users"),
                     },
                     //blogs 
                     {

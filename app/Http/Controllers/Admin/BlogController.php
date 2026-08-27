@@ -150,22 +150,22 @@ class BlogController extends Controller
             );
     }
     // Edit Blog
-public function editBlog($id)
-{
-    $categories = BlogCategory::where('status', '!=', 2)->get();
+    public function editBlog($id)
+    {
+        $categories = BlogCategory::where('status', '!=', 2)->get();
 
-    $blog = Blog::where('blog_id', $id)
-        ->where('status', '!=', 2)
-        ->firstOrFail();
+        $blog = Blog::where('blog_id', $id)
+            ->where('status', '!=', 2)
+            ->firstOrFail();
 
-    return Inertia::render(
-        'admin/blogs/blog-posts/edit',
-        [
-            'categories' => $categories,
-            'blog' => $blog,
-        ]
-    );
-}
+        return Inertia::render(
+            'admin/blogs/blog-posts/edit',
+            [
+                'categories' => $categories,
+                'blog' => $blog,
+            ]
+        );
+    }
 
     // Update Blog
     public function updateBlog(UpdateBlogRequest $request, $id)
@@ -257,6 +257,8 @@ public function editBlog($id)
         Blog::where('blog_id', $request->query('id'))->update(['status' => $status]);
 
         // Redirect
-        return redirect()->route('admin.blogs')->with('success', trans('Status updated successfully!'));
+        return redirect()
+            ->route('dashboard.admin.blogs.post')
+            ->with('success', trans('Status updated successfully!'));
     }
 }

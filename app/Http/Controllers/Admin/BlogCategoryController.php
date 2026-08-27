@@ -128,19 +128,24 @@ class BlogCategoryController extends Controller
     // Actions
     public function actionBlog(Request $request)
     {
-        $blog = Blog::where(
-            'blog_id',
-            $request->query('id')
+        $categoryId = $request->query('id');
+        $mode = $request->query('mode');
+
+        // Find category
+        $category = BlogCategory::where(
+            'blog_category_id',
+            $categoryId
         )->first();
 
-        if (!$blog) {
+        if (!$category) {
             return back()->with(
                 'failed',
-                trans('Blog not found!')
+                trans('Category not found!')
             );
         }
 
-        switch ($request->query('mode')) {
+        // Determine status
+        switch ($mode) {
             case 'publish':
                 $status = 1;
                 break;
@@ -160,15 +165,12 @@ class BlogCategoryController extends Controller
                 );
         }
 
-        $blog->update([
-            'status' => $status,
-        ]);
+        // Update status
+        $category->status = $status;
+        $category->save();
 
+        // Redirect
         return redirect()
-            ->route('dashboard.admin.blogs.post')
-            ->with(
-                'success',
-                trans('Blog status updated successfully!')
-            );
+            ->route('dashboard.admin.blog.categories');
     }
 }

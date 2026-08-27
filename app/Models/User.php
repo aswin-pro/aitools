@@ -46,6 +46,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+
+    public function plan() {
+        return $this->belongsTo(
+            Plan::class,
+            'plan_id',
+            'id'
+        );
+    }
+
     // Send new email verification
     public function sendEmailVerificationNotification()
     {

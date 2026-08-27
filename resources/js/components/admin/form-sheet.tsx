@@ -26,6 +26,8 @@ interface FormField {
     placeholder?: string;
     required?: boolean;
 
+    inputType?: React.HTMLInputTypeAttribute;
+
     options?: SelectOption[];
     searchable?: boolean;
 }
@@ -47,7 +49,7 @@ interface FormSheetProps {
     cancelLabel?: string;
 }
 
-export function                                                                                                                                         FormSheet({
+export function FormSheet({
     open,
     onOpenChange,
     title,
@@ -83,7 +85,7 @@ export function                                                                 
                                         key={field.name}
                                         id={field.id ?? field.name}
                                         name={field.name}
-                                        type="text"
+                                        type={field.inputType ?? "text"}
                                         label={field.label}
                                         required={field.required}
                                         value={value}

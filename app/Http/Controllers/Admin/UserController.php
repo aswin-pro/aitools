@@ -13,6 +13,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\users\updateUserRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -38,142 +39,146 @@ class UserController extends Controller
      */
 
     // All Users
-    public function index()
+    public function index(Request $request)
     {
-        // Queries
-        $users = User::where('role_id', '2')->orderBy('created_at', 'desc')->get();
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
+
+        $users = User::with('plan')
+            ->where('role_id', 2)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('plan_details', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $plans = Plan::where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.users.index', compact('users', 'settings', 'config'));
+        return Inertia::render('admin/users/index', [
+            'users' => $users,
+            'plans' => $plans,
+            'settings' => $settings,
+            'config' => $config,
+        ]);
     }
 
-
-public function viewUser(Request $request, $id)
-{
-    // Get user details
-    $user_details = User::where('id', $id)->first();
-
-    if ($user_details == null) {
-        abort(404);
-    }
-
-    $paginateType = $request->input('paginate', 'content');
-
-    $allContents = Generate::where('generate_by', $user_details->id)
-        ->orderBy('id', 'desc')
-        ->get();
-
-    $contentPage = $paginateType === 'content'
-        ? (int) $request->input('page', 1)
-        : 1;
-
-    $perContentPage = $request->integer('per_page', 6);
-
-    $contentItems = $allContents
-        ->slice(
-            ($contentPage - 1) * $perContentPage,
-            $perContentPage
-        )
-        ->values()
-        ->all();
-
-    $contents = new LengthAwarePaginator(
-        $contentItems,
-        $allContents->count(),
-        $perContentPage,
-        $contentPage,
-        [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]
-    );
-
-    $allImages = AiImages::where('generate_by', $user_details->id)
-        ->orderBy('id', 'desc')
-        ->get();
-
-    $imagePage = $paginateType === 'image'
-        ? (int) $request->input('page', 1)
-        : 1;
-
-    $perImagePage = $request->integer('per_page', 3);
-
-    $imageItems = $allImages
-        ->slice(
-            ($imagePage - 1) * $perImagePage,
-            $perImagePage
-        )
-        ->values()
-        ->all();
-
-    $images = new LengthAwarePaginator(
-        $imageItems,
-        $allImages->count(),
-        $perImagePage,
-        $imagePage,
-        [
-            'path' => $request->url(),
-            'query' => $request->query(),
-        ]
-    );
-
-
-    $settings = Setting::where('status', 1)->first();
-
-
-
-    return Inertia::render('admin/users/index', [
-        'user_details' => $user_details,
-        'settings' => $settings,
-        'contents' => $contents,
-        'images' => $images,
-    ]);
-}
-
-    // Edit User
-    public function editUser(Request $request, $id)
+    public function viewUser(Request $request, $id)
     {
         // Get user details
         $user_details = User::where('id', $id)->first();
+
+        if ($user_details == null) {
+            abort(404);
+        }
+
+        $paginateType = $request->input('paginate', 'content');
+
+        $allContents = Generate::where('generate_by', $user_details->id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $contentPage = $paginateType === 'content'
+            ? (int) $request->input('page', 1)
+            : 1;
+
+        $perContentPage = $request->integer('per_page', 6);
+
+        $contentItems = $allContents
+            ->slice(
+                ($contentPage - 1) * $perContentPage,
+                $perContentPage
+            )
+            ->values()
+            ->all();
+
+        $contents = new LengthAwarePaginator(
+            $contentItems,
+            $allContents->count(),
+            $perContentPage,
+            $contentPage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        $allImages = AiImages::where('generate_by', $user_details->id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $imagePage = $paginateType === 'image'
+            ? (int) $request->input('page', 1)
+            : 1;
+
+        $perImagePage = $request->integer('per_page', 3);
+
+        $imageItems = $allImages
+            ->slice(
+                ($imagePage - 1) * $perImagePage,
+                $perImagePage
+            )
+            ->values()
+            ->all();
+
+        $images = new LengthAwarePaginator(
+            $imageItems,
+            $allImages->count(),
+            $perImagePage,
+            $imagePage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+
         $settings = Setting::where('status', 1)->first();
 
-        // Check user
-        if ($user_details == null) {
-            return view('errors.404');
-        } else {
-            return view('admin.pages.users.edit', compact('user_details', 'settings'));
-        }
+
+
+        return Inertia::render('admin/users/view-user', [
+            'user_details' => $user_details,
+            'settings' => $settings,
+            'contents' => $contents,
+            'images' => $images,
+        ]);
     }
 
     // Update User
-    public function updateUser(Request $request)
+    public function updateUser(updateUserRequest $request)
     {
-        // Validation 
-        $validator = $request->validate([
-            'user_id' => 'required',
-            'full_name' => 'required',
-            'email' => 'required'
-        ]);
+        $user = User::find($request->user_id);
 
-        // Update user details
-        if ($request->password == null) {
-            // Update
-            User::where('id', $request->user_id)->update([
-                'name' => $request->full_name,
-                'email' => $request->email
-            ]);
-        } else {
-            // Update
-            User::where('id', $request->user_id)->update([
-                'name' => $request->full_name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password)
-            ]);
+        if (!$user) {
+            return back()->with(
+                'failed',
+                trans('User not found!')
+            );
         }
 
-        // Page redirect
-        return redirect()->route('admin.users')->with('success', trans('User Updated Successfully!'));
+        $user->name = $request->full_name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with(
+            'success',
+            trans('User updated successfully!')
+        );
     }
 
     // Change user plan
@@ -308,7 +313,7 @@ public function viewUser(Request $request, $id)
             }
 
             // Page redirect
-            return redirect()->route('admin.offline.transactions')->with('success', trans('Plan changed successfully!'));
+            return redirect()->route('dashboard.admin.users')->with('success', trans('Plan changed successfully!'));
         } else {
             $message = "";
 
@@ -339,7 +344,7 @@ public function viewUser(Request $request, $id)
                     $plan_validity->addDays($term_days);
                     $message = trans("Plan changed successfully!");
                 }
-            } else { 
+            } else {
                 // Add plan validity
                 $plan_validity = Carbon::now();
                 $plan_validity->addDays($term_days);
@@ -435,47 +440,80 @@ public function viewUser(Request $request, $id)
             }
 
             // Page redirect
-            return redirect()->route('admin.change.user.plan', $request->user_id)->with('success', $message);
+            return redirect()->route('dashboard.admin.users', $request->user_id)->with('success', $message);
         }
     }
 
     // Update status
     public function updateStatus(Request $request)
     {
-        // Get user details
-        $user_details = User::where('id', $request->query('id'))->first();
-        // Check status
-        if ($user_details->status == 0) {
-            $status = 1;
-        } else {
-            $status = 0;
+        $user = User::where('id', $request->query('id'))->first();
+
+        if (!$user) {
+            return back()->with(
+                'failed',
+                trans('User not found!')
+            );
         }
-        // Update status
-        User::where('id', $request->query('id'))->update(['status' => $status]);
-        // Page redirect
-        return redirect()->route('admin.users')->with('success', trans('User Status Updated Successfully!'));
+
+        $mode = $request->query('mode');
+
+        switch ($mode) {
+            case 'activate':
+                $status = 1;
+                break;
+
+            case 'deactivate':
+                $status = 0;
+                break;
+
+            default:
+                return back()->with(
+                    'failed',
+                    trans('Invalid action!')
+                );
+        }
+
+        $user->status = $status;
+        $user->save();
+
+        return redirect()
+            ->route('dashboard.admin.users')
+            ->with(
+                'success',
+                $mode === 'activate'
+                    ? trans('User activated successfully!')
+                    : trans('User deactivated successfully!')
+            );
     }
 
     // Delete User
     public function deleteUser(Request $request)
     {
         $user = User::where('id', $request->query('id'))->first();
-        // Queries
-        Generate::where('generate_by', $user->id)->delete();
-        AiImages::where('generate_by', $user->id)->delete();
 
-        // Get transactions
-        $transactions = Transaction::where('user_id', $request->query('id'))->first();
-
-        if ($transactions != null) {
-            $transactions->delete();
+        if (!$user) {
+            return back()->with(
+                'failed',
+                trans('User not found!')
+            );
         }
 
-        // Delete user
-        User::where('id', $request->query('id'))->delete();
+        // Delete generated content
+        Generate::where('generate_by', $user->id)->delete();
 
-        // Page redirect
-        return redirect()->route('admin.users')->with('success', trans('User deleted Successfully!'));
+        AiImages::where('generate_by', $user->id)->delete();
+
+        // Delete transactions
+        Transaction::where('user_id', $user->id)->delete();
+
+        // Delete user
+        $user->delete();
+
+        return back()->with(
+            'success',
+            trans('User deleted successfully!')
+        );
     }
 
     // Login As User

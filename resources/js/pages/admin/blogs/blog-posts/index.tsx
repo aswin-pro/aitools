@@ -37,16 +37,27 @@ export default function Index({ blogs }: { blogs: LaravelPagination<Blog> }) {
         "publish" | "unpublish" | "delete" | null
     >(null);
 
+    const openActionDialog = (
+        blog: Blog,
+        action: "publish" | "unpublish" | "delete",
+    ) => {
+        setSelectedBlog(blog);
+        setSelectedAction(action);
+        setConfirmOpen(true);
+    };
+
     const columns = useMemo(
         () =>
             getColumns({
                 t,
+
                 onEdit: (blog) => {
                     router.get(
                         route("dashboard.admin.edit.blog", blog.blog_id),
                     );
                 },
-                onAction: () => {},
+
+                onAction: openActionDialog,
             }),
         [t],
     );
@@ -107,7 +118,7 @@ export default function Index({ blogs }: { blogs: LaravelPagination<Blog> }) {
                 },
 
                 onError: () => {
-                    toast.error(t("Unable to update blog status."));
+                    toast.error(t("Unable to update blog."));
                 },
 
                 onFinish: () => {

@@ -49,7 +49,6 @@ export interface systemSetting {
 
 }
 
-
 export interface AuthenticationLog {
     id: number;
     ip_address: string;
@@ -69,7 +68,69 @@ export interface AuthenticationLog {
     logout_at: string | null;
     cleared_by_user: number;
 }
+export interface Plan {
+    id: number;
+    is_private: number;
+    name: string;
+    description: string | null;
+    price: number;
+    validity: number;
+    template_counts: number;
+    templates: Record<string, number>;
+    max_words: number;
+    max_images: number;
+    ai_speech_to_text: number;
+    ai_text_to_speech: number;
+    ai_code: number;
+    ai_chatgenius: number;
+    ai_docsassist: number;
+    ai_webchat: number;
+    additional_tools: number;
+    recommended: number;
+    support: number;
+}
 
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    role_id: number;
+
+    email_verified_at: string | null;
+    password: string;
+
+    auth_type: string | null;
+    choosed_theme: string;
+
+    plan_id: string | null;
+    plan: Plan | null;
+    term: number | null;
+    plan_details: string | null;
+    plan_validity: string | null;
+
+    plan_activation_date: string | null;
+
+    billing_name: string | null;
+    type: string | null;
+    vat_number: string | null;
+
+    billing_address: string | null;
+    billing_city: string | null;
+    billing_state: string | null;
+    billing_zipcode: string | null;
+    billing_country: string | null;
+    billing_phone: string | null;
+    billing_email: string | null;
+
+    api_key: string | null;
+
+    status: number;
+
+    remember_token?: string | null;
+
+    created_at: string;
+    updated_at: string;
+}
 
 
 export interface Currencies {
@@ -117,27 +178,7 @@ export interface InvoiceBillingDetails {
     invoice_amount: number;
 }
 
-export interface Plan {
-    id: number;
-    is_private: number;
-    name: string;
-    description: string | null;
-    price: number;
-    validity: number;
-    template_counts: number;
-    templates: Record<string, number>;
-    max_words: number;
-    max_images: number;
-    ai_speech_to_text: number;
-    ai_text_to_speech: number;
-    ai_code: number;
-    ai_chatgenius: number;
-    ai_docsassist: number;
-    ai_webchat: number;
-    additional_tools: number;
-    recommended: number;
-    support: number;
-}
+
 
 
 export interface Transaction {
