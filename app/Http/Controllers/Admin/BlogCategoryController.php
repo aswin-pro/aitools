@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -125,10 +126,25 @@ class BlogCategoryController extends Controller
     }
 
     // Actions
-    public function actionBlogCategory(Request $request)
+    public function actionBlog(Request $request)
     {
-        // Check status
+        $blog = Blog::where(
+            'blog_id',
+            $request->query('id')
+        )->first();
+
+        if (!$blog) {
+            return back()->with(
+                'failed',
+                trans('Blog not found!')
+            );
+        }
+
         switch ($request->query('mode')) {
+            case 'publish':
+                $status = 1;
+                break;
+
             case 'unpublish':
                 $status = 0;
                 break;
@@ -138,14 +154,21 @@ class BlogCategoryController extends Controller
                 break;
 
             default:
-                $status = 1;
-                break;
+                return back()->with(
+                    'failed',
+                    trans('Invalid action!')
+                );
         }
 
-        // Update status
-        BlogCategory::where('blog_category_id', $request->query('id'))->update(['status' => $status]);
+        $blog->update([
+            'status' => $status,
+        ]);
 
-        // Redirect
-        // return redirect()->route('admin.blog.categories')->with('success', trans('Status updated successfully!'));
+        return redirect()
+            ->route('dashboard.admin.blogs.post')
+            ->with(
+                'success',
+                trans('Blog status updated successfully!')
+            );
     }
 }

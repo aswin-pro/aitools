@@ -40,7 +40,7 @@ const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
 
                 <Textarea
                     ref={ref}
-                    required={required}
+                    // required={required}
                     {...props}
                 />
 

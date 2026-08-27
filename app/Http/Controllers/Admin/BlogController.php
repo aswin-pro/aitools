@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\PublishBlogRequest;
+use App\Http\Requests\Admin\UpdateBlogRequest;
 use App\Models\Blog;
 use App\Models\Config;
 use Illuminate\Support\Str;
@@ -87,163 +89,150 @@ class BlogController extends Controller
     }
 
     // Add Blog
-public function createBlog()
-{
-    $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
+    public function createBlog()
+    {
+        $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
 
-    return Inertia::render(
-        'admin/blogs/blog-posts/create',
-        compact('blogsCategories')
-    );
-}
+        return Inertia::render(
+            'admin/blogs/blog-posts/create',
+            compact('blogsCategories')
+        );
+    }
 
     // Publish Blog
-    public function publishBlog(Request $request)
+    public function publishBlog(PublishBlogRequest $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'blog_cover' => ['required', 'mimes:jpg,jpeg,png,webp'],
-            'blog_name' => 'required|min:3',
-            'blog_slug' => 'required|min:3',
-            'short_description' => 'required|min:3',
-            'long_description' => 'required|min:3',
-            'category_id' => 'required',
-            'tags' => 'required',
-            'seo_title' => 'required',
-            'seo_description' => 'required',
-            'seo_keywords' => 'required'
-        ]);
+        $blogCoverImage = $request->file('blog_cover');
 
-        if ($validator->fails()) {
-            return back()->with('failed', $validator->messages()->all()[0])->withInput();
-        }
+        $fileName = pathinfo(
+            $blogCoverImage->getClientOriginalName(),
+            PATHINFO_FILENAME
+        );
 
-        // Cover image
-        $blogCoverImage = $request->blog_cover->getClientOriginalName();
-        $UploadCoverImage = pathinfo($blogCoverImage, PATHINFO_FILENAME);
-        $UploadExtension = pathinfo($blogCoverImage, PATHINFO_EXTENSION);
+        $extension = $blogCoverImage->getClientOriginalExtension();
 
-        // Upload image
-        if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "webp") {
-            // Upload image
-            $CoverImage = 'images/blogs/cover-images/' . $UploadCoverImage . '_' . uniqid() . '.' . $UploadExtension;
-            $request->blog_cover->move(public_path('images/blogs/cover-images'), $CoverImage);
-        }
+        $coverImage = 'images/blogs/cover-images/'
+            . $fileName
+            . '_'
+            . uniqid()
+            . '.'
+            . $extension;
 
-        // Generate a unique slug for the blog post
-        $existingSlug = Blog::where('slug', $request->blog_slug)->first();
+        $blogCoverImage->move(
+            public_path('images/blogs/cover-images'),
+            $coverImage
+        );
 
-        if ($existingSlug) {
-            $blogSlug = $this->createSlug($request->blog_name);
-        } else {
-            $blogSlug = $request->blog_slug;
-        }
-
-        // Save Blog
         $blog = new Blog();
-        $blog->published_by = Auth::user()->id;
+
+        $blog->published_by = Auth::id();
         $blog->blog_id = uniqid();
-        $blog->cover_image = $CoverImage;
+
+        $blog->cover_image = $coverImage;
         $blog->heading = ucfirst($request->blog_name);
-        $blog->slug = $blogSlug;
+        $blog->slug = $request->blog_slug;
         $blog->short_description = ucfirst($request->short_description);
         $blog->long_description = $request->long_description;
         $blog->category = $request->category_id;
         $blog->tags = ucfirst($request->tags);
+
         $blog->title = ucfirst($request->seo_title);
         $blog->description = ucfirst($request->seo_description);
         $blog->keywords = $request->seo_keywords;
+
         $blog->save();
 
-        // Redirect
-        return redirect()->route('admin.create.blog')->with('success', trans('Blog published successfully!'));
+        return redirect()
+            ->route('dashboard.admin.blogs.post')
+            ->with(
+                'success',
+                trans('Blog published successfully!')
+            );
     }
-
     // Edit Blog
-    public function editBlog($id)
-    {
-        // Queries
-        $blogsCategories = BlogCategory::where('status', '!=', 2)->get();
-        $config = Config::get();
+public function editBlog($id)
+{
+    $categories = BlogCategory::where('status', '!=', 2)->get();
 
-        // Get page details
-        $blogDetails = Blog::where('blog_id', $id)->where('status', '!=', 2)->first();
+    $blog = Blog::where('blog_id', $id)
+        ->where('status', '!=', 2)
+        ->firstOrFail();
 
-        // View
-        return view('admin.pages.blogs.edit', compact('blogsCategories', 'blogDetails', 'config'));
-    }
+    return Inertia::render(
+        'admin/blogs/blog-posts/edit',
+        [
+            'categories' => $categories,
+            'blog' => $blog,
+        ]
+    );
+}
 
     // Update Blog
-    public function updateBlog(Request $request)
+    public function updateBlog(UpdateBlogRequest $request, $id)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'blog_name' => 'required|min:3',
-            'blog_slug' => 'required|min:3',
-            'short_description' => 'required|min:3',
-            'long_description' => 'required|min:3',
-            'category_id' => 'required',
-            'tags' => 'required',
-        ]);
+        $blog = Blog::where('blog_id', $id)
+            ->where('status', '!=', 2)
+            ->first();
 
-        if ($validator->fails()) {
-            return back()->with('failed', $validator->messages()->all()[0])->withInput();
+        if (!$blog) {
+            return back()->with(
+                'failed',
+                trans('Blog not found!')
+            );
         }
 
-        // Blog id
-        $blogId = $request->segment(3);
 
-        // Check cover image
         if ($request->hasFile('blog_cover')) {
-            // Validation
-            $validator = Validator::make($request->all(), [
-                'blog_cover' => ['required', 'mimes:jpg,jpeg,png,webp'],
-            ]);
+            $blogCoverImage = $request->file('blog_cover');
 
-            if ($validator->fails()) {
-                return back()->with('failed', $validator->messages()->all()[0])->withInput();
-            }
+            $fileName = pathinfo(
+                $blogCoverImage->getClientOriginalName(),
+                PATHINFO_FILENAME
+            );
 
-            // Cover image
-            $blogCoverImage = $request->blog_cover->getClientOriginalName();
-            $UploadCoverImage = pathinfo($blogCoverImage, PATHINFO_FILENAME);
-            $UploadExtension = pathinfo($blogCoverImage, PATHINFO_EXTENSION);
+            $extension = $blogCoverImage->getClientOriginalExtension();
 
-            // Upload image
-            if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "webp") {
-                // Upload image
-                $CoverImage = 'images/blogs/cover-images/' . $UploadCoverImage . '_' . uniqid() . '.' . $UploadExtension;
-                $request->blog_cover->move(public_path('images/blogs/cover-images'), $CoverImage);
-            }
+            $coverImage = 'images/blogs/cover-images/'
+                . $fileName
+                . '_'
+                . uniqid()
+                . '.'
+                . $extension;
 
-            // Update blog cover image
-            Blog::where('blog_id', $blogId)->update(['cover_image' => $CoverImage]);
+            $blogCoverImage->move(
+                public_path('images/blogs/cover-images'),
+                $coverImage
+            );
+
+            $blog->cover_image = $coverImage;
         }
 
-        // Generate a unique slug for the blog post
-        $existingSlug = Blog::where('slug', $request->blog_slug)->first();
 
-        if ($existingSlug) {
-            $blogSlug = $request->blog_slug;
-        } else {
-            $blogSlug = $this->createSlug($request->blog_name);
-        }
 
-        // Update blog details
-        Blog::where('blog_id', $blogId)->update([
-            'heading' => ucfirst($request->blog_name),
-            'slug' => $blogSlug,
-            'short_description' => $request->short_description,
-            'long_description' => $request->long_description,
-            'category' => $request->category_id,
-            'tags' => ucfirst($request->tags),
-            'title' => ucfirst($request->seo_title),
-            'description' => ucfirst($request->seo_description),
-            'keywords' => $request->seo_keywords
-        ]);
+        $blog->heading = ucfirst($request->blog_name);
+        $blog->slug = $request->blog_slug;
+        $blog->short_description = ucfirst(
+            $request->short_description
+        );
+        $blog->long_description = $request->long_description;
+        $blog->category = $request->category_id;
+        $blog->tags = ucfirst($request->tags);
 
-        // Redirect
-        return redirect()->route('admin.edit.blog', $blogId)->with('success', trans('Updated!'));
+
+        $blog->title = ucfirst($request->seo_title);
+        $blog->description = ucfirst(
+            $request->seo_description
+        );
+        $blog->keywords = $request->seo_keywords;
+
+        $blog->save();
+
+        return redirect()
+            ->route('dashboard.admin.blogs.post')
+            ->with(
+                'success',
+                trans('Blog updated successfully!')
+            );
     }
 
     // Actions

@@ -148,11 +148,11 @@ use Inertia\Inertia;
 
         // Blogs
         Route::get('blog/blog-posts', [App\Http\Controllers\Admin\BlogController::class, "index"])->name('blogs.post');
-        Route::get('create-blog', [App\Http\Controllers\Admin\BlogController::class, "createBlog"])->name('create.blog');
-        Route::post('publish-blog', [App\Http\Controllers\Admin\BlogController::class, "publishBlog"])->name('publish.blog')->middleware(['demo.mode']);
-        Route::get('edit-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "editBlog"])->name('edit.blog');
-        Route::post('update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
-        Route::get('action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
+        Route::get('blog/create-blog', [App\Http\Controllers\Admin\BlogController::class, "createBlog"])->name('create.blog');
+        Route::post('blog/publish-blog', [App\Http\Controllers\Admin\BlogController::class, "publishBlog"])->name('publish.blog')->middleware(['demo.mode']);
+        Route::get('blog/edit-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "editBlog"])->name('edit.blog');
+        Route::post('blog/update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
+        Route::get('blog/action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
 
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
         

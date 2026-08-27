@@ -12,7 +12,18 @@ import { Label } from "@/components/ui/label";
 
 import { Blog } from "@/types/admin";
 
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+
 import RichTextEditor from "@/components/admin/rich-text-editor";
+import InputError from "@/components/input-error";
+import TagInput from "@/components/admin/tag-input";
+import { toast } from "sonner";
 
 interface BlogCategory {
     blog_category_id: string;
@@ -30,9 +41,9 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
 
     const isEdit = mode === "edit";
 
-    const [coverPreview, setCoverPreview] = useState<string | null>(
-        blog?.cover_image ?? null,
-    );
+    // const [coverPreview, setCoverPreview] = useState<string | null>(
+    //     blog?.cover_image ?? null,
+    // );
 
     const form = useForm({
         blog_cover: null as File | null,
@@ -47,12 +58,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
         seo_keywords: blog?.keywords ?? "",
     });
 
-    /*
-     * Normal fields
-     *
-     * These are intentionally configuration based so we
-     * don't repeat FormInput/FormTextarea markup.
-     */
     const fields = useMemo(
         () => [
             {
@@ -110,19 +115,19 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
         [t],
     );
 
-    const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    // const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = e.target.files?.[0];
 
-        if (!file) {
-            return;
-        }
+    //     if (!file) {
+    //         return;
+    //     }
 
-        form.setData("blog_cover", file);
+    //     form.setData("blog_cover", file);
 
-        setCoverPreview(URL.createObjectURL(file));
+    //     setCoverPreview(URL.createObjectURL(file));
 
-        form.clearErrors("blog_cover");
-    };
+    //     form.clearErrors("blog_cover");
+    // };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -132,8 +137,19 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
             preserveScroll: true,
 
             onSuccess: () => {
-                // Create/Edit page can decide what happens
-                // after successful submission.
+                toast.success(
+                    isEdit
+                        ? t("Blog updated successfully!")
+                        : t("Blog published successfully!"),
+                );
+            },
+
+            onError: () => {
+                toast.error(
+                    isEdit
+                        ? t("Unable to update blog.")
+                        : t("Unable to publish blog."),
+                );
             },
         };
 
@@ -148,204 +164,244 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Cover */}
-            <div className="space-y-3">
-                <Label required={!isEdit}>{t("Cover")}</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Blog Information + Cover */}
+            <div className="grid gap-6 lg:grid-cols-3">
+                {/* Blog Information */}
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <h2 className="text-lg font-semibold">
+                            {t("Blog Information")}
+                        </h2>
 
-                <input
-                    type="file"
-                    accept=".jpeg,.jpg,.png,.webp"
-                    onChange={handleCoverChange}
-                    disabled={form.processing}
-                    className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
+                        <CardDescription>
+                            {t(
+                                "Enter the basic information for your blog post.",
+                            )}
+                        </CardDescription>
+                    </CardHeader>
 
-                {form.errors.blog_cover && (
-                    <p className="text-sm text-destructive">
-                        {form.errors.blog_cover}
-                    </p>
-                )}
-
-                {coverPreview && (
-                    <div className="relative max-w-md overflow-hidden rounded-lg border">
-                        <img
-                            src={
-                                coverPreview.startsWith("http")
-                                    ? coverPreview
-                                    : `/storage/${coverPreview}`
-                            }
-                            alt={t("Cover preview")}
-                            className="h-auto max-h-80 w-full object-cover"
-                        />
-                    </div>
-                )}
-
-                {!coverPreview && (
-                    <div className="flex h-40 max-w-md items-center justify-center rounded-lg border border-dashed text-muted-foreground">
-                        <div className="flex flex-col items-center gap-2">
-                            <ImagePlus className="size-8" />
-                            <span className="text-sm">
-                                {t("No cover image selected")}
-                            </span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Basic information */}
-            <div className="space-y-5">
-                {fields.map((field) => {
-                    const value = form.data[field.name];
-
-                    if (field.type === "input") {
-                        return (
+                    <CardContent className="space-y-5">
+                        <div className="grid gap-5 md:grid-cols-2 items-start">
                             <FormInput
-                                key={field.name}
-                                name={field.name}
-                                label={field.label}
-                                placeholder={field.placeholder}
-                                required={field.required}
-                                value={value}
-                                error={form.errors[field.name]}
+                                name="blog_name"
+                                label={t("Name")}
+                                placeholder={t("Eg: Blog title")}
+                                required
+                                value={form.data.blog_name}
+                                error={form.errors.blog_name}
                                 disabled={form.processing}
                                 onChange={(e) => {
-                                    form.setData(field.name, e.target.value);
+                                    form.setData("blog_name", e.target.value);
 
-                                    form.clearErrors(field.name);
+                                    form.clearErrors("blog_name");
                                 }}
                             />
-                        );
-                    }
 
-                    return (
+                            <FormInput
+                                name="blog_slug"
+                                label={t("Slug")}
+                                placeholder={t("Eg: blog-url")}
+                                required
+                                value={form.data.blog_slug}
+                                error={form.errors.blog_slug}
+                                disabled={form.processing}
+                                onChange={(e) => {
+                                    form.setData("blog_slug", e.target.value);
+
+                                    form.clearErrors("blog_slug");
+                                }}
+                            />
+                        </div>
+
+                        {/* Short Description */}
                         <FormTextarea
-                            key={field.name}
-                            name={field.name}
-                            label={field.label}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            rows={field.rows}
-                            value={value}
-                            error={form.errors[field.name]}
+                            name="short_description"
+                            label={t("Short description")}
+                            placeholder={t("Eg: Blog description")}
+                            required
+                            rows={4}
+                            value={form.data.short_description}
+                            error={form.errors.short_description}
                             disabled={form.processing}
                             onChange={(e) => {
-                                form.setData(field.name, e.target.value);
+                                form.setData(
+                                    "short_description",
+                                    e.target.value,
+                                );
 
-                                form.clearErrors(field.name);
+                                form.clearErrors("short_description");
                             }}
                         />
-                    );
-                })}
+                    </CardContent>
+                </Card>
+
+                {/* Blog Settings */}
+                <Card>
+                    <CardHeader>
+                        <h2 className="text-lg font-semibold">
+                            {t("Blog Settings")}
+                        </h2>
+
+                        <CardDescription>
+                            {t("Configure the cover, category and tags.")}
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-5">
+                        {/* Cover */}
+                        <div className="grid gap-2">
+                            <Label required={!isEdit}>{t("Cover")}</Label>
+
+                            <input
+                                type="file"
+                                accept=".jpeg,.jpg,.png,.webp"
+                                disabled={form.processing}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+
+                                    if (file) {
+                                        form.setData("blog_cover", file);
+
+                                        form.clearErrors("blog_cover");
+                                    }
+                                }}
+                                className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            />
+
+                            <InputError message={form.errors.blog_cover} />
+                        </div>
+
+                        {/* Category */}
+                        <SearchableSelect
+                            name="category_id"
+                            label={t("Category")}
+                            value={form.data.category_id}
+                            options={categories.map((category) => ({
+                                value: category.blog_category_id,
+                                label: category.blog_category_title,
+                            }))}
+                            placeholder={t("Choose a category")}
+                            searchable
+                            error={form.errors.category_id}
+                            onChange={(value) => {
+                                form.setData("category_id", value);
+
+                                form.clearErrors("category_id");
+                            }}
+                        />
+
+                        <TagInput
+                            label={t("Tags")}
+                            value={form.data.tags}
+                            onChange={(value) => {
+                                form.setData("tags", value);
+                                form.clearErrors("tags");
+                            }}
+                            error={form.errors.tags}
+                            required
+                            disabled={form.processing}
+                            placeholder={t("Enter a tag")}
+                            subLable={t("Press Enter or comma to add")}
+                        />
+                    </CardContent>
+                </Card>
             </div>
 
-<RichTextEditor
-    label={t("Description")}
-    value={form.data.long_description}
-    onChange={(value) => {
-        form.setData("long_description", value);
-        form.clearErrors("long_description");
-    }}
-    error={form.errors.long_description}
-    required
-    disabled={form.processing}
-/>
-
-            {/* Category + Tags */}
-            <div className="grid gap-5 md:grid-cols-2">
-                <SearchableSelect
-                    name="category_id"
-                    label={t("Category")}
-                    value={form.data.category_id}
-                    options={categories.map((category) => ({
-                        value: category.blog_category_id,
-                        label: category.blog_category_title,
-                    }))}
-                    placeholder={t("Choose a category")}
-                    searchable
-                    error={form.errors.category_id}
-                    onChange={(value) => {
-                        form.setData("category_id", value);
-
-                        form.clearErrors("category_id");
-                    }}
-                />
-
-                <FormInput
-                    name="tags"
-                    label={t("Tags")}
-                    placeholder={t("tag 1, tag 2")}
-                    required
-                    value={form.data.tags}
-                    error={form.errors.tags}
-                    disabled={form.processing}
-                    onChange={(e) => {
-                        form.setData("tags", e.target.value);
-
-                        form.clearErrors("tags");
-                    }}
-                    subLable={t("Separate tags with commas")}
-                />
-            </div>
-
-            {/* SEO */}
-            <div className="space-y-5">
-                <div>
+            {/* Description */}
+            <Card>
+                <CardHeader>
                     <h2 className="text-lg font-semibold">
-                        {t("SEO Configurations")}
+                        {t("Blog Content")}
                     </h2>
 
-                    <p className="text-sm text-muted-foreground">
+                    <CardDescription>
+                        {t("Write the full content of your blog post.")}
+                    </CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                    <RichTextEditor
+                        label="Content"
+                        value={form.data.long_description}
+                        onChange={(value) => {
+                            form.setData("long_description", value);
+
+                            form.clearErrors("long_description");
+                        }}
+                        error={form.errors.long_description}
+                        required
+                        disabled={form.processing}
+                    />
+                </CardContent>
+            </Card>
+
+            {/* SEO */}
+            <Card>
+                <CardHeader>
+                    <h2 className="text-lg font-semibold">
+                        {t("SEO Configuration")}
+                    </h2>
+
+                    <CardDescription>
                         {t("Configure the SEO information for this blog.")}
-                    </p>
-                </div>
+                    </CardDescription>
+                </CardHeader>
 
-                {seoFields.map((field) => {
-                    const value = form.data[field.name];
-
-                    if (field.type === "input") {
-                        return (
-                            <FormInput
-                                key={field.name}
-                                name={field.name}
-                                label={field.label}
-                                placeholder={field.placeholder}
-                                required={field.required}
-                                value={value}
-                                error={form.errors[field.name]}
-                                disabled={form.processing}
-                                onChange={(e) => {
-                                    form.setData(field.name, e.target.value);
-
-                                    form.clearErrors(field.name);
-                                }}
-                            />
-                        );
-                    }
-
-                    return (
-                        <FormTextarea
-                            key={field.name}
-                            name={field.name}
-                            label={field.label}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            rows={field.rows}
-                            value={value}
-                            error={form.errors[field.name]}
+                <CardContent className="space-y-5">
+                    <div className="grid gap-5 md:grid-cols-2 items-start">
+                        <FormInput
+                            name="seo_title"
+                            label={t("Title")}
+                            placeholder={t("SEO title")}
+                            required
+                            value={form.data.seo_title}
+                            error={form.errors.seo_title}
                             disabled={form.processing}
                             onChange={(e) => {
-                                form.setData(field.name, e.target.value);
+                                form.setData("seo_title", e.target.value);
 
-                                form.clearErrors(field.name);
+                                form.clearErrors("seo_title");
                             }}
                         />
-                    );
-                })}
-            </div>
+
+                        <FormInput
+                            name="seo_keywords"
+                            label={t("Keywords")}
+                            placeholder={t("SEO keywords")}
+                            required
+                            value={form.data.seo_keywords}
+                            error={form.errors.seo_keywords}
+                            disabled={form.processing}
+                            onChange={(e) => {
+                                form.setData("seo_keywords", e.target.value);
+
+                                form.clearErrors("seo_keywords");
+                            }}
+                        />
+                    </div>
+
+                    {/* SEO Description */}
+                    <FormTextarea
+                        name="seo_description"
+                        label={t("Description")}
+                        placeholder={t("SEO description")}
+                        required
+                        rows={4}
+                        value={form.data.seo_description}
+                        error={form.errors.seo_description}
+                        disabled={form.processing}
+                        onChange={(e) => {
+                            form.setData("seo_description", e.target.value);
+
+                            form.clearErrors("seo_description");
+                        }}
+                    />
+                </CardContent>
+            </Card>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 border-t pt-6">
+            <div className="flex justify-end gap-3">
                 <Button
                     type="button"
                     variant="outline"
