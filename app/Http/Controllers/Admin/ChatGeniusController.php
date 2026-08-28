@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Models\ChatGenius;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\chatgenius\createChatRequest;
+use App\Http\Requests\Admin\chatgenius\updateChatRequest;
+use App\Models\Chat;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class ChatGeniusController extends Controller
 {
@@ -26,147 +30,156 @@ class ChatGeniusController extends Controller
      */
 
     // Chat Genius
-    public function index()
+    public function index(Request $request)
     {
-        // Get all Chat Genius
-        $chatgenius = ChatGenius::where('status', '>=', 0)->orderBy('id', 'desc')->get();
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
 
-        return view('admin.pages.chatgenius.index', compact('chatgenius'));
+        $chatgenius = ChatGenius::query()
+            ->where('status', '>=', 0)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where(
+                        'chat_genius_name',
+                        'like',
+                        "%{$search}%"
+                    )
+                        ->orWhere(
+                            'chat_genius_expert',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'chat_genius_description',
+                            'like',
+                            "%{$search}%"
+                        );
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return Inertia::render('admin/chat-genius/index', [
+            'chatgenius' => $chatgenius,
+        ]);
     }
 
-    public function createChatgenius()
-    {
-        // Create Chat Genius
-        return view('admin.pages.chatgenius.create');
-    }
+    // public function createChatgenius()
+    // {
+    //     // Create Chat Genius
+    //     return view('admin.pages.chatgenius.create');
+    // }
 
-    public function saveChatgenius(Request $request)
+    public function saveChatgenius(createChatRequest $request)
     {
-        // Validate form
-        $sizeLimit = env("SIZE_LIMIT");
         $uniqueId = uniqid();
 
-        $validator = Validator::make($request->all(), [
-            'chat_genius_image' => 'required|mimes:jpg,jpeg,png,webp|max:' . $sizeLimit,
-            'chat_genius_name' => 'required|min:2|max:200',
-            'chat_genius_expert' => 'required|min:2|max:200',
-            'chat_genius_description' => 'required|min:2',
-            'chat_genius_message' => 'required|min:2'
-        ], [
-            // Custom error messages
-            'chat_genius_image.required' => 'The image is required.',
-            'chat_genius_image.mimes' => 'The image must be a file of type: jpg, jpeg, png, webp.',
-            'chat_genius_image.max' => 'The image may not be greater than ' . $sizeLimit / 1024 . ' MB.',
-            'chat_genius_name.required' => 'The name field is required.',
-            'chat_genius_expert.required' => 'The expert field is required.',
-            'chat_genius_description.required' => 'The description is required.',
-            'chat_genius_message.required' => 'The message is required.'
-        ]);
+        $image = $request->file('chat_genius_image');
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('error', trans('Validation failed! Please check the form.'));
-        }
+        $image->move(
+            public_path('images/chatgenius'),
+            $uniqueId . '.' . $image->getClientOriginalExtension()
+        );
 
+        $chatgeniusImage =
+            'images/chatgenius/' .
+            $uniqueId . '.' .
+            $image->getClientOriginalExtension();
 
-        // Upload Chat Genius Image
-        $request->file('chat_genius_image')->move(public_path('images/chatgenius'), $uniqueId . '.' . $request->file('chat_genius_image')->getClientOriginalExtension());
-        $chatgeniusImage = 'images/chatgenius/' . $uniqueId . '.' . $request->file('chat_genius_image')->getClientOriginalExtension();
-        // Save Chat Genius
-        $chatgenius = new ChatGenius;
+        $chatgenius = new ChatGenius();
+
         $chatgenius->chat_genius_id = $uniqueId;
         $chatgenius->chat_genius_image = $chatgeniusImage;
-        $chatgenius->chat_genius_name = $request->input('chat_genius_name');
-        $chatgenius->chat_genius_expert = $request->input('chat_genius_expert');
-        $chatgenius->chat_genius_description = $request->input('chat_genius_description');
-        $chatgenius->chat_genius_message = $request->input('chat_genius_message');
+        $chatgenius->chat_genius_name = $request->chat_genius_name;
+        $chatgenius->chat_genius_expert = $request->chat_genius_expert;
+        $chatgenius->chat_genius_description = $request->chat_genius_description;
+        $chatgenius->chat_genius_message = $request->chat_genius_message;
+
         $chatgenius->save();
 
-        return redirect()->route('admin.chatgenius')->with('success', trans('Chat Assistant created successfully!'));
+        return redirect()
+            ->route('dashboard.admin.chatgenius')
+            ->with(
+                'success',
+                trans('Chat Assistant created successfully!')
+            );
     }
 
-    public function editChatgenius(Request $request, $id)
+    // public function editChatgenius(Request $request, $id)
+    // {
+    //     // Find Chat Genius
+    //     $chatgenius = ChatGenius::where('chat_genius_id', $id)->first();
+
+    //     if ($chatgenius->id > 55) {
+    //         if ($chatgenius == null) {
+    //             return redirect()->route('admin.chatgenius')->with('failed', trans('Chat Assistant not found!'));
+    //         }
+
+    //         return view('admin.pages.chatgenius.edit', compact('chatgenius'));
+    //     } else {
+    //         return redirect()->route('admin.chatgenius')->with('failed', trans('Update Chat Assistant not allowed!'));
+    //     }
+    // }
+
+    public function updateChatgenius(updateChatRequest $request)
     {
-        // Find Chat Genius
-        $chatgenius = ChatGenius::where('chat_genius_id', $id)->first();
+        $chatgenius = ChatGenius::where(
+            'chat_genius_id',
+            $request->input('chat_genius_id')
+        )->first();
 
-        if ($chatgenius->id > 55) {
-            if ($chatgenius == null) {
-                return redirect()->route('admin.chatgenius')->with('failed', trans('Chat Assistant not found!'));
-            }
-
-            return view('admin.pages.chatgenius.edit', compact('chatgenius'));
-        } else {
-            return redirect()->route('admin.chatgenius')->with('failed', trans('Update Chat Assistant not allowed!'));
-        }
-    }
-
-    public function updateChatgenius(Request $request)
-    {
-        // Validate form
-        $sizeLimit = env("SIZE_LIMIT");
-        $uniqueId = uniqid();
-
-        // Validate form
-        $validator = Validator::make($request->all(), [
-            'chat_genius_name' => 'required|min:2|max:200',
-            'chat_genius_expert' => 'required|min:2|max:200',
-            'chat_genius_description' => 'required|min:2',
-            'chat_genius_message' => 'required|min:2'
-        ], [
-            // Custom error messages
-            'chat_genius_name.required' => trans('The name field is required.'),
-            'chat_genius_expert.required' => trans('The expert field is required.'),
-            'chat_genius_description.required' => trans('The description is required.'),
-            'chat_genius_message.required' => trans('The message is required.')
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('error', trans('Validation failed! Please check the form.'));
+        if (!$chatgenius) {
+            return back()->with(
+                'error',
+                trans('Chat Assistant not found!')
+            );
         }
 
-        if ($request->file('chat_genius_image')) {
-            // Validate form
-            $validator = Validator::make($request->all(), [
-                'chat_genius_image' => 'required|mimes:jpg,jpeg,png,webp|max:' . $sizeLimit,
-            ], [
-                // Custom error messages
-                'chat_genius_image.required' => trans('The image is required.'),
-                'chat_genius_image.mimes' => trans('The image must be a file of type: jpg, jpeg, png, webp.'),
-                'chat_genius_image.max' => trans('The image may not be greater than ' . $sizeLimit / 1024 . ' MB.')
-            ]);
+        /*
+     * Update image if a new image is selected
+     */
+        if ($request->hasFile('chat_genius_image')) {
+            $uniqueId = uniqid();
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput()
-                    ->with('error', trans('Validation failed! Please check the form.'));
-            }
+            $image = $request->file('chat_genius_image');
 
-            // Upload Chat Genius Image
-            $request->file('chat_genius_image')->move(public_path('images/chatgenius'), $uniqueId . '.' . $request->file('chat_genius_image')->getClientOriginalExtension());
-            $chatgeniusImage = 'images/chatgenius/' . $uniqueId . '.' . $request->file('chat_genius_image')->getClientOriginalExtension();
+            $imageName =
+                $uniqueId . '.' .
+                $image->getClientOriginalExtension();
 
-            // Update Chat Genius Image
-            $chatgenius = ChatGenius::where('chat_genius_id', $request->input('chat_genius_id'))->first();
-            $chatgenius->chat_genius_image = $chatgeniusImage;
-            $chatgenius->save();
+            $image->move(
+                public_path('images/chatgenius'),
+                $imageName
+            );
+
+            $chatgenius->chat_genius_image =
+                'images/chatgenius/' . $imageName;
         }
 
-        // Update Chat Genius
-        $chatgenius = ChatGenius::where('chat_genius_id', $request->input('chat_genius_id'))->first();
-        $chatgenius->chat_genius_name = $request->input('chat_genius_name');
-        $chatgenius->chat_genius_expert = $request->input('chat_genius_expert');
-        $chatgenius->chat_genius_description = $request->input('chat_genius_description');
-        $chatgenius->chat_genius_message = $request->input('chat_genius_message');
+        /*
+     * Update Chat Assistant details
+     */
+        $chatgenius->chat_genius_name =
+            $request->input('chat_genius_name');
+
+        $chatgenius->chat_genius_expert =
+            $request->input('chat_genius_expert');
+
+        $chatgenius->chat_genius_description =
+            $request->input('chat_genius_description');
+
+        $chatgenius->chat_genius_message =
+            $request->input('chat_genius_message');
+
         $chatgenius->save();
 
-        return redirect()->route('admin.chatgenius')->with('success', trans('Chat Assistant updated successfully!'));
+        return redirect()
+            ->route('dashboard.admin.chatgenius')
+            ->with(
+                'success',
+                trans('Chat Assistant updated successfully!')
+            );
     }
 
     // Chat Genius Actions
@@ -178,23 +191,60 @@ class ChatGeniusController extends Controller
         $chatgenius->status = $chatgenius->status == 1 ? 0 : 1;
         $chatgenius->save();
 
-        return redirect()->route('admin.chatgenius')->with('success', trans('Chat Assistant status updated successfully!'));
+        return redirect()->route('dashboard.admin.chatgenius')->with('success', trans('Chat Assistant status updated successfully!'));
     }
 
     // Chat Genius Delete
+
     public function deleteChatgenius(Request $request)
     {
-        // Find Chat Genius
-        $chatgenius = ChatGenius::where('chat_genius_id', $request->id)->first();
+        $chatgenius = ChatGenius::where(
+            'chat_genius_id',
+            $request->query('id')
+        )->first();
 
-        if ($chatgenius->id > 55) {
-            // Update Chat Genius
-            $chatgenius->status = -1;
-            $chatgenius->save();
-
-            return redirect()->route('admin.chatgenius')->with('success', trans('Chat Assistant deleted successfully!'));
-        } else {
-            return redirect()->route('admin.chatgenius')->with('failed', trans('Delete Chat Assistant not allowed!'));
+        if (!$chatgenius) {
+            return back()->with(
+                'failed',
+                trans('Chat Assistant not found!')
+            );
         }
+
+        // Check whether this Chat Assistant has been used
+        $hasChats = Chat::where(
+            'chat_genius_id',
+            $chatgenius->chat_genius_id
+        )->exists();
+
+        if ($hasChats) {
+            return back()->with(
+                'error',
+                trans('This Chat Assistant cannot be deleted because it has already been used.')
+            );
+        }
+
+        // Permanently delete Chat Assistant
+        $chatgenius->delete();
+
+        return back()->with(
+            'success',
+            trans('Chat Assistant deleted successfully!')
+        );
     }
+
+    // public function deleteChatgenius(Request $request)
+    // {
+    //     // Find Chat Genius
+    //     $chatgenius = ChatGenius::where('chat_genius_id', $request->id)->first();
+
+    //     if ($chatgenius->id > 55) {
+    //         // Update Chat Genius
+    //         $chatgenius->status = -1;
+    //         $chatgenius->save();
+
+    //         return redirect()->route('admin.chatgenius')->with('success', trans('Chat Assistant deleted successfully!'));
+    //     } else {
+    //         return redirect()->route('admin.chatgenius')->with('failed', trans('Delete Chat Assistant not allowed!'));
+    //     }
+    // }
 }

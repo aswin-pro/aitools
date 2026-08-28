@@ -49,9 +49,9 @@ export function NavMain() {
                     },
                     {
                         title: "Chat Assistants",
-                        url: "dashboard.admin.users",
+                        url: "dashboard.admin.chatgenius",
                         icon: MessagesSquare,
-                        isActive: route().current("dashboard.admin.users"),
+                        isActive: route().current("dashboard.admin.chatgenius"),
                     },
                     //users 
                     {

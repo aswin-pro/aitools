@@ -8,10 +8,11 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-
+import FormFile from "./form-file";
 import FormInput from "./form-input";
 import { SearchableSelect } from "./searchable-select";
 import { LoadingSwap } from "../ui/loading-swap";
+import FormTextarea from "./form-textarea";
 
 interface SelectOption {
     value: string;
@@ -19,7 +20,7 @@ interface SelectOption {
 }
 
 interface FormField {
-    type: "input" | "select";
+    type: "input" | "select" | "textarea" | "file";
     id?: string;
     name: string;
     label: string;
@@ -104,6 +105,27 @@ export function FormSheet({
                                 );
                             }
 
+                            if (field.type === "file") {
+                                return (
+                                    <FormFile
+                                        key={field.name}
+                                        id={field.id ?? field.name}
+                                        name={field.name}
+                                        label={field.label}
+                                        required={field.required}
+                                        error={form.errors[field.name]}
+                                        disabled={form.processing}
+                                        onChange={(e) => {
+                                            const file =
+                                                e.target.files?.[0] ?? null;
+
+                                            form.setData(field.name, file);
+                                            form.clearErrors(field.name);
+                                        }}
+                                    />
+                                );
+                            }
+
                             if (field.type === "select") {
                                 return (
                                     <SearchableSelect
@@ -120,6 +142,30 @@ export function FormSheet({
                                         placeholder={field.placeholder}
                                         searchable={field.searchable ?? false}
                                         error={form.errors[field.name]}
+                                    />
+                                );
+                            }
+
+                            if (field.type === "textarea") {
+                                return (
+                                    <FormTextarea
+                                        key={field.name}
+                                        id={field.id ?? field.name}
+                                        name={field.name}
+                                        label={field.label}
+                                        required={field.required}
+                                        value={value}
+                                        placeholder={field.placeholder}
+                                        error={form.errors[field.name]}
+                                        disabled={form.processing}
+                                        onChange={(e) => {
+                                            form.setData(
+                                                field.name,
+                                                e.target.value,
+                                            );
+
+                                            form.clearErrors(field.name);
+                                        }}
                                     />
                                 );
                             }

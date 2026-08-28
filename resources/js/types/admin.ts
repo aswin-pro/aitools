@@ -258,3 +258,16 @@ export interface Blog {
         blog_category_title: string;
     };
 }
+
+export interface ChatGenius {
+    id: number;
+    chat_genius_id: string;
+    chat_genius_image: string;
+    chat_genius_name: string;
+    chat_genius_expert: string;
+    chat_genius_description: string;
+    chat_genius_message: string;
+    status: number;
+    created_at: string;
+    updated_at: string;
+}
