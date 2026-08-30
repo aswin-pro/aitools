@@ -6,7 +6,7 @@ import {
     NavigateParams,
     SharedData,
 } from "@/types";
-import { Form, Head, router, usePage } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/table/data-table";

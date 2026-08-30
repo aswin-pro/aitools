@@ -17,6 +17,7 @@ import { SharedData } from "@/types";
 import { Link, usePage } from "@inertiajs/react";
 import {
     ArrowRightLeft,
+    Blocks,
     ChevronRight,
     CircleDollarSign,
     FilePenLine,
@@ -124,7 +125,21 @@ export function NavMain() {
                                     "dashboard.admin.system.sitemap",
                                 ),
                             },
+                            {
+                                title: "Backups",
+                                url: "dashboard.admin.system.backups",
+                                isActive: route().current(
+                                    "dashboard.admin.system.backups",
+                                ),
+                            },
                         ],
+                    },
+
+                    {
+                        title: "Plugins",
+                        url: "dashboard.admin.plugins.index",
+                        icon: Blocks,
+                        isActive: route().current("dashboard.admin.edit.*"),
                     },
 
                     {

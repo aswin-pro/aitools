@@ -47,7 +47,7 @@ export const getColumns = ({
     },
 
     {
-        accessorKey: "chat_genius_name",
+        accessorKey: "Chat Assistant",
         header: t("Chat Assistant"),
         cell: ({ row }) => {
             const chatgenius = row.original;
@@ -69,13 +69,13 @@ export const getColumns = ({
     },
 
     {
-        accessorKey: "chat_genius_expert",
+        accessorKey: "Expert",
         header: t("Expert"),
         cell: ({ row }) => row.original.chat_genius_expert ?? "-",
     },
 
     {
-        accessorKey: "chat_genius_description",
+        accessorKey: "Description",
         header: t("Description"),
         cell: ({ row }) => {
             const description = row.original.chat_genius_description ?? "";
@@ -100,7 +100,7 @@ export const getColumns = ({
     // },
 
     {
-        accessorKey: "status",
+        accessorKey: "Status",
         header: t("Status"),
         cell: ({ row }) =>
             CustomBadge(

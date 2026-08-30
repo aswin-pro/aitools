@@ -165,8 +165,8 @@ use Inertia\Inertia;
         Route::post('verify-license', [App\Http\Controllers\Admin\LicenseController::class, "verifyLicense"])->name('verify.license')->middleware(['demo.mode']);
        
         // Backup
-        Route::get('backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups');
-        Route::get('backups/get-database-backup', [App\Http\Controllers\Admin\BackupController::class, 'getDatabaseBackup'])->name('get.database.backup');
+        Route::get('system/backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('system.backups');
+        // Route::get('backups/get-database-backup', [App\Http\Controllers\Admin\BackupController::class, 'getDatabaseBackup'])->name('get.database.backup');
         Route::get('backups/create-file-backup', [App\Http\Controllers\Admin\BackupController::class, 'createFileBackup'])->name('create.file.backup')->middleware(['demo.mode']);
         Route::get('backups/create-database-backup', [App\Http\Controllers\Admin\BackupController::class, 'createDatabaseBackup'])->name('create.database.backup')->middleware(['demo.mode']);
         Route::get('backups/restore-backup', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backup.restore')->middleware(['demo.mode']);
