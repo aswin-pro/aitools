@@ -5,13 +5,12 @@ namespace Plugins\GoogleOAuth\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class GoogleOAuthController extends Controller
 {
     public function googleOAuthSettings(Request $request)
     {
-        $settings = Setting::where('id', 1)->first();
-
         $google_configuration = [
             'GOOGLE_ENABLE'        => env('GOOGLE_ENABLE', 'off'),
             'GOOGLE_CLIENT_ID'     => env('GOOGLE_CLIENT_ID', ''),
@@ -19,18 +18,39 @@ class GoogleOAuthController extends Controller
             'GOOGLE_REDIRECT'      => env('GOOGLE_REDIRECT', ''),
         ];
 
-        return view()->file(base_path('plugins/GoogleOAuth/Views/index.blade.php'), compact('settings', 'google_configuration'));
+        return Inertia::render('admin/plugins/google-oauth', [
+            'googleConfiguration' => $google_configuration,
+        ]);
     }
 
     public function googleOAuthSettingsUpdate(Request $request)
     {
+        $this->updateEnv(
+            'GOOGLE_ENABLE',
+            $request->google_auth_enable
+        );
 
-        $this->updateEnv('GOOGLE_ENABLE', $request->google_auth_enable);
-        $this->updateEnv('GOOGLE_CLIENT_ID', '"' . str_replace('"', "'", $request->google_client_id) . '"');
-        $this->updateEnv('GOOGLE_CLIENT_SECRET', '"' . str_replace('"', "'", $request->google_client_secret) . '"');
-        $this->updateEnv('GOOGLE_REDIRECT', '"' . str_replace('"', "'", $request->google_redirect) . '"');
+        $this->updateEnv(
+            'GOOGLE_CLIENT_ID',
+            '"' . str_replace('"', "'", $request->google_client_id) . '"'
+        );
 
-        return redirect()->route('admin.plugin.google_oauth.settings')->with('success', __('Google OAuth Settings Updated Successfully!'));
+        $this->updateEnv(
+            'GOOGLE_CLIENT_SECRET',
+            '"' . str_replace('"', "'", $request->google_client_secret) . '"'
+        );
+
+        $this->updateEnv(
+            'GOOGLE_REDIRECT',
+            '"' . str_replace('"', "'", $request->google_redirect) . '"'
+        );
+
+        return redirect()
+            ->route('admin.plugin.google_oauth.settings')
+            ->with(
+                'success',
+                __('Google OAuth Settings Updated Successfully!')
+            );
     }
 
     public function updateEnv($key, $value)
@@ -38,23 +58,21 @@ class GoogleOAuthController extends Controller
         $path = base_path('.env');
 
         if (file_exists($path)) {
-            // Read the file contents
             $envContent = file_get_contents($path);
 
-            // Create a new key-value pair
-            $pattern     = "/^" . preg_quote($key) . "=.*/m";
+            $pattern = "/^" . preg_quote($key) . "=.*/m";
             $replacement = $key . '=' . $value;
 
-            // Check if the key exists in .env
             if (preg_match($pattern, $envContent)) {
-                // Replace existing key
-                $envContent = preg_replace($pattern, $replacement, $envContent);
+                $envContent = preg_replace(
+                    $pattern,
+                    $replacement,
+                    $envContent
+                );
             } else {
-                // Append new key-value pair
                 $envContent .= "\n" . $replacement;
             }
 
-            // Write back to .env file
             file_put_contents($path, $envContent);
         }
     }

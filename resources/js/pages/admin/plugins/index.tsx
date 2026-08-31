@@ -283,7 +283,7 @@ function PluginCard({
                         </p>
                     </div>
 
-                    {/* Actions */}
+             
                     <div className="flex shrink-0 flex-col items-center gap-2">
                         <Button
                             type="button"

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use Inertia\Inertia;
 
 class CookieConsentController extends Controller
 {
@@ -16,7 +17,11 @@ class CookieConsentController extends Controller
         $settings = Setting::first();
 
         // return view
-        return view()->file(base_path('plugins/CookieConsent/Views/index.blade.php'), compact('settings'));
+        // return view()->file(base_path('plugins/CookieConsent/Views/index.blade.php'), compact('settings'));
+
+        return Inertia::render('admin/plugins/cookie-consent', [
+            'cookieConsentEnabled' => env('COOKIE_CONSENT_ENABLED') == true,
+        ]);
     }
 
     // Update Cookie Consent

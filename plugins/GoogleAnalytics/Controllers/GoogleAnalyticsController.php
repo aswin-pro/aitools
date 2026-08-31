@@ -5,6 +5,7 @@ namespace Plugins\GoogleAnalytics\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class GoogleAnalyticsController extends Controller
 {
@@ -12,7 +13,9 @@ class GoogleAnalyticsController extends Controller
     {
         $settings = Setting::where('id', 1)->first();
 
-        return view()->file(base_path('plugins/GoogleAnalytics/Views/index.blade.php'), compact('settings'));
+        // return view()->file(base_path('plugins/GoogleAnalytics/Views/index.blade.php'), compact('settings'));
+
+        return Inertia::render('admin/plugins/google-analytics', compact('settings'));
     }
 
     public function googleAnalyticsSettingsUpdate(Request $request)

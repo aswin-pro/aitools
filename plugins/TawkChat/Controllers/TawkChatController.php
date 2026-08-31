@@ -5,6 +5,8 @@ namespace Plugins\TawkChat\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Spatie\Color\Validate;
 
 class TawkChatController extends Controller
 {
@@ -12,14 +14,19 @@ class TawkChatController extends Controller
     {
         $settings = Setting::where('id', 1)->first();
 
-        return view()->file(base_path('plugins/TawkChat/Views/index.blade.php'), compact('settings'));
+        return Inertia::render('admin/plugins/tawk-chat', [
+            'settings' => $settings,
+        ]);
     }
 
     public function tawkChatSettingsUpdate(Request $request)
     {
+        $validated = $request -> validate([
+            'tawk_chat_key' => 'required|string|max:255',
+        ]);
 
         Setting::where('id', 1)->update([
-            'tawk_chat_key' => $request->tawk_chat_key,
+            'tawk_chat_key' => $request['tawk_chat_key'],
         ]);
 
         return redirect()->route('admin.plugin.tawkchat.settings')->with('success', __('Tawk.to Settings Updated Successfully!'));

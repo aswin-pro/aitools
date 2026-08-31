@@ -77,9 +77,9 @@ use Inertia\Inertia;
         // Account Setting
         Route::get('settings', [App\Http\Controllers\Admin\AccountController::class, "index"])->name('index.account');
         Route::get('settings/profile', [App\Http\Controllers\Admin\AccountController::class, "editAccount"])->name('edit.account');
-        Route::post('update-account', [App\Http\Controllers\Admin\AccountController::class, "updateAccount"])->name('update.account')->middleware(['demo.mode']);
+        Route::post('settings/update-account', [App\Http\Controllers\Admin\AccountController::class, "updateAccount"])->name('update.account')->middleware(['demo.mode']);
         Route::get('settings/password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
-        Route::post('update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
+        Route::post('settings/update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
         
         //general settings
@@ -103,7 +103,7 @@ use Inertia\Inertia;
         Route::get('settings/tax-setting', [App\Http\Controllers\Admin\SettingController::class, "taxSetting"])->name('tax.setting');
         Route::post('settings/update-tex-setting', [App\Http\Controllers\Admin\SettingController::class, "updateTaxSetting"])->name('update.tax.setting')->middleware(['demo.mode']);
         Route::post('settings/update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
-        // Generating a sitemap
+        
         
         //system - login activity | clear cache | generate sitemap
         Route::get('system/login-activity', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('system.login-activity');
