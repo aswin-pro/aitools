@@ -185,7 +185,6 @@ export default function SMTP() {
             <Head title={t("SMTP Settings")} />
 
             <div className="space-y-6">
-                {/* Page Header */}
                 <div>
                     <p className="text-sm text-muted-foreground">
                         {t("Overview")}
@@ -196,9 +195,7 @@ export default function SMTP() {
                     </h1>
                 </div>
 
-                {/* Main Card */}
                 <div className="rounded-xl border bg-card">
-                    {/* Card Header */}
                     <div className="border-b px-6 py-5">
                         <h2 className="font-semibold">
                             {t("SMTP Credentials")}
@@ -218,9 +215,7 @@ export default function SMTP() {
                     >
                         {({ errors, processing, clearErrors }) => (
                             <>
-                                {/* Fields */}
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                    {/* Sender Name */}
                                     <FormInput
                                         id="mail_sender"
                                         name="mail_sender"

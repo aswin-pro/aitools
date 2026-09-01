@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class TwilioSmsNotificationController extends Controller
 {
@@ -95,7 +96,11 @@ class TwilioSmsNotificationController extends Controller
             ->get()
             ->keyBy('template_name');
 
-        return view('TwilioSms::index', compact('twilio_sms_notification_settings', 'twilio_sms_notification_templates'));
+
+        return Inertia::render('admin/plugins/twilio-sms-notification/index', [
+            'twilio_sms_notification_settings' => $twilio_sms_notification_settings,
+            'twilio_sms_notification_templates' => $twilio_sms_notification_templates,
+        ]);
     }
 
     // Update Twilio Sms Notification Settings
@@ -149,6 +154,8 @@ class TwilioSmsNotificationController extends Controller
         return back()->with('success', __('Template updated successfully.'));
     }
 
+
+
     // Update Twilio Sms Notification Plan Purchase Template
     public function twilioSmsTemplatePlanPurchaseUpdate(Request $request)
     {
@@ -175,6 +182,9 @@ class TwilioSmsNotificationController extends Controller
         // redirect
         return back()->with('success', __('Template updated successfully.'));
     }
+
+
+
 
     // Update Twilio Sms Notification Plan Renewal Template
     public function twilioSmsTemplatePlanRenewalUpdate(Request $request)
@@ -203,6 +213,8 @@ class TwilioSmsNotificationController extends Controller
         return back()->with('success', __('Template updated successfully.'));
     }
 
+
+
     // Update Twilio Sms Notification Plan Expiry Template
     public function twilioSmsTemplateUserPlanExpiryRemainderUpdate(Request $request)
     {
@@ -223,6 +235,10 @@ class TwilioSmsNotificationController extends Controller
         // redirect
         return back()->with('success', __('Template updated successfully.'));
     }
+
+
+
+
 
     // Update Twilio Sms Notification Plan Expired Template
     public function twilioSmsTemplateUserExpiredUpdate(Request $request)

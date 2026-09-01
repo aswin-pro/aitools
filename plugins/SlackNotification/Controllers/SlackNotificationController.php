@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class SlackNotificationController extends Controller
 {
+
     public function slackSettings(Request $request)
     {
-        // check database
+        // Check database
         if (! Schema::hasTable('slack_notification_settings')) {
             Schema::create('slack_notification_settings', function (Blueprint $table) {
                 $table->id();
@@ -26,48 +28,49 @@ class SlackNotificationController extends Controller
             });
         }
 
-        // slack settings
+        // Slack settings
         $slack_settings = DB::table('slack_notification_settings')->first();
 
-        // return view
-        return view()->file(base_path('plugins/SlackNotification/Views/index.blade.php'), compact('slack_settings'));
-    }
-
-    public function slackSettingsUpdate(Request $request)
-    {
-        // validate request
-        $validator = Validator::make($request->all(), [
-            'slack_webhook_url' => 'required|url',
+        return Inertia::render('admin/plugins/slack-notification', [
+            'slack_settings' => $slack_settings,
         ]);
-
-        // if validation fails, redirect to settings page
-        if ($validator->fails()) {
-            return redirect()->route('admin.plugin.slack.settings')->with('failed', __('Invalid Slack Webhook URL!'));
-        }
-
-        // update or insert                                                                                                     
-        DB::table('slack_notification_settings')->updateOrInsert(
-            ['id' => 1],
-            [
-                'slack_webhook_url' => $request->slack_webhook_url,
-                'user_registration' => $request->has('user_registration') ? 1 : 0,
-                'plan_purchase'     => $request->has('plan_purchase') ? 1 : 0,
-                'plan_renewal'      => $request->has('plan_renewal') ? 1 : 0,
-                'error_logging'     => $request->has('error_logging') ? 1 : 0,
-                'updated_at'        => now(),
-            ]
-        );
-
-        // forget cache
-        cache()->forget('slack_notification_settings');
-
-        // update env
-        $this->updateEnv('LOG_CHANNEL', $request->has('error_logging') ? 'slack' : 'stack');
-        $this->updateEnv('LOG_SLACK_WEBHOOK_URL', $request->slack_webhook_url);
-
-        // return view
-        return redirect()->route('admin.plugin.slack.settings')->with('success', __('Slack Settings Updated Successfully!'));
     }
+
+
+public function slackSettingsUpdate(Request $request)
+{
+    $request->validate([
+        'slack_webhook_url' => 'required|url',
+    ]);
+
+    DB::table('slack_notification_settings')->updateOrInsert(
+        ['id' => 1],
+        [
+            'slack_webhook_url' => $request->slack_webhook_url,
+            'user_registration' => $request->boolean('user_registration') ? 1 : 0,
+            'plan_purchase'     => $request->boolean('plan_purchase') ? 1 : 0,
+            'plan_renewal'      => $request->boolean('plan_renewal') ? 1 : 0,
+            'error_logging'     => $request->boolean('error_logging') ? 1 : 0,
+            'updated_at'        => now(),
+        ]
+    );
+
+    cache()->forget('slack_notification_settings');
+
+    $this->updateEnv(
+        'LOG_CHANNEL',
+        $request->boolean('error_logging') ? 'slack' : 'stack'
+    );
+
+    $this->updateEnv(
+        'LOG_SLACK_WEBHOOK_URL',
+        $request->slack_webhook_url
+    );
+
+    return redirect()
+        ->route('admin.plugin.slack.settings')
+        ->with('success', __('Slack Settings Updated Successfully!'));
+}
 
     public function updateEnv($key, $value)
     {
