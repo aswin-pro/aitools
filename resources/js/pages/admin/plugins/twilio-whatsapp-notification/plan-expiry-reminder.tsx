@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-
 import { shortcodes } from "./shortcodes";
 import FormInput from "@/components/admin/form-input";
 import ShortcodeTable from "./short-code-table";
@@ -34,7 +33,7 @@ export default function PlanExpiryReminder({ template }: Props) {
 
         form.post(
             route(
-                "admin.twilio_sms_template_plan_expiry_remainder.update",
+                "admin.twilio_whatsapp_template_plan_expiry_remainder.update",
             ),
             {
                 preserveScroll: true,
@@ -54,14 +53,14 @@ export default function PlanExpiryReminder({ template }: Props) {
     };
 
     return (
-        <section className="space-y-6 ">
+        <section className="space-y-6">
             <div>
                 <h2 className="text-lg font-semibold">
                     Plan Expiry Reminder
                 </h2>
 
                 <p className="text-sm text-muted-foreground">
-                    Configure SMS reminders before a user's plan expires.
+                    Configure WhatsApp reminders before a user's plan expires.
                 </p>
             </div>
 
@@ -124,10 +123,15 @@ export default function PlanExpiryReminder({ template }: Props) {
                     />
                 </div>
 
-                <ShortcodeTable shortcodes={shortcodes.plan_expiry} />
+                <ShortcodeTable
+                    shortcodes={shortcodes.plan_expiry}
+                />
 
                 <div className="flex justify-end">
-                    <Button type="submit" disabled={form.processing}>
+                    <Button
+                        type="submit"
+                        disabled={form.processing}
+                    >
                         <LoadingSwap isLoading={form.processing}>
                             Update
                         </LoadingSwap>
@@ -137,3 +141,4 @@ export default function PlanExpiryReminder({ template }: Props) {
         </section>
     );
 }
+

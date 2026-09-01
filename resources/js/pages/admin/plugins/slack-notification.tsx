@@ -38,7 +38,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: "Plugins",
-        href: "#",
+        href: route("dashboard.admin.plugins.index"),
     },
     {
         title: "Slack Settings",

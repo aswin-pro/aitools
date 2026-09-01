@@ -74,7 +74,7 @@ export default function NewUserRegistration({ template }: Props) {
                 onSubmit={submit}
                 className="space-y-6"
             >
-                <div className="mt-10 grid gap-6 md:grid-cols-2">
+                <div className="mt-10 grid gap-6 md:grid-cols-2 items-start">
                     <div className="grid gap-2">
                         <Label htmlFor="new_user_registration_admin">
                             {t("Send Notification to Admin")}

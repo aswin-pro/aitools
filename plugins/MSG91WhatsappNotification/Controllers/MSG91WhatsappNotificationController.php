@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class MSG91WhatsappNotificationController extends Controller
 {
@@ -110,8 +111,14 @@ class MSG91WhatsappNotificationController extends Controller
             ->get()
             ->keyBy('template_name');
 
-        // return view
-        return view('msg91::index', compact('msg91_whatsapp_notification_settings', 'msg91_whatsapp_notification_templates'));
+
+        return Inertia::render('admin/plugins/msg91-whatsapp-notification/index', [
+
+            'msg91_whatsapp_notification_settings' => $msg91_whatsapp_notification_settings,
+            'msg91_whatsapp_notification_templates' => $msg91_whatsapp_notification_templates
+        ]
+        )    ;
+
     }
 
     // Update Msg91 Whatsapp Notification Settings
@@ -121,12 +128,12 @@ class MSG91WhatsappNotificationController extends Controller
         $validator = Validator::make($request->all(), [
             'auth_key'  => 'required',
             'sender_id'   => 'required',
-            'admin_number'   => 'required',
+             'admin_number' => 'required|regex:/^[0-9]{10,15}$/',
         ]);
 
-        // Validation failed
-        if ($validator->fails()) {
-            return redirect()->route('admin.plugin.msg91_whatsapp_notification.settings')->with('failed', $validator->errors()->first());
+
+        if($validator->fails()) {
+            return back()->withErrors($validator);
         }
 
         // Update or insert

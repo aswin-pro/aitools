@@ -1,14 +1,15 @@
 import Heading from "@/components/heading";
 import AppLayout from "@/layouts/app/app-layout";
+
+import TwilioCredentials from "./twiliocredentials";
+import { BreadcrumbItem } from "@/types";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import NewUserRegistration from "./new-user-regitration";
 import PlanPurchase from "./plan-purchase";
 import PlanRenewal from "./plan-renewal";
 import PlanExpiryReminder from "./plan-expiry-reminder";
 import PlanExpiredNotification from "./plan-expired-notification";
-import TwilioCredentials from "./twiliocredentials";
-import { BreadcrumbItem } from "@/types";
-import { useTranslation } from "react-i18next";
 
 interface TwilioSettings {
     account_sid: string | null;
@@ -25,16 +26,13 @@ interface TwilioTemplate {
 }
 
 interface Props {
-    twilio_sms_notification_settings: TwilioSettings | null;
-    twilio_sms_notification_templates: Record<
-        string,
-        TwilioTemplate
-    >;
+    twilio_whatsapp_notification_settings: TwilioSettings | null;
+    twilio_whatsapp_notification_templates: Record<string, TwilioTemplate>;
 }
 
 export default function TwilioSmsSettings({
-    twilio_sms_notification_settings,
-    twilio_sms_notification_templates,
+    twilio_whatsapp_notification_settings,
+    twilio_whatsapp_notification_templates,
 }: Props) {
     const { t } = useTranslation();
 
@@ -48,7 +46,7 @@ export default function TwilioSmsSettings({
             href: route("dashboard.admin.plugins.index"),
         },
         {
-            title: t("Twilio SMS Notification"),
+            title: t("Twilio Whatsapp Notification"),
             href: "#",
         },
     ];
@@ -56,9 +54,9 @@ export default function TwilioSmsSettings({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Heading
-                title={t("Twilio SMS Notification Settings")}
+                title={t("Twilio Whatsapp Notification Settings")}
                 description={t(
-                    "Configure Twilio SMS notification credentials and templates.",
+                    "Configure Twilio Whatsapp notification credentials and templates.",
                 )}
             />
 
@@ -66,9 +64,7 @@ export default function TwilioSmsSettings({
                 <CardContent>
                     <div className="pt-10">
                         <TwilioCredentials
-                            settings={
-                                twilio_sms_notification_settings
-                            }
+                            settings={twilio_whatsapp_notification_settings}
                         />
                     </div>
                 </CardContent>
@@ -80,7 +76,7 @@ export default function TwilioSmsSettings({
                         <div className="pt-10">
                             <NewUserRegistration
                                 template={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "New User Registration Admin"
                                     ]
                                 }
@@ -96,12 +92,12 @@ export default function TwilioSmsSettings({
                         <div className="pt-10">
                             <PlanPurchase
                                 adminTemplate={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "Plan Purchase Admin"
                                     ]
                                 }
                                 userTemplate={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "Plan Purchase User"
                                     ]
                                 }
@@ -117,12 +113,12 @@ export default function TwilioSmsSettings({
                         <div className="pt-10">
                             <PlanRenewal
                                 adminTemplate={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "Plan Renewal Admin"
                                     ]
                                 }
                                 userTemplate={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "Plan Renewal User"
                                     ]
                                 }
@@ -132,13 +128,13 @@ export default function TwilioSmsSettings({
                 </Card>
             </div>
 
-            <div className="mt-10">
+           <div className="mt-10">
                 <Card>
                     <CardContent>
                         <div className="pt-10">
                             <PlanExpiryReminder
                                 template={
-                                    twilio_sms_notification_templates[
+                                    twilio_whatsapp_notification_templates[
                                         "User Plan Expiry Remainder"
                                     ]
                                 }
@@ -152,17 +148,17 @@ export default function TwilioSmsSettings({
                 <Card>
                     <CardContent>
                         <div className="pt-10">
-                            <PlanExpiredNotification
-                                template={
-                                    twilio_sms_notification_templates[
-                                        "User Plan Expired Notification"
-                                    ]
-                                }
-                            />
+<PlanExpiredNotification
+    template={
+        twilio_whatsapp_notification_templates[
+            "User Plan Expired Notification"
+        ]
+    }
+/>
                         </div>
                     </CardContent>
                 </Card>
-            </div>
+            </div> 
         </AppLayout>
     );
 }

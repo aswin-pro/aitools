@@ -9,49 +9,55 @@ import ShortcodeTable from "./short-code-table";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-
-interface TwilioTemplate {
+interface MSG91Template {
     id: number;
     template_name: string;
-    template_sid: string | null;
+    template_id: string | null;
     is_enabled: number;
 }
 
 interface Props {
-    adminTemplate: TwilioTemplate | undefined;
-    userTemplate: TwilioTemplate | undefined;
+    adminTemplate: MSG91Template | undefined;
+    userTemplate: MSG91Template | undefined;
 }
 
 export default function PlanRenewal({
     adminTemplate,
     userTemplate,
 }: Props) {
-
     const { t } = useTranslation();
+
     const form = useForm({
         plan_renewal_admin: adminTemplate?.is_enabled === 1,
-        plan_renewal_admin_template_sid: adminTemplate?.template_sid ?? "",
+        plan_renewal_admin_template_id:
+            adminTemplate?.template_id ?? "",
         plan_renewal_user: userTemplate?.is_enabled === 1,
-        plan_renewal_user_template_sid: userTemplate?.template_sid ?? "",
+        plan_renewal_user_template_id:
+            userTemplate?.template_id ?? "",
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        form.post(route("admin.twilio_sms_template_plan_renewal.update"), {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success(
-                    t("Template updated successfully."),
-                );
-            },
+        form.post(
+            route(
+                "admin.msg91_sms_template_plan_renewal.update",
+            ),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success(
+                        t("Template updated successfully."),
+                    );
+                },
 
-            onError: () => {
-                toast.error(
-                    t("Error updating template"),
-                );
+                onError: () => {
+                    toast.error(
+                        t("Error updating template"),
+                    );
+                },
             },
-        });
+        );
     };
 
     return (
@@ -62,7 +68,9 @@ export default function PlanRenewal({
                 </h2>
 
                 <p className="text-sm text-muted-foreground">
-                    {t("Configure SMS notifications when a plan is renewed.")}
+                    {t(
+                        "Configure SMS notifications when a plan is renewed.",
+                    )}
                 </p>
             </div>
 
@@ -76,7 +84,9 @@ export default function PlanRenewal({
                         <div className="flex h-10 items-center">
                             <Switch
                                 id="plan_renewal_admin"
-                                checked={form.data.plan_renewal_admin}
+                                checked={
+                                    form.data.plan_renewal_admin
+                                }
                                 onCheckedChange={(checked) => {
                                     form.setData(
                                         "plan_renewal_admin",
@@ -84,7 +94,7 @@ export default function PlanRenewal({
                                     );
 
                                     form.clearErrors(
-                                        "plan_renewal_admin_template_sid",
+                                        "plan_renewal_admin_template_id",
                                     );
                                 }}
                             />
@@ -92,23 +102,27 @@ export default function PlanRenewal({
                     </div>
 
                     <FormInput
-                        id="plan_renewal_admin_template_sid"
-                        name="plan_renewal_admin_template_sid"
+                        id="plan_renewal_admin_template_id"
+                        name="plan_renewal_admin_template_id"
                         type="text"
-                        label="Admin Template SID"
-                        placeholder="Admin Template SID"
-                        value={form.data.plan_renewal_admin_template_sid}
+                        label={t("Admin Template ID")}
+                        placeholder={t("Admin Template ID")}
+                        value={
+                            form.data
+                                .plan_renewal_admin_template_id
+                        }
                         error={
-                            form.errors.plan_renewal_admin_template_sid
+                            form.errors
+                                .plan_renewal_admin_template_id
                         }
                         onChange={(e) => {
                             form.setData(
-                                "plan_renewal_admin_template_sid",
+                                "plan_renewal_admin_template_id",
                                 e.target.value,
                             );
 
                             form.clearErrors(
-                                "plan_renewal_admin_template_sid",
+                                "plan_renewal_admin_template_id",
                             );
                         }}
                     />
@@ -121,7 +135,9 @@ export default function PlanRenewal({
                         <div className="flex h-10 items-center">
                             <Switch
                                 id="plan_renewal_user"
-                                checked={form.data.plan_renewal_user}
+                                checked={
+                                    form.data.plan_renewal_user
+                                }
                                 onCheckedChange={(checked) => {
                                     form.setData(
                                         "plan_renewal_user",
@@ -129,7 +145,7 @@ export default function PlanRenewal({
                                     );
 
                                     form.clearErrors(
-                                        "plan_renewal_user_template_sid",
+                                        "plan_renewal_user_template_id",
                                     );
                                 }}
                             />
@@ -137,32 +153,41 @@ export default function PlanRenewal({
                     </div>
 
                     <FormInput
-                        id="plan_renewal_user_template_sid"
-                        name="plan_renewal_user_template_sid"
+                        id="plan_renewal_user_template_id"
+                        name="plan_renewal_user_template_id"
                         type="text"
-                        label="Business Template SID"
-                        placeholder="Business Template SID"
-                        value={form.data.plan_renewal_user_template_sid}
+                        label={t("Business Template ID")}
+                        placeholder={t("Business Template ID")}
+                        value={
+                            form.data
+                                .plan_renewal_user_template_id
+                        }
                         error={
-                            form.errors.plan_renewal_user_template_sid
+                            form.errors
+                                .plan_renewal_user_template_id
                         }
                         onChange={(e) => {
                             form.setData(
-                                "plan_renewal_user_template_sid",
+                                "plan_renewal_user_template_id",
                                 e.target.value,
                             );
 
                             form.clearErrors(
-                                "plan_renewal_user_template_sid",
+                                "plan_renewal_user_template_id",
                             );
                         }}
                     />
                 </div>
 
-                <ShortcodeTable shortcodes={shortcodes.plan_basic} />
+                <ShortcodeTable
+                    shortcodes={shortcodes.plan_basic}
+                />
 
                 <div className="flex justify-end">
-                    <Button type="submit" disabled={form.processing}>
+                    <Button
+                        type="submit"
+                        disabled={form.processing}
+                    >
                         <LoadingSwap isLoading={form.processing}>
                             {t("Update")}
                         </LoadingSwap>

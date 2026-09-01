@@ -1,4 +1,3 @@
-
 import { useForm } from "@inertiajs/react";
 import { useTranslation } from "react-i18next";
 
@@ -12,16 +11,16 @@ import ShortcodeTable from "./short-code-table";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { toast } from "sonner";
 
-interface TwilioTemplate {
+interface MSG91Template {
     id: number;
     template_name: string;
-    template_sid: string | null;
+    template_id: string | null;
     is_enabled: number;
 }
 
 interface Props {
-    adminTemplate: TwilioTemplate | undefined;
-    userTemplate: TwilioTemplate | undefined;
+    adminTemplate: MSG91Template | undefined;
+    userTemplate: MSG91Template | undefined;
 }
 
 export default function PlanPurchase({
@@ -32,11 +31,11 @@ export default function PlanPurchase({
 
     const form = useForm({
         plan_purchase_admin: adminTemplate?.is_enabled === 1,
-        plan_purchase_admin_template_sid:
-            adminTemplate?.template_sid ?? "",
+        plan_purchase_admin_template_id:
+            adminTemplate?.template_id ?? "",
         plan_purchase_user: userTemplate?.is_enabled === 1,
-        plan_purchase_user_template_sid:
-            userTemplate?.template_sid ?? "",
+        plan_purchase_user_template_id:
+            userTemplate?.template_id ?? "",
     });
 
     const submit = (e: React.FormEvent) => {
@@ -44,7 +43,7 @@ export default function PlanPurchase({
 
         form.post(
             route(
-                "admin.twilio_sms_template_plan_purchase.update",
+                "admin.msg91_sms_template_plan_purchase.update",
             ),
             {
                 preserveScroll: true,
@@ -99,7 +98,7 @@ export default function PlanPurchase({
                                     );
 
                                     form.clearErrors(
-                                        "plan_purchase_admin_template_sid",
+                                        "plan_purchase_admin_template_id",
                                     );
                                 }}
                             />
@@ -107,27 +106,27 @@ export default function PlanPurchase({
                     </div>
 
                     <FormInput
-                        id="plan_purchase_admin_template_sid"
-                        name="plan_purchase_admin_template_sid"
+                        id="plan_purchase_admin_template_id"
+                        name="plan_purchase_admin_template_id"
                         type="text"
-                        label={t("Admin Template SID")}
-                        placeholder={t("Admin Template SID")}
+                        label={t("Admin Template ID")}
+                        placeholder={t("Admin Template ID")}
                         value={
                             form.data
-                                .plan_purchase_admin_template_sid
+                                .plan_purchase_admin_template_id
                         }
                         error={
                             form.errors
-                                .plan_purchase_admin_template_sid
+                                .plan_purchase_admin_template_id
                         }
                         onChange={(e) => {
                             form.setData(
-                                "plan_purchase_admin_template_sid",
+                                "plan_purchase_admin_template_id",
                                 e.target.value,
                             );
 
                             form.clearErrors(
-                                "plan_purchase_admin_template_sid",
+                                "plan_purchase_admin_template_id",
                             );
                         }}
                     />
@@ -151,7 +150,7 @@ export default function PlanPurchase({
                                     );
 
                                     form.clearErrors(
-                                        "plan_purchase_user_template_sid",
+                                        "plan_purchase_user_template_id",
                                     );
                                 }}
                             />
@@ -159,27 +158,27 @@ export default function PlanPurchase({
                     </div>
 
                     <FormInput
-                        id="plan_purchase_user_template_sid"
-                        name="plan_purchase_user_template_sid"
+                        id="plan_purchase_user_template_id"
+                        name="plan_purchase_user_template_id"
                         type="text"
-                        label={t("Business Template SID")}
-                        placeholder={t("Business Template SID")}
+                        label={t("Business Template ID")}
+                        placeholder={t("Business Template ID")}
                         value={
                             form.data
-                                .plan_purchase_user_template_sid
+                                .plan_purchase_user_template_id
                         }
                         error={
                             form.errors
-                                .plan_purchase_user_template_sid
+                                .plan_purchase_user_template_id
                         }
                         onChange={(e) => {
                             form.setData(
-                                "plan_purchase_user_template_sid",
+                                "plan_purchase_user_template_id",
                                 e.target.value,
                             );
 
                             form.clearErrors(
-                                "plan_purchase_user_template_sid",
+                                "plan_purchase_user_template_id",
                             );
                         }}
                     />
@@ -203,4 +202,3 @@ export default function PlanPurchase({
         </section>
     );
 }
-

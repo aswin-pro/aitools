@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class MSG91SmsNotificationController extends Controller
 {
@@ -95,7 +96,10 @@ class MSG91SmsNotificationController extends Controller
             ->keyBy('template_name');
 
         // return view
-        return view('msg91Sms::index', compact('msg91_sms_notification_settings', 'msg91_sms_notification_templates'));
+        return Inertia::render('admin/plugins/msg91-sms-notification/index', [
+            'msg91_sms_notification_settings' => $msg91_sms_notification_settings,
+            'msg91_sms_notification_templates' => $msg91_sms_notification_templates,
+        ]);
     }
 
     // Update Msg91 Sms Notification Settings
@@ -105,12 +109,12 @@ class MSG91SmsNotificationController extends Controller
         $validator = Validator::make($request->all(), [
             'auth_key'  => 'required',
             'sender_id'   => 'required',
-            'admin_number'   => 'required',
+            'admin_number' => 'required|regex:/^[0-9]{10,15}$/',
         ]);
 
         // Validation failed
         if ($validator->fails()) {
-            return redirect()->route('admin.plugin.msg91_sms_notification.settings')->with('failed', $validator->errors()->first());
+            return back()->withErrors($validator);
         }
 
         // Update or insert

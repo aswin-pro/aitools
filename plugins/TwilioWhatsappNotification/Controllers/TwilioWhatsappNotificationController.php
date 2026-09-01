@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class TwilioWhatsappNotificationController extends Controller
 {
@@ -95,7 +96,14 @@ class TwilioWhatsappNotificationController extends Controller
             ->get()
             ->keyBy('template_name');
 
-        return view('Twilio::index', compact('twilio_whatsapp_notification_settings', 'twilio_whatsapp_notification_templates'));
+        return Inertia::render('admin/plugins/twilio-whatsapp-notification/index', [
+            'twilio_whatsapp_notification_settings' =>
+            $twilio_whatsapp_notification_settings,
+
+            'twilio_whatsapp_notification_templates' =>
+            $twilio_whatsapp_notification_templates,
+        ]);
+
     }
 
     // Update Twilio Whatsapp Notification Settings

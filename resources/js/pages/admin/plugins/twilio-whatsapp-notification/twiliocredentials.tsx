@@ -32,7 +32,7 @@ export default function TwilioCredentials({ settings }: Props) {
 
         form.post(
             route(
-                "admin.twilio_sms_notification_settings.update",
+                "admin.twilio_whatsapp_notification_settings.update",
             ),
             {
                 preserveScroll: true,
@@ -40,7 +40,7 @@ export default function TwilioCredentials({ settings }: Props) {
                 onSuccess: () => {
                     toast.success(
                         t(
-                            "Twilio SMS Notification settings updated successfully!",
+                            "Twilio Whatsapp Notification settings updated successfully!",
                         ),
                     );
                 },
@@ -48,7 +48,7 @@ export default function TwilioCredentials({ settings }: Props) {
                 onError: () => {
                     toast.error(
                         t(
-                            "Error updating Twilio SMS Notification settings",
+                            "Error updating Twilio Whatsapp Notification settings",
                         ),
                     );
                 },
@@ -60,12 +60,12 @@ export default function TwilioCredentials({ settings }: Props) {
         <section className="space-y-6">
             <div>
                 <h2 className="text-lg font-semibold">
-                    {t("Twilio SMS Notification Credentials")}
+                    {t("Twilio Whatsapp Notification Credentials")}
                 </h2>
 
                 <p className="text-sm text-muted-foreground">
                     {t(
-                        "Configure the credentials required to send SMS notifications through Twilio.",
+                        "Configure the credentials required to send Whatsapp notifications through Twilio.",
                     )}
                 </p>
             </div>
