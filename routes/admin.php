@@ -57,14 +57,14 @@ use Inertia\Inertia;
 
         // Payment Gateways
         Route::get('payment-methods', [App\Http\Controllers\Admin\PaymentMethodController::class, "index"])->name('payment.methods');
-        Route::get('add-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "addPaymentMethod"])->name('add.payment.method');
-        Route::post('save-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "savePaymentMethod"])->name('save.payment.method')->middleware(['demo.mode']);
-        Route::get('edit-payment-method/{id}', [App\Http\Controllers\Admin\PaymentMethodController::class, "editPaymentMethod"])->name('edit.payment.method');
+        // Route::get('add-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "addPaymentMethod"])->name('add.payment.method');
+        // Route::post('save-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "savePaymentMethod"])->name('save.payment.method')->middleware(['demo.mode']);
+        // Route::get('edit-payment-method/{id}', [App\Http\Controllers\Admin\PaymentMethodController::class, "editPaymentMethod"])->name('edit.payment.method');
         Route::post('update-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "updatePaymentMethod"])->name('update.payment.method')->middleware(['demo.mode']);
         Route::get('delete-payment-method', [App\Http\Controllers\Admin\PaymentMethodController::class, "deletePaymentMethod"])->name('delete.payment.method')->middleware(['demo.mode']);
 
         // Payment Configuration
-        Route::get('configure-payment-method/{id}', [App\Http\Controllers\Admin\PaymentMethodController::class, 'configurePaymentMethod'])->name('configure.payment');
+        // Route::get('configure-payment-method/{id}', [App\Http\Controllers\Admin\PaymentMethodController::class, 'configurePaymentMethod'])->name('configure.payment');
         Route::post('update-payment-configuration/{id}', [App\Http\Controllers\Admin\PaymentMethodController::class, 'updatePaymentConfiguration'])->name('update.payment.configuration')->middleware(['demo.mode']);
 
         // Transactions
@@ -153,13 +153,9 @@ use Inertia\Inertia;
         Route::get('blog/edit-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "editBlog"])->name('edit.blog');
         Route::post('blog/update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
         Route::get('blog/action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
-
-
-
-
+        
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
         
-
         // License
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');
         Route::post('verify-license', [App\Http\Controllers\Admin\LicenseController::class, "verifyLicense"])->name('verify.license')->middleware(['demo.mode']);

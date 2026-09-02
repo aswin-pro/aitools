@@ -21,7 +21,6 @@ export default function GeneratedImages({ images }: GeneratedImagesProps) {
     return (
         <>
             <div className="rounded-xl border bg-card shadow-sm">
-                {/* Header */}
                 <div className="border-b px-6 py-4">
                     <h3 className="font-semibold">
                         Latest Generated AI Images
@@ -32,7 +31,6 @@ export default function GeneratedImages({ images }: GeneratedImagesProps) {
                     </p>
                 </div>
 
-                {/* Images */}
                 <div className="p-6">
                     {images.data.length > 0 ? (
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -59,7 +57,6 @@ export default function GeneratedImages({ images }: GeneratedImagesProps) {
                                         key={image.id}
                                         className="overflow-hidden rounded-lg border transition-colors hover:bg-muted/50"
                                     >
-                                        {/* Image */}
                                         {imageSrc ? (
                                             <img
                                                 src={assetUrl(imageSrc)}
@@ -72,7 +69,6 @@ export default function GeneratedImages({ images }: GeneratedImagesProps) {
                                             </div>
                                         )}
 
-                                        {/* Details */}
                                         <div className="p-4">
                                             <h4 className="line-clamp-1 font-semibold uppercase">
                                                 {image.name}

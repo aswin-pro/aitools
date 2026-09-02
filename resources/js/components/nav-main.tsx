@@ -26,6 +26,7 @@ import {
     MessagesSquare,
     Settings,
     UsersRound,
+    WalletCards,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -60,6 +61,13 @@ export function NavMain() {
                         url: "dashboard.admin.users",
                         icon: UsersRound,
                         isActive: route().current("dashboard.admin.users"),
+                    },
+                    //payment methods 
+                    {
+                        title: "Payment Methods",
+                        url: "dashboard.admin.payment.methods",
+                        icon: WalletCards,
+                        isActive: route().current("dashboard.admin.payment.methods"),
                     },
                     //blogs 
                     {

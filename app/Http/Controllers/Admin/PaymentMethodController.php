@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class PaymentMethodController extends Controller
 {
@@ -28,14 +29,39 @@ class PaymentMethodController extends Controller
      */
 
     // All Payment Methods
-    public function index()
-    {
-        // Get payment methods
-        $payment_methods = Gateway::orderBy('created_at', 'desc')->get();
-        $settings = Setting::where('status', 1)->first();
+public function index(Request $request)
+{
+    // Get payment methods
+    $perPage = $request->integer('per_page', 10);
+    $search = $request->input('search');
 
-        return view('admin.pages.payment-methods.index', compact('payment_methods', 'settings'));
+    $query = Gateway::query()
+        ->orderBy('created_at', 'desc');
+
+    if ($search) {
+        $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('display_name', 'like', "%{$search}%");
+        });
     }
+
+    $payment_methods = $query->paginate($perPage)->withQueryString();
+
+    $settings = Setting::where('status', 1)->first();
+
+    // Get payment configuration
+    $config = Config::get();
+
+    return Inertia::render('admin/payment-methods/index', [
+        'payment_methods' => $payment_methods,
+        'settings' => $settings,
+        'config' => $config,
+        'filters' => [
+            'search' => $search,
+            'per_page' => $perPage,
+        ],
+    ]);
+}
 
     // Add Payment Method
     public function addPaymentMethod()
@@ -79,19 +105,20 @@ class PaymentMethodController extends Controller
     // Edit Payment Method
     public function editPaymentMethod(Request $request, $id)
     {
-        // Payment gateway id
-        $gateway_id = $request->id;
+        $gateway_details = Gateway::where('id', $id)->first();
 
-        // Check payment gateway id
-        if ($gateway_id == null) {
-            return view('errors.404');
-        } else {
-            // Check payment gateway details
-            $gateway_details = Gateway::where('id', $gateway_id)->first();
-            $settings = Setting::where('status', 1)->first();
-
-            return view('admin.pages.payment-methods.edit', compact('gateway_details', 'settings'));
+        if (!$gateway_details) {
+            return redirect()
+                ->route('dashboard.admin.payment.methods')
+                ->with('failed', __('Payment method not found.'));
         }
+
+        $settings = Setting::where('status', 1)->first();
+
+        return Inertia::render('admin/payment-methods/edit', [
+            'gateway_details' => $gateway_details,
+            'settings' => $settings,
+        ]);
     }
 
     // Update Payment Method
@@ -99,51 +126,92 @@ class PaymentMethodController extends Controller
     {
         // Validation
         $validator = Validator::make($request->all(), [
-            'payment_gateway_name' => 'required'
+            'payment_gateway_id' => 'required',
+            'payment_gateway_name' => 'required',
         ]);
 
         if ($validator->fails()) {
-            return back()->with('failed', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
         // Check payment method image
         if (isset($request->payment_gateway_image)) {
-            // Image validatation
+            // Image validation
             $validator = Validator::make($request->all(), [
-                'payment_gateway_image' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:' . env("SIZE_LIMIT") . '',
+                'payment_gateway_image' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:' . env('SIZE_LIMIT'),
             ]);
 
             if ($validator->fails()) {
-                return back()->with('failed', $validator->messages()->all()[0])->withInput();
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
-            // get profile image
-            $payment_gateway_image = $request->payment_gateway_image->getClientOriginalName();
-            $UploadPaymentGatewayImage = pathinfo($payment_gateway_image, PATHINFO_FILENAME);
-            $UploadExtension = pathinfo($payment_gateway_image, PATHINFO_EXTENSION);
+            // Get image name
+            $payment_gateway_image =
+                $request->payment_gateway_image->getClientOriginalName();
+
+            $UploadPaymentGatewayImage = pathinfo(
+                $payment_gateway_image,
+                PATHINFO_FILENAME
+            );
+
+            $UploadExtension = pathinfo(
+                $payment_gateway_image,
+                PATHINFO_EXTENSION
+            );
 
             // Upload image
-            if ($UploadExtension == "jpeg" || $UploadExtension == "png" || $UploadExtension == "jpg" || $UploadExtension == "gif" || $UploadExtension == "svg") {
-                // Upload image
-                $payment_gateway_image = 'img/payments/' . 'IMG-' . $request->payment_gateway_image->getClientOriginalName() . '-' . time() . '.' . $request->payment_gateway_image->extension();
-                $request->payment_gateway_image->move(public_path('img/payments'), $payment_gateway_image);
+            if (
+                $UploadExtension == "jpeg" ||
+                $UploadExtension == "png" ||
+                $UploadExtension == "jpg" ||
+                $UploadExtension == "gif" ||
+                $UploadExtension == "svg" ||
+                $UploadExtension == "webp"
+            ) {
+                $payment_gateway_image =
+                    'img/payments/' .
+                    'IMG-' .
+                    $request->payment_gateway_image->getClientOriginalName() .
+                    '-' .
+                    time() .
+                    '.' .
+                    $request->payment_gateway_image->extension();
 
-                // Update user profile image
-                Gateway::where('id', $request->payment_gateway_id)->update([
+                $request->payment_gateway_image->move(
+                    public_path('img/payments'),
+                    $payment_gateway_image
+                );
+
+                Gateway::where(
+                    'id',
+                    $request->payment_gateway_id
+                )->update([
                     'logo' => $payment_gateway_image,
-                    'display_name' => $request->payment_gateway_name
+                    'display_name' => $request->payment_gateway_name,
                 ]);
             }
         }
 
         // Update payment method
-        Gateway::where('id', $request->payment_gateway_id)->update([
+        Gateway::where(
+            'id',
+            $request->payment_gateway_id
+        )->update([
             'name' => $request->payment_gateway_name,
-            'display_name' => $request->payment_gateway_name
+            'display_name' => $request->payment_gateway_name,
         ]);
-        
+
         // Page redirect
-        return redirect()->route('admin.payment.methods')->with('success', trans('Payment Gateway Details Updated Successfully!'));
+        return redirect()
+            ->route('dashboard.admin.payment.methods')
+            ->with(
+                'success',
+                trans('Payment Gateway Details Updated Successfully!')
+            );
     }
 
     // Delete Payment Method
@@ -162,27 +230,134 @@ class PaymentMethodController extends Controller
         // Update payment gateway
         Gateway::where('id', $request->query('id'))->update(['status' => $status]);
         // Page redirect
-        return redirect()->route('admin.payment.methods')->with('success', trans('Payment Method Status Updated Successfully!'));
+        return redirect()
+            ->route('dashboard.admin.payment.methods')
+            ->with('success', __('Payment method status updated successfully.'));
     }
 
     // Payment Configuration
     public function configurePaymentMethod(Request $request, $id)
     {
-        // Queries
         $config = Config::get();
+
         $gateway_details = Gateway::where('id', $id)->first();
 
-        // Check gateway details
-        if (empty($gateway_details)) {
-            return redirect()->route('admin.payment.methods')->with('failed', trans('Not Found!'));
+        if (!$gateway_details) {
+            return redirect()
+                ->route('dashboard.admin.payment.methods')
+                ->with('failed', __('Payment method not found.'));
         }
 
-        return view('admin.pages.payment-methods.configuration', compact('config', 'gateway_details'));
-    }
+        $settings = Setting::where('status', 1)->first();
 
+        return Inertia::render('admin/payment-methods/configure', [
+            'config' => $config,
+            'gateway_details' => $gateway_details,
+            'settings' => $settings,
+        ]);
+    }
     // Update Payment Configuration
     public function updatePaymentConfiguration(Request $request, $id)
     {
+        $rules = [];
+
+        // Paypal
+        if ($id == 1) {
+            $rules = [
+                'paypal_mode' => 'required',
+                'paypal_client_key' => 'required',
+                'paypal_secret' => 'required',
+            ];
+        }
+
+        // Razorpay
+        if ($id == 2) {
+            $rules = [
+                'razorpay_client_key' => 'required',
+                'razorpay_secret' => 'required',
+            ];
+        }
+
+        // Phonepe
+        if ($id == 8) {
+            $rules = [
+                'clientId' => 'required',
+                'clientVersion' => 'required',
+                'clientSecret' => 'required',
+            ];
+        }
+
+        // Stripe
+        if ($id == 3) {
+            $rules = [
+                'stripe_publishable_key' => 'required',
+                'stripe_secret' => 'required',
+            ];
+        }
+
+        // Paystack
+        if ($id == 4) {
+            $rules = [
+                'paystack_public_key' => 'required',
+                'paystack_secret' => 'required',
+                'merchant_email' => 'required|email',
+            ];
+        }
+
+        // Mollie
+        if ($id == 5) {
+            $rules = [
+                'mollie_key' => 'required',
+            ];
+        }
+
+        // Transaction Cloud
+        if ($id == 7) {
+            $rules = [
+                'transaction_cloud_login' => 'required',
+                'transaction_cloud_password' => 'required',
+            ];
+        }
+
+        // Bank transfer
+        if ($id == 6) {
+            $rules = [
+                'bank_transfer' => 'required',
+            ];
+        }
+
+        // Mercado Pago
+        if ($id == 9) {
+            $rules = [
+                'mercado_pago_public_key' => 'required',
+                'mercado_pago_access_token' => 'required',
+            ];
+        }
+
+        // Toyyibpay
+        if ($id == 10) {
+            $rules = [
+                'toyyibpay_mode' => 'required',
+                'toyyibpay_api_key' => 'required',
+                'toyyibpay_category_code' => 'required',
+            ];
+        }
+
+        // Flutterwave
+        if ($id == 11) {
+            $rules = [
+                'flw_public_key' => 'required',
+                'flw_secret_key' => 'required',
+                'flw_encryption_key' => 'required',
+            ];
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
         // Paypal mode
         if ($id == 1) {
             Config::where('config_key', 'paypal_mode')->update([
@@ -274,11 +449,11 @@ class PaymentMethodController extends Controller
         // Transaction Cloud
         if ($id == 7) {
             Config::where('config_key', 'transaction_cloud_api_key')->update([
-                'config_value' => $request->transaction_cloud_login
+                'config_value' => $request->transaction_cloud_login,
             ]);
-    
+
             Config::where('config_key', 'transaction_cloud_api_password')->update([
-                'config_value' => $request->transaction_cloud_password
+                'config_value' => $request->transaction_cloud_password,
             ]);
         }
 
@@ -339,7 +514,11 @@ class PaymentMethodController extends Controller
             ]);
         }
 
-        // Page redirect
-        return redirect()->route('admin.payment.methods')->with('success', trans('Updated!'));
+        return redirect()
+            ->route('dashboard.admin.payment.methods')
+            ->with(
+                'success',
+                __('Payment configuration updated successfully.')
+            );
     }
 }

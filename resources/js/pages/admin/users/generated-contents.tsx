@@ -19,7 +19,6 @@ export default function GeneratedContents({
     return (
         <>
             <div className="rounded-xl border bg-card shadow-sm">
-                {/* Header */}
                 <div className="border-b px-6 py-4">
                     <h3 className="font-semibold">
                         Latest Generated AI Contents
@@ -30,7 +29,6 @@ export default function GeneratedContents({
                     </p>
                 </div>
 
-                {/* Content */}
                 <div className="p-6">
                     {contents.data.length > 0 ? (
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
