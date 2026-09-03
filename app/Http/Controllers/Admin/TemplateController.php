@@ -104,7 +104,7 @@ class TemplateController extends Controller
         $categories = CustomTemplateCategory::where('status', 1)->get();
 
         return Inertia::render(
-            'admin/content-templates/templates/add',
+            'admin/content-templates/templates/create',
             [
                 'categories' => $categories,
             ]
@@ -164,7 +164,7 @@ class TemplateController extends Controller
                 $field->field_description = ucfirst($request->fieldDescription[$i]);
                 $field->save();
             } else {
-                return redirect()->route('admin.add.template')->with('failed', trans('New Template Created Failed!'));
+                return redirect()->route('dashboard.admin.add.template')->with('failed', trans('New Template Created Failed!'));
             }
         }
 
@@ -174,57 +174,119 @@ class TemplateController extends Controller
     // Edit Template
     public function editTemplate(Request $request, $id)
     {
-        // Queries
-        $id = $request->id;
-        $categories = CustomTemplateCategory::where('status', 1)->get();
-        $template_details = CustomTemplate::join('custom_template_categories', 'custom_templates.category_id', '=', 'custom_template_categories.id')->join('custom_template_fields', 'custom_templates.id', '=', 'custom_template_fields.template_id')->select('custom_templates.*', 'custom_template_categories.category_name', 'custom_template_fields.ai_input', 'custom_template_fields.field_type', 'custom_template_fields.field_name', 'custom_template_fields.field_description')->where('custom_templates.id', $id)->get();
+        $template = CustomTemplate::find($id);
 
-        // Template Checking
-        if ($template_details == null) {
-            return view('errors.404');
-        } else {
-            return view('admin.pages.templates.edit', compact('categories', 'template_details'));
+        if (!$template) {
+            abort(404);
         }
+
+        $categories = CustomTemplateCategory::where('status', 1)->get();
+
+        $fields = CustomTemplateField::where('template_id', $template->id)
+            ->orderBy('id')
+            ->get();
+
+        return Inertia::render('admin/content-templates/templates/edit', [
+            'template' => $template,
+            'fields' => $fields,
+            'categories' => $categories,
+        ]);
     }
 
     // Update Template
+
     public function updateTemplate(Request $request)
     {
-        // Validation
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(), [
+            'template_id' => 'required',
             'category_id' => 'required',
             'name' => 'required',
             'description' => 'required',
-            'aiInput*' => 'required',
-            'fieldType*' => 'required',
-            'fieldTitle*' => 'required',
-            'fieldDescription*' => 'required',
-            'prompt' => 'required'
+            'aiInput.*' => 'required',
+            'fieldType.*' => 'required',
+            'fieldTitle.*' => 'required',
+            'fieldDescription.*' => 'required',
+            'prompt' => 'required',
+        ], [
+            'category_id.required' => 'Category is required.',
+            'name.required' => 'Template name is required.',
+            'description.required' => 'Description is required.',
+            'aiInput.*.required' => 'AI input is required.',
+            'fieldType.*.required' => 'Field type is required.',
+            'fieldTitle.*.required' => 'Field title is required.',
+            'fieldDescription.*.required' => 'Field description is required.',
+            'prompt.required' => 'Prompt is required.',
         ]);
 
-        // Update Custom Template
-        CustomTemplate::where('id', $request->template_id)->update(['category_id' => $request->category_id, 'name' => ucfirst($request->name), 'description' => ucfirst($request->description), 'prompt' => $request->prompt]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
 
-        // Delete Custom Template Field (Previous)
-        CustomTemplateField::where('template_id', $request->template_id)->delete();
+        $template = CustomTemplate::find($request->template_id);
 
-        // Update Custom Template Field
-        for ($i = 0; $i < count($request->fieldTitle); $i++) {
-            if (isset($request->aiInput[$i]) && isset($request->fieldType[$i]) && isset($request->fieldTitle[$i]) && isset($request->fieldDescription[$i])) {
-                // Save Template Field
+        if (!$template) {
+            return back()->withErrors([
+                'template_id' => 'Template not found.',
+            ]);
+        }
+
+        CustomTemplate::where('id', $request->template_id)->update([
+            'category_id' => $request->category_id,
+            'name' => ucfirst($request->name),
+            'description' => ucfirst($request->description),
+            'prompt' => $request->prompt,
+        ]);
+
+
+        CustomTemplateField::where(
+            'template_id',
+            $request->template_id
+        )->delete();
+
+        for (
+            $i = 0;
+            $i < count($request->fieldTitle);
+            $i++
+        ) {
+            if (
+                isset($request->aiInput[$i]) &&
+                isset($request->fieldType[$i]) &&
+                isset($request->fieldTitle[$i]) &&
+                isset($request->fieldDescription[$i])
+            ) {
                 $field = new CustomTemplateField();
-                $field->template_id = $request->template_id;
-                $field->ai_input = $request->aiInput[$i];
-                $field->field_type = $request->fieldType[$i];
-                $field->field_name = ucfirst($request->fieldTitle[$i]);
-                $field->field_description = ucfirst($request->fieldDescription[$i]);
+
+                $field->template_id =
+                    $request->template_id;
+
+                $field->ai_input =
+                    $request->aiInput[$i];
+
+                $field->field_type =
+                    $request->fieldType[$i];
+
+                $field->field_name =
+                    ucfirst($request->fieldTitle[$i]);
+
+                $field->field_description =
+                    ucfirst(
+                        $request->fieldDescription[$i]
+                    );
+
                 $field->save();
-            } else {
-                return redirect()->route('admin.add.template')->with('failed', trans('New Template Created Failed!'));
             }
         }
 
-        return redirect()->route('admin.edit.template', $request->template_id)->with('success', trans('Template Details Updated Successfully!'));
+        return redirect()
+            ->route(
+                'dashboard.admin.templates'
+            )
+            ->with(
+                'success',
+                trans(
+                    'Template Details Updated Successfully!'
+                )
+            );
     }
 
     // Deactivate Template
@@ -235,19 +297,16 @@ class TemplateController extends Controller
 
         if (!$template) {
             return back()->withErrors([
-                'action' => __('Template not found.'),
+                'action' => __('Template not found.')
             ]);
         }
 
         $status = $template->status == 0 ? 1 : 0;
 
         $template->update([
-            'status' => $status,
+            'status' => $status
         ]);
 
-        return back()->with(
-            'success',
-            __('Template Status Updated Successfully!')
-        );
+        return back()->with('success', __('Template status updated successfully!'));
     }
 }

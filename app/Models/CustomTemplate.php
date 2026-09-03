@@ -9,6 +9,14 @@ class CustomTemplate extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'category_id',
+        'unique_slug',
+        'name',
+        'description',
+        'prompt',
+        'status',
+    ];
     protected $casts = [
         'status' => 'boolean',
     ];

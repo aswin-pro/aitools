@@ -28,6 +28,7 @@ import {
     UsersRound,
     WalletCards,
     Form,
+    FileBox,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -84,6 +85,13 @@ export function NavMain() {
                         url: "dashboard.admin.users",
                         icon: UsersRound,
                         isActive: route().current("dashboard.admin.users"),
+                    },
+                    //plans
+                    {
+                        title: "Plans",
+                        url: "dashboard.admin.index.plans",
+                        icon: FileBox,
+                        isActive: route().current("dashboard.admin.index.plans"),
                     },
                     //payment methods 
                     {

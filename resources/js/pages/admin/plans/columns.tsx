@@ -6,7 +6,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CustomTemplate } from "@/types/admin";
 import { ColumnDef } from "@tanstack/react-table";
 import {
     CheckCircle,
@@ -14,6 +13,28 @@ import {
     Pencil,
     XCircle,
 } from "lucide-react";
+
+export interface Plan {
+    id: number;
+    plan_id: string;
+    is_private: boolean;
+    name: string;
+    description: string;
+    price: number;
+    validity: number;
+    content_templates: Record<string, number>;
+    ai_credits: number;
+    ai_image_credits: number;
+    speech_to_text: boolean;
+    text_to_speech: boolean;
+    code_generator: boolean;
+    personalized_chat: boolean;
+    document_analyzer: boolean;
+    site_analyzer: boolean;
+    is_recommended: boolean;
+    customer_support: boolean;
+    status: boolean;
+}
 
 export const getColumns = ({
     pageIndex,
@@ -25,38 +46,65 @@ export const getColumns = ({
     pageIndex: number;
     pageSize: number;
     t: (key: string) => string;
-    onEdit: (template: CustomTemplate) => void;
+    onEdit: (plan: Plan) => void;
     onAction: (
-        template: CustomTemplate,
+        plan: Plan,
         action: "active" | "inactive",
     ) => void;
-}): ColumnDef<CustomTemplate>[] => [
+}): ColumnDef<Plan>[] => [
     {
         accessorKey: "S_No",
         header: t("#"),
-        cell: ({ row }) => pageIndex * pageSize + row.index + 1,
+        cell: ({ row }) =>
+            pageIndex * pageSize + row.index + 1,
     },
-    {
-        accessorKey: "Category Name",
-        header: t("Category"),
-        cell: ({ row }) => row.original.category_name,
-    },
+
     {
         accessorKey: "Name",
         header: t("Name"),
         cell: ({ row }) => row.original.name,
     },
+
     {
-        accessorKey: "Description",
-        header: t("Description"),
-        cell: ({ row }) => row.original.description,
+        accessorKey: "Price",
+        header: t("Price"),
+        cell: ({ row }) => row.original.price,
     },
-{
-    accessorKey: "Updated_at",
-    header: t("Last Updated on"),
-    cell: ({ row }) =>
-        row.original.formatted_updated_at ?? "-",
-},
+
+    {
+        accessorKey: "Validity",
+        header: t("Validity"),
+        cell: ({ row }) => {
+            const validity = row.original.validity;
+
+            if (validity === 9999) {
+                return t("Forever");
+            }
+
+            if (validity === 31) {
+                return t("Monthly");
+            }
+
+            if (validity === 366) {
+                return t("Yearly");
+            }
+
+            return `${validity} ${t("Days")}`;
+        },
+    },
+
+    {
+        accessorKey: "AI_Credits",
+        header: t("AI Credits"),
+        cell: ({ row }) => row.original.ai_credits,
+    },
+
+    {
+        accessorKey: "AI_Image_Credits",
+        header: t("Image Credits"),
+        cell: ({ row }) => row.original.ai_image_credits,
+    },
+
     {
         accessorKey: "Status",
         header: t("Status"),
@@ -70,11 +118,12 @@ export const getColumns = ({
                     : "bg-red-500 text-white dark:bg-red-800",
             ),
     },
+
     {
         accessorKey: "Actions",
         header: t("Actions"),
         cell: ({ row }) => {
-            const template = row.original;
+            const plan = row.original;
 
             return (
                 <DropdownMenu>
@@ -90,16 +139,16 @@ export const getColumns = ({
 
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                            onClick={() => onEdit(template)}
+                            onClick={() => onEdit(plan)}
                         >
                             <Pencil className="mr-2 size-4" />
                             {t("Edit")}
                         </DropdownMenuItem>
 
-                        {template.status ? (
+                        {plan.status ? (
                             <DropdownMenuItem
                                 onClick={() =>
-                                    onAction(template, "inactive")
+                                    onAction(plan, "inactive")
                                 }
                             >
                                 <XCircle className="mr-2 size-4" />
@@ -108,7 +157,7 @@ export const getColumns = ({
                         ) : (
                             <DropdownMenuItem
                                 onClick={() =>
-                                    onAction(template, "active")
+                                    onAction(plan, "active")
                                 }
                             >
                                 <CheckCircle className="mr-2 size-4" />

@@ -187,35 +187,31 @@ export default function Index({ categories, filters }: IndexProps) {
         );
     };
 
-const columns = useMemo(
-    () =>
-        getColumns({
-            pageIndex: categories.current_page - 1,
-            pageSize: categories.per_page,
-            t,
-            onEdit: handleEdit,
-            onAction: openActionDialog,
-        }),
-    [categories.current_page, categories.per_page, t],
-);
-
-    const search = filters?.search ?? "";
+    const columns = useMemo(
+        () =>
+            getColumns({
+                pageIndex: categories.current_page - 1,
+                pageSize: categories.per_page,
+                t,
+                onEdit: handleEdit,
+                onAction: openActionDialog,
+            }),
+        [categories.current_page, categories.per_page, t],
+    );
 
     const dialogContent = {
         active: {
             icon: <CheckCircle className="size-7 text-green-600" />,
-            title: t("Activate category?"),
-            description: t("If you proceed, this category will be activated."),
-            confirmLabel: t("Yes, activate"),
+            title: t("Set category as active?"),
+            description: t("If you proceed, this category will be active."),
+            confirmLabel: t("Yes, set active"),
         },
 
         inactive: {
             icon: <XCircle className="size-7 text-destructive" />,
-            title: t("Deactivate category?"),
-            description: t(
-                "If you proceed, this category will be deactivated.",
-            ),
-            confirmLabel: t("Yes, deactivate"),
+            title: t("Set category as inactive?"),
+            description: t("If you proceed, this category will be inactive."),
+            confirmLabel: t("Yes, set inactive"),
         },
 
         delete: {

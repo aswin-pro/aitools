@@ -2,347 +2,323 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Plan;
+use App\Http\Controllers\Controller;
 use App\Models\Config;
+use App\Models\CustomTemplate;
+use App\Models\Plan;
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use App\Models\CustomTemplate;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class PlanController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Display plans.
      */
-
-    // All Plans
-    public function index()
+    public function index(Request $request)
     {
-        // Queries
-        $plans = Plan::get();
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
+
+        $plans = Plan::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->latest('id')
+            ->paginate($perPage)
+            ->withQueryString();
+
         $currencies = Setting::where('status', 1)->get();
         $settings = Setting::where('status', 1)->first();
         $config = Config::get();
 
-        return view('admin.pages.plans.index', compact('plans', 'currencies', 'settings', 'config'));
+        return Inertia::render('admin/plans/index', [
+            'plans' => $plans,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
+            'currencies' => $currencies,
+            'settings' => $settings,
+            'config' => $config,
+        ]);
     }
 
-    // Add Plan
+    /**
+     * Show add plan page.
+     */
     public function addPlan()
     {
-        // Queries
         $config = Config::get();
+
         $settings = Setting::where('status', 1)->first();
 
-        // Templates
-        $templates = CustomTemplate::groupBy('id')->get();
+        $templates = CustomTemplate::where('status', 1)
+            ->groupBy('id')
+            ->get();
 
-        return view('admin.pages.plans.add', compact('settings', 'config', 'templates'));
+        return Inertia::render('admin/plans/add', [
+            'templates' => $templates,
+            'settings' => $settings,
+            'config' => $config,
+        ]);
     }
 
-    // Save Plan 
+    /**
+     * Save a new plan.
+     */
     public function savePlan(Request $request)
     {
-        // Validation
-        $validator = $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'validity' => 'required',
-            'templates' => 'required',
-            'words' => 'required',
-            'images' => 'required',
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required',
+                'description' => 'required',
+                'price' => 'required|numeric|min:0',
+                'validity' => 'required|integer|min:1',
 
-        // Templates
-        $templates = CustomTemplate::groupBy('id')->get();
+                'ai_credits' => 'required|integer|min:0',
+                'ai_image_credits' => 'required|integer|min:0',
+            ],
+            [
+                'name.required' => __('Plan name is required.'),
+                'description.required' => __('Plan description is required.'),
+                'price.required' => __('Plan price is required.'),
+                'price.numeric' => __('Plan price must be a valid number.'),
+                'price.min' => __('Plan price cannot be negative.'),
+                'validity.required' => __('Plan validity is required.'),
+                'validity.integer' => __('Plan validity must be a valid number.'),
+                'validity.min' => __('Plan validity must be at least 1 day.'),
+                'ai_credits.required' => __('AI credits are required.'),
+                'ai_credits.integer' => __('AI credits must be a valid number.'),
+                'ai_credits.min' => __('AI credits cannot be negative.'),
+                'ai_image_credits.required' => __('AI image credits are required.'),
+                'ai_image_credits.integer' => __('AI image credits must be a valid number.'),
+                'ai_image_credits.min' => __('AI image credits cannot be negative.'),
+            ]
+        );
 
-        // Checked Templates
-        $availablePlansTemplates = [];
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
 
-        // Foreach
+  
+        $templates = CustomTemplate::where('status', 1)
+            ->groupBy('id')
+            ->get();
+
+        $contentTemplates = [];
+
         foreach ($templates as $template) {
-            $currentTemplate = $template->unique_slug;
-
-            // Check template
-            if ($request[$currentTemplate] == "on") {
-                $availablePlansTemplates[$template->unique_slug] = 1;
-            } else {
-                $availablePlansTemplates[$template->unique_slug] = 0;
-            }
+            $contentTemplates[$template->unique_slug] =
+                $request->boolean($template->unique_slug) ? 1 : 0;
         }
 
-        // Recommended
-        if ($request->recommended == null) {
-            $recommended = 0;
-        } else {
-            $recommended = 1;
-        }
+        $plan = new Plan();
 
-        // AI Speech to Text
-        if ($request->ai_speech_to_text == null) {
-            $ai_speech_to_text = 0;
-        } else {
-            $ai_speech_to_text = 1;
-        }
 
-        // AI Text to Speech
-        if ($request->ai_text_to_speech == null) {
-            $ai_text_to_speech = 0;
-        } else {
-            $ai_text_to_speech = 1;
-        }
+        $plan->is_private = $request->boolean('is_private');
 
-        // AI Code
-        if ($request->ai_code == null) {
-            $ai_code = 0;
-        } else {
-            $ai_code = 1;
-        }
+        $plan->name = ucfirst($request->input('name'));
 
-        // AI ChatGenius
-        if ($request->ai_chatgenius == null) {
-            $ai_chatgenius = 0;
-        } else {
-            $ai_chatgenius = 1;
-        }
+        $plan->description = $request->input('description');
 
-        // AI DocsAssistant
-        if ($request->ai_docsassist == null) {
-            $ai_docsassist = 0;
-        } else {
-            $ai_docsassist = 1;
-        }
+        $plan->price = $request->input('price');
 
-        // AI WebChat
-        if ($request->ai_webchat == null) {
-            $ai_webchat = 0;
-        } else {
-            $ai_webchat = 1;
-        }
+        $plan->validity = $request->input('validity');
 
-        // Additional Tools
-        if ($request->additional_tools == null) {
-            $additional_tools = 0;
-        } else {
-            $additional_tools = 1;
-        }
+        $plan->content_templates = $contentTemplates;
 
-        // Support
-        if ($request->support == null) {
-            $support = 0;
-        } else {
-            $support = 1;
-        }
+        $plan->ai_credits = $request->input('ai_credits');
 
-        // Recommended
-        if ($request->recommended == null) {
-            $recommended = 0;
-        } else {
-            $recommended = 1;
-        }
+        $plan->ai_image_credits = $request->input('ai_image_credits');
 
-        // Is Private?
-        if ($request->is_private == null) {
-            $is_private = 0;
-        } else {
-            $is_private = 1;
-        }
+        $plan->speech_to_text = $request->boolean('speech_to_text');
 
-        // Save plan
-        $plan = new Plan;
-        $plan->is_private = $is_private;
-        $plan->plan_id = $request->product_id;
-        $plan->name = ucfirst($request->name);
-        $plan->description = ucfirst($request->description);
-        $plan->price = $request->price;
-        $plan->validity = $request->validity;
-        $plan->template_counts = $request->templates;
-        $plan->templates = json_encode($availablePlansTemplates);
-        $plan->max_words = $request->words;
-        $plan->max_images = $request->images;
-        $plan->ai_speech_to_text = $ai_speech_to_text;
-        $plan->ai_text_to_speech = $ai_text_to_speech;
-        $plan->ai_code = $ai_code;
-        $plan->ai_chatgenius = $ai_chatgenius;
-        $plan->ai_docsassist = $ai_docsassist;
-        $plan->ai_webchat = $ai_webchat;
-        $plan->additional_tools = $additional_tools;
-        $plan->recommended = $recommended;
-        $plan->support = $support;
+        $plan->text_to_speech = $request->boolean('text_to_speech');
+
+        $plan->code_generator = $request->boolean('code_generator');
+
+        $plan->personalized_chat = $request->boolean('personalized_chat');
+
+        $plan->document_analyzer = $request->boolean('document_analyzer');
+
+        $plan->site_analyzer = $request->boolean('site_analyzer');
+
+        $plan->is_recommended = $request->boolean('is_recommended');
+
+        $plan->customer_support = $request->boolean('customer_support');
+
+        $plan->status = 1;
+
         $plan->save();
 
-        return redirect()->route('admin.add.plan')->with('success', trans('New Plan Created Successfully!'));
+        return redirect()
+            ->route('dashboard.admin.add.plan')
+            ->with('success', __('Plan added successfully!'));
     }
 
-    // Edit Plan
+    /**
+     * Show edit plan page.
+     */
     public function editPlan(Request $request, $id)
     {
-        // Queries
-        $id = $request->id;
-        $plan_details = Plan::where('id', $id)->first();
-        $settings = Setting::where('status', 1)->first();
+        $plan = Plan::find($id);
+
+        if (!$plan) {
+            abort(404);
+        }
+
         $config = Config::get();
 
-        // Plan Checking
-        if ($plan_details == null) {
-            return view('errors.404');
-        } else {
-            // Available templates in single plan
-            $templates = CustomTemplate::groupBy('id')->get();
-            $availableTemplates = json_decode($plan_details->templates, true);
-            return view('admin.pages.plans.edit', compact('plan_details', 'templates', 'availableTemplates', 'settings', 'config'));
-        }
+        $settings = Setting::where('status', 1)->first();
+
+      
+        $templates = CustomTemplate::query()
+            ->groupBy('id')
+            ->get();
+
+        return Inertia::render('admin/plans/edit', [
+            'plan' => $plan,
+            'templates' => $templates,
+            'settings' => $settings,
+            'config' => $config,
+        ]);
     }
 
-    // Update Plan
+    /**
+     * Update an existing plan.
+     */
     public function updatePlan(Request $request)
     {
-        // Validation
-        $validator = $request->validate([
-            'plan_id' => 'required',
-            'name' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'validity' => 'required',
-            'templates' => 'required',
-            'words' => 'required',
-            'images' => 'required'
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required|exists:plans,id',
 
-        // Templates
-        $templates = CustomTemplate::groupBy('id')->get();
+                'name' => 'required',
+                'description' => 'required',
+                'price' => 'required|numeric|min:0',
+                'validity' => 'required|integer|min:1',
 
-        // Checked Templates
-        $availablePlansTemplates = [];
+                'ai_credits' => 'required|integer|min:0',
+                'ai_image_credits' => 'required|integer|min:0',
+            ],
+            [
+                'id.required' => __('Plan ID is required.'),
+                'id.exists' => __('Plan not found.'),
 
-        // Foreach
+                'name.required' => __('Plan name is required.'),
+                'description.required' => __('Plan description is required.'),
+                'price.required' => __('Plan price is required.'),
+                'price.numeric' => __('Plan price must be a valid number.'),
+                'price.min' => __('Plan price cannot be negative.'),
+                'validity.required' => __('Plan validity is required.'),
+                'validity.integer' => __('Plan validity must be a valid number.'),
+                'validity.min' => __('Plan validity must be at least 1 day.'),
+                'ai_credits.required' => __('AI credits are required.'),
+                'ai_credits.integer' => __('AI credits must be a valid number.'),
+                'ai_credits.min' => __('AI credits cannot be negative.'),
+                'ai_image_credits.required' => __('AI image credits are required.'),
+                'ai_image_credits.integer' => __('AI image credits must be a valid number.'),
+                'ai_image_credits.min' => __('AI image credits cannot be negative.'),
+            ]
+        );
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $plan = Plan::find($request->input('id'));
+
+        if (!$plan) {
+            return back()->withErrors([
+                'id' => __('Plan not found.'),
+            ]);
+        }
+
+       
+        $templates = CustomTemplate::query()
+            ->groupBy('id')
+            ->get();
+
+        $contentTemplates = [];
+
         foreach ($templates as $template) {
-            $currentTemplate = $template->unique_slug;
-
-            // Check template
-            if ($request[$currentTemplate] == "on") {
-                $availablePlansTemplates[$template->unique_slug] = 1;
-            } else {
-                $availablePlansTemplates[$template->unique_slug] = 0;
-            }
+            $contentTemplates[$template->unique_slug] =
+                $request->boolean($template->unique_slug) ? 1 : 0;
         }
 
-        // Recommended
-        if ($request->recommended == null) {
-            $recommended = 0;
-        } else {
-            $recommended = 1;
-        }
+        $plan->is_private = $request->boolean('is_private');
 
-        // AI Speech to Text
-        if ($request->ai_speech_to_text == null) {
-            $ai_speech_to_text = 0;
-        } else {
-            $ai_speech_to_text = 1;
-        }
+        $plan->name = ucfirst($request->input('name'));
 
-        // AI Text to Speech
-        if ($request->ai_text_to_speech == null) {
-            $ai_text_to_speech = 0;
-        } else {
-            $ai_text_to_speech = 1;
-        }
+        $plan->description = $request->input('description');
 
-        // AI Code
-        if ($request->ai_code == null) {
-            $ai_code = 0;
-        } else {
-            $ai_code = 1;
-        }
+        $plan->price = $request->input('price');
 
-        // AI ChatGenius
-        if ($request->ai_chatgenius == null) {
-            $ai_chatgenius = 0;
-        } else {
-            $ai_chatgenius = 1;
-        }
+        $plan->validity = $request->input('validity');
 
-        // AI DocsAssistant
-        if ($request->ai_docsassist == null) {
-            $ai_docsassist = 0;
-        } else {
-            $ai_docsassist = 1;
-        }
+        $plan->content_templates = $contentTemplates;
 
-        // AI WebChat
-        if ($request->ai_webchat == null) {
-            $ai_webchat = 0;
-        } else {
-            $ai_webchat = 1;
-        }
+        $plan->ai_credits = $request->input('ai_credits');
 
-        // Additional Tools
-        if ($request->additional_tools == null) {
-            $additional_tools = 0;
-        } else {
-            $additional_tools = 1;
-        }
+        $plan->ai_image_credits = $request->input('ai_image_credits');
 
-        // Support
-        if ($request->support == null) {
-            $support = 0;
-        } else {
-            $support = 1;
-        }
+        $plan->speech_to_text = $request->boolean('speech_to_text');
 
-        // Recommended
-        if ($request->recommended == null) {
-            $recommended = 0;
-        } else {
-            $recommended = 1;
-        }
+        $plan->text_to_speech = $request->boolean('text_to_speech');
 
-        // Is Private?
-        if ($request->is_private == null) {
-            $is_private = 0;
-        } else {
-            $is_private = 1;
-        }
+        $plan->code_generator = $request->boolean('code_generator');
 
-        // Update plan
-        Plan::where('id', $request->plan_id)->update([
-            'is_private' => $is_private, 'plan_id' => $request->product_id, 'name' => ucfirst($request->name), 'description' => ucfirst($request->description),
-            'price' => $request->price, 'validity' => $request->validity, 'template_counts' => $request->templates,
-            'templates' => json_encode($availablePlansTemplates), 'max_words' => $request->words, 'max_images' => $request->images, 'ai_speech_to_text' => $ai_speech_to_text, 'ai_text_to_speech' => $ai_text_to_speech, 'ai_code' => $ai_code,
-            'ai_chatgenius' => $ai_chatgenius, 'ai_docsassist' => $ai_docsassist, 'ai_webchat' => $ai_webchat, 'additional_tools' => $additional_tools, 'recommended' => $recommended, 'support' => $support
-        ]);
+        $plan->personalized_chat = $request->boolean('personalized_chat');
 
-        return redirect()->route('admin.edit.plan', $request->plan_id)->with('success', trans('Plan Details Updated Successfully!'));
+        $plan->document_analyzer = $request->boolean('document_analyzer');
+
+        $plan->site_analyzer = $request->boolean('site_analyzer');
+
+        $plan->is_recommended = $request->boolean('is_recommended');
+
+        $plan->customer_support = $request->boolean('customer_support');
+
+        $plan->save();
+
+        return redirect()
+            ->route('dashboard.admin.edit.plan', $plan->id)
+            ->with('success', __('Plan updated successfully!'));
     }
 
-    // Delete Plan
+    /**
+     * Activate / deactivate a plan.
+     */
     public function deletePlan(Request $request)
     {
-        // Get plan details
-        $plan_details = Plan::where('id', $request->query('id'))->first();
+        $plan = Plan::find($request->query('id'));
 
-        // Check status
-        if ($plan_details->status == 0) {
-            $status = 1;
-        } else {
-            $status = 0;
+        if (!$plan) {
+            return back()->withErrors([
+                'action' => __('Plan not found.'),
+            ]);
         }
 
-        // Update status
-        Plan::where('id', $request->query('id'))->update(['status' => $status]);
-        return redirect()->route('admin.index.plans')->with('success', trans('Plan Status Updated Successfully!'));
+        if ($plan->status == 1) {
+            $plan->status = 0;
+
+            $message = __('Plan deactivated successfully!');
+        } else {
+            $plan->status = 1;
+
+            $message = __('Plan activated successfully!');
+        }
+
+        $plan->save();
+
+        return back()->with('success', $message);
     }
 }

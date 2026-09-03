@@ -2,10 +2,10 @@ import Heading from "@/components/heading";
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
 
-import { BreadcrumbItem, LaravelPagination } from "@/types";
+import { BreadcrumbItem, LaravelPagination, NavigateParams } from "@/types";
 import { CustomTemplate } from "@/types/admin";
 import { Head, router } from "@inertiajs/react";
-import { Plus } from "lucide-react";
+import { CheckCircle, Plus, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getColumns } from "./columns";
@@ -23,15 +23,9 @@ interface TemplatesProps {
 
 type TemplateAction = "active" | "inactive";
 
-interface NavigateParams {
-    page?: number;
-    per_page?: number;
-    search?: string;
-}
 
-export default function Index({
-    templates,
-}: TemplatesProps) {
+
+export default function Index({ templates }: TemplatesProps) {
     const { t } = useTranslation();
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -48,8 +42,9 @@ export default function Index({
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedTemplate, setSelectedTemplate] =
         useState<CustomTemplate | null>(null);
-    const [selectedAction, setSelectedAction] =
-        useState<TemplateAction | null>(null);
+    const [selectedAction, setSelectedAction] = useState<TemplateAction | null>(
+        null,
+    );
     const [actionLoading, setActionLoading] = useState(false);
 
     const navigate = (params: NavigateParams) => {
@@ -60,13 +55,10 @@ export default function Index({
     };
 
     const handleEdit = (template: CustomTemplate) => {
-        router.get(route("admin.edit.template", template.id));
+        router.get(route("dashboard.admin.edit.template", template.id));
     };
 
-    const handleAction = (
-        template: CustomTemplate,
-        action: TemplateAction,
-    ) => {
+    const handleAction = (template: CustomTemplate, action: TemplateAction) => {
         setSelectedTemplate(template);
         setSelectedAction(action);
         setConfirmOpen(true);
@@ -80,26 +72,21 @@ export default function Index({
         setActionLoading(true);
 
         router.get(
-            route("admin.delete.template"),
+            route("dashboard.admin.delete.template"),
             {
                 id: selectedTemplate.id,
             },
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    toast.success(
-                        t("Template Status Updated Successfully!"),
-                    );
+                    toast.success(t("Template Status Updated Successfully!"));
 
                     setConfirmOpen(false);
                     setSelectedTemplate(null);
                     setSelectedAction(null);
                 },
                 onError: (errors) => {
-                    toast.error(
-                        errors.action ??
-                            t("Something went wrong."),
-                    );
+                    toast.error(errors.action ?? t("Something went wrong."));
 
                     setConfirmOpen(false);
                     setSelectedTemplate(null);
@@ -112,6 +99,24 @@ export default function Index({
         );
     };
 
+const dialogContent = {
+    active: {
+        icon: <CheckCircle className="size-7 text-green-600" />,
+        title: t("Active template?"),
+        description: t("If you proceed, this template will be active."),
+        confirmLabel: t("Yes, active"),
+    },
+
+    inactive: {
+        icon: <XCircle className="size-7 text-destructive" />,
+        title: t("Inactive template?"),
+        description: t("If you proceed, this template will be inactive."),
+        confirmLabel: t("Yes, inactive"),
+    },
+};
+
+    const currentDialog = selectedAction ? dialogContent[selectedAction] : null;
+
     const columns = useMemo(
         () =>
             getColumns({
@@ -121,17 +126,11 @@ export default function Index({
                 onEdit: handleEdit,
                 onAction: handleAction,
             }),
-        [
-            templates.current_page,
-            templates.per_page,
-            t,
-        ],
+        [templates.current_page, templates.per_page, t],
     );
 
     const actionText =
-        selectedAction === "active"
-            ? t("activate")
-            : t("deactivate");
+        selectedAction === "active" ? t("activate") : t("deactivate");
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -146,9 +145,7 @@ export default function Index({
 
                     <Button
                         onClick={() =>
-                            router.get(
-                                route("dashboard.admin.add.template"),
-                            )
+                            router.get(route("dashboard.admin.add.template"))
                         }
                     >
                         <Plus className=" size-4" />
@@ -185,29 +182,28 @@ export default function Index({
                     }
                 />
 
-                <ConfirmDialog
-                    open={confirmOpen}
-                    onOpenChange={(open) => {
-                        if (actionLoading) {
-                            return;
-                        }
+         <ConfirmDialog
+    open={confirmOpen}
+    onOpenChange={(open) => {
+        if (actionLoading) {
+            return;
+        }
 
-                        setConfirmOpen(open);
+        setConfirmOpen(open);
 
-                        if (!open) {
-                            setSelectedTemplate(null);
-                            setSelectedAction(null);
-                        }
-                    }}
-                    title={t("Are you sure?")}
-                    description={t(
-                        "If you proceed, you will activate/deactivate this template.",
-                    )}
-                    confirmLabel={t("Yes, proceed")}
-                    cancelLabel={t("Cancel")}
-                    onConfirm={handleConfirmAction}
-                    loading={actionLoading}
-                />
+        if (!open) {
+            setSelectedTemplate(null);
+            setSelectedAction(null);
+        }
+    }}
+    icon={currentDialog?.icon}
+    title={currentDialog?.title ?? ""}
+    description={currentDialog?.description ?? ""}
+    confirmLabel={currentDialog?.confirmLabel ?? ""}
+    cancelLabel={t("Cancel")}
+    onConfirm={handleConfirmAction}
+    loading={actionLoading}
+/>
             </div>
         </AppLayout>
     );
