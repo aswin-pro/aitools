@@ -7,6 +7,8 @@ use App\Models\CustomTemplate;
 use App\Http\Controllers\Controller;
 use App\Models\CustomTemplateCategory;
 use App\Models\CustomTemplateField;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class TemplateController extends Controller
 {
@@ -27,37 +29,119 @@ class TemplateController extends Controller
      */
 
     // All Templates
-    public function index()
-    {
-        // Queries
-        $templates = CustomTemplate::join('custom_template_categories', 'custom_templates.category_id', '=', 'custom_template_categories.id')->join('custom_template_fields', 'custom_templates.id', '=', 'custom_template_fields.template_id')->select('custom_templates.*', 'custom_template_categories.category_name', 'custom_template_fields.ai_input', 'custom_template_fields.field_type', 'custom_template_fields.field_name', 'custom_template_fields.field_description')->orderBy('custom_templates.id', 'DESC')->groupBy('custom_templates.id')->get();
+    // public function index()
+    // {
+    //     // Queries
+    //     $templates = CustomTemplate::join('custom_template_categories', 'custom_templates.category_id', '=', 'custom_template_categories.id')->join('custom_template_fields', 'custom_templates.id', '=', 'custom_template_fields.template_id')->select('custom_templates.*', 'custom_template_categories.category_name', 'custom_template_fields.ai_input', 'custom_template_fields.field_type', 'custom_template_fields.field_name', 'custom_template_fields.field_description')->orderBy('custom_templates.id', 'DESC')->groupBy('custom_templates.id')->get();
 
-        return view('admin.pages.templates.index', compact('templates'));
+    //     return view('admin.pages.templates.index', compact('templates'));
+    // }
+
+
+
+    // All Templates
+    public function index(Request $request)
+    {
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
+
+        $templates = CustomTemplate::join(
+            'custom_template_categories',
+            'custom_templates.category_id',
+            '=',
+            'custom_template_categories.id'
+        )
+            ->join(
+                'custom_template_fields',
+                'custom_templates.id',
+                '=',
+                'custom_template_fields.template_id'
+            )
+            ->select(
+                'custom_templates.*',
+                'custom_template_categories.category_name',
+                'custom_template_fields.ai_input',
+                'custom_template_fields.field_type',
+                'custom_template_fields.field_name',
+                'custom_template_fields.field_description'
+            )
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('custom_templates.name', 'like', "%{$search}%")
+                        ->orWhere('custom_templates.description', 'like', "%{$search}%")
+                        ->orWhere(
+                            'custom_template_categories.category_name',
+                            'like',
+                            "%{$search}%"
+                        );
+                });
+            })
+            ->orderBy('custom_templates.id', 'DESC')
+            ->groupBy('custom_templates.id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $templates->getCollection()->transform(function ($template) {
+            $template->formatted_updated_at = formatDateForUser(
+                $template->updated_at
+            );
+
+            return $template;
+        });
+
+        return Inertia::render('admin/content-templates/templates/index', [
+            'templates' => $templates,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
+        ]);
     }
 
     // Add Template
     public function addTemplate()
     {
-        // Queries
         $categories = CustomTemplateCategory::where('status', 1)->get();
 
-        return view('admin.pages.templates.add', compact('categories'));
+        return Inertia::render(
+            'admin/content-templates/templates/add',
+            [
+                'categories' => $categories,
+            ]
+        );
     }
 
     // Save Template
     public function saveTemplate(Request $request)
     {
         // Validation
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(), [
             'category_id' => 'required',
             'name' => 'required',
             'description' => 'required',
-            'aiInput*' => 'required',
-            'fieldType*' => 'required',
-            'fieldTitle*' => 'required',
-            'fieldDescription*' => 'required',
-            'prompt' => 'required'
+            'aiInput.*' => 'required',
+            'fieldType.*' => 'required',
+            'fieldTitle.*' => 'required',
+            'fieldDescription.*' => 'required',
+            'prompt' => 'required',
+        ], [
+            'category_id.required' => 'Category is required.',
+            'name.required' => 'Template name is required.',
+            'description.required' => 'Description is required.',
+            'aiInput.*.required' => 'AI input is required.',
+            'fieldType.*.required' => 'Field type is required.',
+            'fieldTitle.*.required' => 'Field title is required.',
+            'fieldDescription.*.required' => 'Field description is required.',
+            'prompt.required' => 'Prompt is required.',
         ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
 
         // Save Template
         $template = new CustomTemplate();
@@ -84,7 +168,7 @@ class TemplateController extends Controller
             }
         }
 
-        return redirect()->route('admin.add.template')->with('success', trans('New Template Created Successfully!'));
+        return redirect()->route('dashboard.admin.add.template')->with('success', trans('New Template Created Successfully!'));
     }
 
     // Edit Template
@@ -144,21 +228,26 @@ class TemplateController extends Controller
     }
 
     // Deactivate Template
+    // Activate / Deactivate Template
     public function deleteTemplate(Request $request)
     {
-        // Get template details
-        $template_details = CustomTemplate::where('id', $request->query('id'))->first();
+        $template = CustomTemplate::find($request->query('id'));
 
-        // Check status
-        if ($template_details->status == 0) {
-            $status = 1;
-        } else {
-            $status = 0;
+        if (!$template) {
+            return back()->withErrors([
+                'action' => __('Template not found.'),
+            ]);
         }
 
-        // Update status
-        CustomTemplate::where('id', $request->query('id'))->update(['status' => $status]);
+        $status = $template->status == 0 ? 1 : 0;
 
-        return redirect()->route('admin.categories')->with('success', trans('Template Status Updated Successfully!'));
+        $template->update([
+            'status' => $status,
+        ]);
+
+        return back()->with(
+            'success',
+            __('Template Status Updated Successfully!')
+        );
     }
 }

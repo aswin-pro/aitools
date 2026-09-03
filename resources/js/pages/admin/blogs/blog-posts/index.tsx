@@ -14,19 +14,20 @@ import { getColumns } from "./columns";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { toast } from "sonner";
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: "Dashboard",
-        href: route("dashboard.admin.overview"),
-    },
-    {
-        title: "Blogs",
-        href: "#",
-    },
-];
-
 export default function Index({ blogs }: { blogs: LaravelPagination<Blog> }) {
     const { t } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t("Dashboard"),
+            href: route("dashboard.admin.overview"),
+        },
+        {
+            title: t("Blogs"),
+            href: "#",
+        },
+    ];
+
     const [confirmOpen, setConfirmOpen] = useState(false);
 
     const [actionLoading, setActionLoading] = useState(false);

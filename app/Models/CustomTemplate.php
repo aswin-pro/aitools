@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class CustomTemplate extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
 }

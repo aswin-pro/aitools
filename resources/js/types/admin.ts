@@ -271,3 +271,25 @@ export interface ChatGenius {
     created_at: string;
     updated_at: string;
 }
+
+export interface CustomTemplateCategory {
+    id: number;
+    category_name: string;
+    status: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface CustomTemplate {
+    id: number;
+    category_id: number;
+    category_name: string;
+    name: string;
+    description: string;
+    prompt: string;
+    status: boolean;
+    unique_slug?: string;
+    created_at?: string;
+    updated_at?: string;
+    formatted_updated_at?: string;
+}

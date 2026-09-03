@@ -22,11 +22,12 @@ use Inertia\Inertia;
         Route::get('delete-user', [App\Http\Controllers\Admin\UserController::class, "deleteUser"])->name('delete.user')->middleware(['demo.mode']);
         Route::get('login-as/{id}', [App\Http\Controllers\Admin\UserController::class, "authAs"])->name('login-as.user');
 
+        //content templates
         // Categories
         Route::get('categories', [App\Http\Controllers\Admin\CategoryController::class, "index"])->name('categories');
-        Route::get('add-category', [App\Http\Controllers\Admin\CategoryController::class, "addCategory"])->name('add.category');
+        // Route::get('add-category', [App\Http\Controllers\Admin\CategoryController::class, "addCategory"])->name('add.category');
         Route::post('save-category', [App\Http\Controllers\Admin\CategoryController::class, "saveCategory"])->name('save.category')->middleware(['demo.mode']);
-        Route::get('edit-category/{id}', [App\Http\Controllers\Admin\CategoryController::class, "editCategory"])->name('edit.category');
+        // Route::get('edit-category/{id}', [App\Http\Controllers\Admin\CategoryController::class, "editCategory"])->name('edit.category');
         Route::post('update-category', [App\Http\Controllers\Admin\CategoryController::class, "updateCategory"])->name('update.category')->middleware(['demo.mode']);
         Route::get('delete-category', [App\Http\Controllers\Admin\CategoryController::class, "deleteCategory"])->name('delete.category')->middleware(['demo.mode']);
 

@@ -14,27 +14,18 @@ import { BlogCategory } from "@/types/admin";
 import { FormSheet } from "@/components/admin/form-sheet";
 import { toast } from "sonner";
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: "Dashboard",
-        href: route("dashboard.admin.overview"),
-    },
-    {
-        title: "Blogs",
-        href: route("dashboard.admin.blogs.post"),
-    },
-    {
-        title: "Categories",
-        href: "#",
-    },
-];
-
 export default function Index({
     blogsCategories,
 }: {
     blogsCategories: LaravelPagination<BlogCategory>;
 }) {
     const { t } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t("Dashboard"), href: route("dashboard.admin.overview") },
+        { title: t("Blogs"), href: route("dashboard.admin.blogs.post") },
+        { title: t("Categories"), href: "#" },
+    ];
 
     const [actionLoading, setActionLoading] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -111,15 +102,15 @@ export default function Index({
                     setConfirmOpen(false);
                     setSelectedCategory(null);
                     setSelectedAction(null);
-                },  
+                },
 
-            onError: () => {
-                setActionLoading(false);
-            },    
+                onError: () => {
+                    setActionLoading(false);
+                },
 
-            onFinish: () => {
-                setActionLoading(false);
-            },
+                onFinish: () => {
+                    setActionLoading(false);
+                },
             },
         );
     };
@@ -210,7 +201,6 @@ export default function Index({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t("Blog Categories")} />
 
-            {/* Heading */}
             <div className="mb-4 flex items-start justify-between">
                 <Heading
                     title={t("Blog Categories")}

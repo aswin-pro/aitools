@@ -23,7 +23,7 @@ class CreateCustomTemplateCategoriesTable extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migratioåns.
      *
      * @return void
      */

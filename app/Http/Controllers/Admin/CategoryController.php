@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomTemplate;
 use App\Models\CustomTemplateCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
@@ -24,20 +28,36 @@ class CategoryController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    // All Categories
-    public function index()
-    {
-        // Queries
-        $categories = CustomTemplateCategory::orderBy('id', 'desc')->get();
 
-        return view('admin.pages.categories.index', compact('categories'));
+    // All Categories
+    public function index(Request $request)
+    {
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
+
+        $categories = CustomTemplateCategory::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('category_name', 'like', "%{$search}%");
+            })
+            ->latest('id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return Inertia::render('admin/content-templates/categories/index', [
+            'categories' => $categories,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
+        ]);
     }
+
 
     // Add Category
-    public function addCategory()
-    {
-        return view('admin.pages.categories.add');
-    }
+    // public function addCategory()
+    // {
+    //     return view('admin.pages.categories.add');
+    // }
 
     // Save Category
     public function saveCategory(Request $request)
@@ -52,56 +72,128 @@ class CategoryController extends Controller
         $category->category_name = ucfirst($request->category_name);
         $category->save();
 
-        return redirect()->route('admin.add.category')->with('success', trans('New Category Created Successfully!'));
+        return back()->with(
+            'success',
+            __('New Category Created Successfully!')
+        );
     }
 
-    // Edit Category
-    public function editCategory(Request $request, $id)
-    {
-        // Queries
-        $id = $request->id;
-        $category_details = CustomTemplateCategory::where('id', $id)->first();
+    // // Edit Category
+    // public function editCategory(Request $request, $id)
+    // {
+    //     // Queries
+    //     $id = $request->id;
+    //     $category_details = CustomTemplateCategory::where('id', $id)->first();
 
-        // Category Checking
-        if ($category_details == null) {
-            return view('errors.404');
-        } else {
-            return view('admin.pages.categories.edit', compact('category_details'));
-        }
-    }
+    //     // Category Checking
+    //     if ($category_details == null) {
+    //         return view('errors.404');
+    //     } else {
+    //         return view('admin.pages.categories.edit', compact('category_details'));
+    //     }
+    // }
 
     // Update Category
     public function updateCategory(Request $request)
     {
-        // Validation
-        $validator = $request->validate([
-            'category_id' => 'required',
-            'category_name' => 'required'
+        // dd($request->all());
+
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required|exists:custom_template_categories,id',
+            'category_name' => 'required',
         ]);
 
-        // Update Category
-        CustomTemplateCategory::where('id', $request->category_id)->update([
-            'category_name' => ucfirst($request->category_name)
-        ]);
-
-        return redirect()->route('admin.edit.category', $request->category_id)->with('success', trans('Category Details Updated Successfully!'));
-    }
-
-    // Deactivate Category
-    public function deleteCategory(Request $request)
-    {
-        // Get plan details
-        $category_details = CustomTemplateCategory::where('id', $request->query('id'))->first();
-
-        // Check status
-        if ($category_details->status == 0) {
-            $status = 1;
-        } else {
-            $status = 0;
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
         }
 
-        // Update status
-        CustomTemplateCategory::where('id', $request->query('id'))->update(['status' => $status]);
-        return redirect()->route('admin.index.categories')->with('success', trans('Category Status Updated Successfully!'));
+        CustomTemplateCategory::where('id', $request->category_id)->update([
+            'category_name' => ucfirst($request->category_name),
+        ]);
+
+        return back()->with(
+            'success',
+            __('Category Details Updated Successfully!')
+        );
+    }
+
+    public function deleteCategory(Request $request)
+    {
+        $category = CustomTemplateCategory::find($request->query('id'));
+
+        if (!$category) {
+            return back()->withErrors([
+                'action' => __('Category not found.'),
+            ]);
+        }
+
+        $action = $request->query('action');
+
+        if ($action === 'active') {
+            DB::table('custom_template_categories')
+                ->where('id', $category->id)
+                ->update([
+                    'status' => 1,
+                ]);
+
+            return back()->with(
+                'success',
+                __('Category activated successfully!')
+            );
+        }
+
+        if ($action === 'inactive') {
+            $templateExists = DB::table('custom_templates')
+                ->where('category_id', $category->id)
+                ->exists();
+
+            if ($templateExists) {
+                return back()->withErrors([
+                    'action' => __(
+                        'This category cannot be deactivated because it is being used by a template.'
+                    ),
+                ]);
+            }
+
+            DB::table('custom_template_categories')
+                ->where('id', $category->id)
+                ->update([
+                    'status' => 0,
+                ]);
+
+            return back()->with(
+                'success',
+                __('Category deactivated successfully!')
+            );
+        }
+
+        if ($action === 'delete') {
+            $templateExists = DB::table('custom_templates')
+                ->where('category_id', $category->id)
+                ->exists();
+
+            if ($templateExists) {
+                return back()->withErrors([
+                    'action' => __(
+                        'This category cannot be deleted because it is being used by a template.'
+                    ),
+                ]);
+            }
+
+            DB::table('custom_template_categories')
+                ->where('id', $category->id)
+                ->delete();
+
+            return back()->with(
+                'success',
+                __('Category deleted successfully!')
+            );
+
+
+
+            return back()->withErrors([
+                'action' => __('Invalid category action.'),
+            ]);
+        };
     }
 }

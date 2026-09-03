@@ -15,38 +15,35 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BlogCategory } from "@/types/admin";
+import { CustomTemplateCategory } from "@/types/admin";
 
 export const getColumns = ({
     pageIndex,
+    pageSize,
     t,
     onEdit,
     onAction,
 }: {
     pageIndex: number;
+    pageSize: number;
     t: (key: string) => string;
-    onEdit: (category: BlogCategory) => void;
+    onEdit: (category: CustomTemplateCategory) => void;
     onAction: (
-        category: BlogCategory,
-        action: "publish" | "unpublish" | "delete",
+        category: CustomTemplateCategory,
+        action: "active" | "inactive" | "delete",
     ) => void;
-}): ColumnDef<BlogCategory>[] => [
+}): ColumnDef<CustomTemplateCategory>[] => [
     {
         accessorKey: t("S.No"),
         header: t("S.No"),
-        cell: ({ row }) => pageIndex * 10 + row.index + 1,
+        cell: ({ row }) => pageIndex * pageSize + row.index + 1,
+
     },
 
     {
-        accessorKey: "Create At",
-        header: t("Created At"),
-        cell: ({ row }) => row.original.formatted_created_at
-    },
-
-    {
-        accessorKey: t("Name"),
-        header: t("Name"),
-        cell: ({ row }) => row.original.blog_category_title,
+        accessorKey: "Category Name",
+        header: t("Category Name"),
+        cell: ({ row }) => row.original.category_name,
     },
 
     {
@@ -54,8 +51,8 @@ export const getColumns = ({
         header: t("Status"),
         cell: ({ row }) =>
             CustomBadge(
-                row.original.status === 1 ? t("Published") : t("Unpublished"),
-                row.original.status === 1
+                row.original.status ? t("Active") : t("Inactive"),
+                row.original.status
                     ? "bg-green-500 text-white dark:bg-green-800"
                     : "bg-red-500 text-white dark:bg-red-800",
             ),
@@ -85,24 +82,23 @@ export const getColumns = ({
                             {t("Edit")}
                         </DropdownMenuItem>
 
-                        {category.status === 0 ? (
+                        {category.status ? (
                             <DropdownMenuItem
-                                onClick={() => onAction(category, "publish")}
+                                onClick={() => onAction(category, "inactive")}
                             >
-                                <CheckCircle className="mr-2 size-4" />
-                                {t("Publish")}
+                                <XCircle className="mr-2 size-4" />
+                                {t("Inactive")}
                             </DropdownMenuItem>
                         ) : (
                             <DropdownMenuItem
-                                onClick={() => onAction(category, "unpublish")}
+                                onClick={() => onAction(category, "active")}
                             >
-                                <XCircle className="mr-2 size-4" />
-                                {t("Unpublish")}
+                                <CheckCircle className="mr-2 size-4" />
+                                {t("Active")}
                             </DropdownMenuItem>
                         )}
 
                         <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
                             onClick={() => onAction(category, "delete")}
                         >
                             <Trash2 className="mr-2 size-4" />

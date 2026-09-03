@@ -27,6 +27,7 @@ import {
     Settings,
     UsersRound,
     WalletCards,
+    Form,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -49,6 +50,28 @@ export function NavMain() {
                         icon: LayoutGrid,
                         isActive: route().current("dashboard.admin.overview"),
                     },
+                    //chat Assistants
+                    {
+                        title: "Content Templates",
+                        icon: Form,
+                        isActive: route().current("dashboard.admin.content-templates.*"),
+                        children: [
+                           
+                            {
+                                title: "Tempalates",
+                                url: "dashboard.admin.templates",
+                                isActive: route().current(
+                                    "dashboard.admin.templates",
+                                ),
+                            },
+                             {
+                                title: "Categories",
+                                url: "dashboard.admin.categories",
+                                isActive: route().current("dashboard.admin.categories"),
+                            },
+                        ],
+                    },
+                    //chat Assistants
                     {
                         title: "Chat Assistants",
                         url: "dashboard.admin.chatgenius",
