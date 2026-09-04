@@ -55,9 +55,10 @@ export function NavMain() {
                     {
                         title: "Content Templates",
                         icon: Form,
-                        isActive: route().current("dashboard.admin.content-templates.*"),
+                        isActive: route().current(
+                            "dashboard.admin.content-templates.*",
+                        ),
                         children: [
-                           
                             {
                                 title: "Tempalates",
                                 url: "dashboard.admin.templates",
@@ -65,10 +66,12 @@ export function NavMain() {
                                     "dashboard.admin.templates",
                                 ),
                             },
-                             {
+                            {
                                 title: "Categories",
                                 url: "dashboard.admin.categories",
-                                isActive: route().current("dashboard.admin.categories"),
+                                isActive: route().current(
+                                    "dashboard.admin.categories",
+                                ),
                             },
                         ],
                     },
@@ -79,7 +82,7 @@ export function NavMain() {
                         icon: MessagesSquare,
                         isActive: route().current("dashboard.admin.chatgenius"),
                     },
-                    //users 
+                    //users
                     {
                         title: "Users",
                         url: "dashboard.admin.users",
@@ -91,16 +94,20 @@ export function NavMain() {
                         title: "Plans",
                         url: "dashboard.admin.index.plans",
                         icon: FileBox,
-                        isActive: route().current("dashboard.admin.index.plans"),
+                        isActive: route().current(
+                            "dashboard.admin.index.plans",
+                        ),
                     },
-                    //payment methods 
+                    //payment methods
                     {
                         title: "Payment Methods",
                         url: "dashboard.admin.payment.methods",
                         icon: WalletCards,
-                        isActive: route().current("dashboard.admin.payment.methods"),
+                        isActive: route().current(
+                            "dashboard.admin.payment.methods",
+                        ),
                     },
-                    //blogs 
+                    //blogs
                     {
                         title: "Blogs",
                         icon: FilePenLine,
@@ -109,7 +116,9 @@ export function NavMain() {
                             {
                                 title: "Blog Posts",
                                 url: "dashboard.admin.blogs.post",
-                                isActive: route().current( "dashboard.admin.blogs.post"),
+                                isActive: route().current(
+                                    "dashboard.admin.blogs.post",
+                                ),
                             },
                             {
                                 title: "Categories",
@@ -120,7 +129,7 @@ export function NavMain() {
                             },
                         ],
                     },
-                    
+
                     {
                         title: "Transactions",
                         url: "dashboard.admin.transactions",
@@ -151,12 +160,13 @@ export function NavMain() {
                                 ),
                             },
                             {
-                                title: "Clear Cache",
-                                url: "dashboard.admin.system.clear-cache",
+                                title: "System Translations",
+                                url: "translation-manager.index",
                                 isActive: route().current(
-                                    "dashboard.admin.system.clear-cache",
+                                    "translation-manager.index",
                                 ),
                             },
+
                             {
                                 title: "Sitemap",
                                 url: "dashboard.admin.system.sitemap",
@@ -169,6 +179,13 @@ export function NavMain() {
                                 url: "dashboard.admin.system.backups",
                                 isActive: route().current(
                                     "dashboard.admin.system.backups",
+                                ),
+                            },
+                            {
+                                title: "Clear Cache",
+                                url: "dashboard.admin.system.clear-cache",
+                                isActive: route().current(
+                                    "dashboard.admin.system.clear-cache",
                                 ),
                             },
                         ],

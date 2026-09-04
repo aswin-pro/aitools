@@ -30,11 +30,11 @@ export default function Index({ templates }: TemplatesProps) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t("Dashboard"),
+            title: "Dashboard",
             href: route("dashboard.admin.overview"),
         },
         {
-            title: t("Content Templates"),
+            title: "Content Templates",
             href: "#",
         },
     ];

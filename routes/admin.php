@@ -174,4 +174,6 @@ use Inertia\Inertia;
         Route::get('check', [App\Http\Controllers\Admin\UpdateController::class, 'check'])->name('check');
         Route::post('check-update', [App\Http\Controllers\Admin\UpdateController::class, 'checkUpdate'])->name('check.update');
         Route::post('update-code', [App\Http\Controllers\Admin\UpdateController::class, 'updateCode'])->name('update.code')->middleware(['demo.mode']);
+
+        
     });

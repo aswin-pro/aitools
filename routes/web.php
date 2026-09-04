@@ -78,4 +78,5 @@ Route::group(['middleware' => 'Installer'], function () {
     // Payment routes
     require __DIR__ . '/payment.php';
 
+require __DIR__ . '/../Modules/TranslationManager/routes/web.php';
 });

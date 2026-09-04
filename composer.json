@@ -58,7 +58,8 @@
             "Plugins\\": "plugins/",
             "Storage\\App\\Public\\": "storage/app/public/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Modules\\": "Modules/"
         },
         "files": [
             "app/helpers.php",

@@ -55,11 +55,11 @@ export default function Index({ plans, filters }: Props) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t("Dashboard"),
+            title: "Dashboard",
             href: route("dashboard.admin.overview"),
         },
         {
-            title: t("Plans"),
+            title: "Plans",
             href: "#",
         },
     ];

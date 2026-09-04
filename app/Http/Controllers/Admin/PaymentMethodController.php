@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Config as MollieConfig;
 
 class PaymentMethodController extends Controller
 {
@@ -444,6 +445,9 @@ public function index(Request $request)
                 'config_value' => $request->mollie_key,
                 'updated_at' => now(),
             ]);
+
+            // update mollie config
+            MollieConfig::set("mollie.key", $request->mollie_key);
         }
 
         // Transaction Cloud

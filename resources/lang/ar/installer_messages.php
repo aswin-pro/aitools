@@ -1,63 +1,173 @@
 <?php
 
 return [
-
-    /*
-     *
-     * Shared translations.
-     *
-     */
-    'title' => 'تنصيب Laravel',
-    'next' => 'متابعة',
-
-    /*
-     *
-     * Home page translations.
-     *
-     */
-    'welcome' => [
-        'title'   => 'تنصيب Laravel',
-        'message' => 'أهلا بك في صفحة تنصيب Laravel',
-    ],
-
-    /*
-     *
-     * Requirements page translations.
-     *
-     */
-    'requirements' => [
-        'title' => 'المتطلبات',
-    ],
-
-    /*
-     *
-     * Permissions page translations.
-     *
-     */
-    'permissions' => [
-        'title' => 'تراخيص المجلدات',
-    ],
-
-    /*
-     *
-     * Environment page translations.
-     *
-     */
+    'back' => 'base',
     'environment' => [
         'title' => 'الإعدادات',
         'save' => 'حفظ ملف .env',
         'success' => 'تم حفظ الإعدادات بنجاح',
         'errors' => 'حدث خطأ أثناء إنشاء ملف .env. رجاءا قم بإنشاءه يدويا',
+        'menu' => [
+            'templateTitle' => 'fdsfds',
+            'title' => 'dfsdfsd',
+            'desc' => 'fdsafddsf',
+            'wizard-button' => 'dfsfdf',
+            'classic-button' => null,
+        ],
+        'wizard' => [
+            'templateTitle' => null,
+            'title' => null,
+            'tabs' => [
+                'environment' => null,
+                'database' => null,
+                'application' => null,
+            ],
+            'form' => [
+                'name_required' => null,
+                'app_name_label' => null,
+                'app_name_placeholder' => null,
+                'app_environment_label' => null,
+                'app_environment_label_local' => null,
+                'app_environment_label_developement' => null,
+                'app_environment_label_qa' => null,
+                'app_environment_label_production' => null,
+                'app_environment_label_other' => null,
+                'app_environment_placeholder_other' => null,
+                'app_debug_label' => null,
+                'app_debug_label_true' => null,
+                'app_debug_label_false' => null,
+                'app_log_level_label' => null,
+                'app_log_level_label_debug' => null,
+                'app_log_level_label_info' => null,
+                'app_log_level_label_notice' => null,
+                'app_log_level_label_warning' => null,
+                'app_log_level_label_error' => null,
+                'app_log_level_label_critical' => null,
+                'app_log_level_label_alert' => null,
+                'app_log_level_label_emergency' => null,
+                'app_url_label' => null,
+                'app_url_placeholder' => null,
+                'db_connection_failed' => null,
+                'db_connection_label' => null,
+                'db_connection_label_mysql' => null,
+                'db_connection_label_sqlite' => null,
+                'db_connection_label_pgsql' => null,
+                'db_connection_label_sqlsrv' => null,
+                'db_host_label' => null,
+                'db_host_placeholder' => null,
+                'db_port_label' => null,
+                'db_port_placeholder' => null,
+                'db_name_label' => null,
+                'db_name_placeholder' => null,
+                'db_username_label' => null,
+                'db_username_placeholder' => null,
+                'db_password_label' => null,
+                'db_password_placeholder' => null,
+                'app_tabs' => [
+                    'more_info' => null,
+                    'broadcasting_title' => null,
+                    'broadcasting_label' => null,
+                    'broadcasting_placeholder' => null,
+                    'cache_label' => null,
+                    'cache_placeholder' => null,
+                    'session_label' => null,
+                    'session_placeholder' => null,
+                    'queue_label' => null,
+                    'queue_placeholder' => null,
+                    'redis_label' => null,
+                    'redis_host' => null,
+                    'redis_password' => null,
+                    'redis_port' => null,
+                    'mail_label' => null,
+                    'mail_driver_label' => null,
+                    'mail_driver_placeholder' => null,
+                    'mail_host_label' => null,
+                    'mail_host_placeholder' => null,
+                    'mail_port_label' => null,
+                    'mail_port_placeholder' => null,
+                    'mail_username_label' => null,
+                    'mail_username_placeholder' => null,
+                    'mail_password_label' => null,
+                    'mail_password_placeholder' => null,
+                    'mail_encryption_label' => null,
+                    'mail_encryption_placeholder' => null,
+                    'pusher_label' => null,
+                    'pusher_app_id_label' => null,
+                    'pusher_app_id_palceholder' => null,
+                    'pusher_app_key_label' => null,
+                    'pusher_app_key_palceholder' => null,
+                    'pusher_app_secret_label' => null,
+                    'pusher_app_secret_palceholder' => null,
+                ],
+                'buttons' => [
+                    'setup_database' => null,
+                    'setup_application' => null,
+                    'install' => null,
+                ],
+            ],
+        ],
+        'classic' => [
+            'templateTitle' => null,
+            'title' => null,
+            'save' => null,
+            'back' => null,
+            'install' => null,
+        ],
     ],
-
-    /*
-     *
-     * Final page translations.
-     *
-     */
     'final' => [
         'title' => 'النهاية',
         'finished' => 'تم تنصيب البرنامج بنجاح...',
         'exit' => 'إضغط هنا للخروج',
+        'templateTitle' => null,
+        'migration' => null,
+        'console' => null,
+        'log' => null,
+        'env' => null,
+    ],
+    'finish' => 'ufdgiasasss',
+    'forms' => [
+        'errorTitle' => null,
+    ],
+    'install' => null,
+    'installed' => [
+        'success_log_message' => null,
+    ],
+    'next' => 'متابعة',
+    'permissions' => [
+        'title' => 'تراخيص المجلدات',
+        'templateTitle' => null,
+        'next' => null,
+    ],
+    'requirements' => [
+        'title' => 'المتطلبات',
+        'templateTitle' => null,
+        'next' => null,
+    ],
+    'title' => 'تنصيب Laravel',
+    'updater' => [
+        'title' => null,
+        'welcome' => [
+            'title' => null,
+            'message' => null,
+        ],
+        'overview' => [
+            'title' => null,
+            'message' => null,
+            'install_updates' => null,
+        ],
+        'final' => [
+            'title' => null,
+            'finished' => null,
+            'exit' => null,
+        ],
+        'log' => [
+            'success_message' => null,
+        ],
+    ],
+    'welcome' => [
+        'title' => 'تنصيب Laravel',
+        'message' => 'أهلا بك في صفحة تنصيب Laravel',
+        'templateTitle' => null,
+        'next' => null,
     ],
 ];

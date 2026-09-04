@@ -35,15 +35,15 @@ export default function Index({ categories, filters }: IndexProps) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: t("Dashboard"),
+            title: "Dashboard",
             href: route("dashboard.admin.overview"),
         },
         {
-            title: t("Content Templates"),
+            title: "Content Templates",
             href: route("dashboard.admin.overview"),
         },
         {
-            title: t("Categories"),
+            title: "Categories",
             href: "#",
         },
     ];
