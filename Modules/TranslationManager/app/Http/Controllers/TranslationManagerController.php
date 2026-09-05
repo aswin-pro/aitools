@@ -271,10 +271,7 @@ class TranslationManagerController extends Controller
                 $perPage
             );
 
-        /*
-     * Convert the current page into normal
-     * DataTable rows.
-     */
+     
         $rows = $paginatedItems
             ->map(function ($sourceValue, $compoundKey) use (
                 $translations,
@@ -345,47 +342,7 @@ class TranslationManagerController extends Controller
         );
     }
 
-    // Update translations
-    // public function update(UpdateTranslationsRequest $request, string $locale)
-    // {
-    //     dd($request->all());
-    //     $group = $request->input('group');
-    //     $type = $request->input('type');
-    //     $updatedTranslations = $request->input('translations', []);
-
-    //     $groupedUpdates = [];
-
-    //     foreach ($updatedTranslations as $compoundKey => $value) {
-    //         if (str_contains($compoundKey, '|||')) {
-    //             [$actualGroup, $actualType, $cleanKey] = explode('|||', $compoundKey, 3);
-
-    //             $groupedUpdates[$actualGroup]['type'] = $actualType;
-    //             $groupedUpdates[$actualGroup]['translations'][$cleanKey] = $value;
-    //         } else {
-    //             $groupedUpdates[$group]['type'] = $type;
-    //             $groupedUpdates[$group]['translations'][$compoundKey] = $value;
-    //         }
-    //     }
-
-    //     foreach ($groupedUpdates as $targetGroup => $data) {
-    //         $targetType = $data['type'];
-    //         $translationsToSave = $data['translations'];
-
-    //         $existingTranslations = $this->reader->readTranslations($locale, $targetGroup, $targetType);
-    //         $mergedTranslations = array_merge($existingTranslations, $translationsToSave);
-
-    //         $this->writer->writeTranslations($locale, $targetGroup, $targetType, $mergedTranslations);
-    //     }
-
-    //     return redirect()->route('translation-manager.edit', [
-    //         'locale' => $locale,
-    //         'group' => $group,
-    //         'type' => $type,
-    //         'page' => $request->input('page', 1),
-    //         'search' => $request->input('search')
-    //     ])->with('success', __('Translations saved successfully.'));
-    // }
-
+    
     public function update(UpdateTranslationsRequest $request, string $locale)
     {
         $group = $request->input('group');
@@ -514,6 +471,9 @@ class TranslationManagerController extends Controller
             return redirect()->back()->with('failed', $message);
         }
     }
+
+
+
 
     // Missing keys page
     public function missing(Request $request, string $locale)

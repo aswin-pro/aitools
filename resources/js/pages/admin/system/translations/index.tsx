@@ -110,21 +110,25 @@ export default function Index({ languages, allLanguages, settings }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t("System Translations")} />
 
-            <Heading
-                title={t("System Translations")}
-                description={t(
-                    "Manage translation languages and locales for your platform.",
-                )}
-            />
+            <div className="flex justify-between  items-center">
+                <div>
+                    <Heading
+                        title={t("System Translations")}
+                        description={t(
+                            "Manage translation languages and locales for your platform.",
+                        )}
+                    />
+                </div>
 
-            <div className="mt-4">
-                <div className="mb-4 flex justify-end">
+                <div>
                     <Button onClick={() => setCreateOpen(true)}>
                         <Plus className=" size-4" />
                         {t("Create New")}
                     </Button>
                 </div>
+            </div>
 
+            <div className="mt-4">
                 <DataTable
                     columns={columns}
                     data={languages.data}

@@ -11,26 +11,34 @@ interface Props {
     onTranslationChange: (key: string, value: string) => void;
 }
 
+interface TranslationInputProps {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+}
+
 function TranslationInput({
     value,
     onChange,
     placeholder,
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    placeholder: string;
-}) {
+}: TranslationInputProps) {
     const [localValue, setLocalValue] = useState(value);
 
     useEffect(() => {
         setLocalValue(value);
     }, [value]);
 
+    const handleBlur = () => {
+        if (localValue !== value) {
+            onChange(localValue);
+        }
+    };
+
     return (
         <Textarea
             value={localValue}
-            onChange={(e) => setLocalValue(e.target.value)}
-            onBlur={() => onChange(localValue)}
+            onChange={(event) => setLocalValue(event.target.value)}
+            onBlur={handleBlur}
             placeholder={placeholder}
             rows={2}
             className="min-h-[70px] min-w-[280px] resize-y"
@@ -50,7 +58,9 @@ export function getEditColumns({
             accessorKey: "category",
             header: t("Category"),
             cell: ({ row }) => (
-                <span className="text-sm">{row.original.category}</span>
+                <span className="text-sm">
+                    {row.original.category}
+                </span>
             ),
         },
         {
@@ -74,15 +84,20 @@ export function getEditColumns({
         {
             id: "translation",
             header: locale.toUpperCase(),
-            cell: ({ row }) => (
-                <TranslationInput
-                    value={translations[row.original.id] ?? ""}
-                    onChange={(value) =>
-                        onTranslationChange(row.original.id, value)
-                    }
-                    placeholder={t("Enter translation...")}
-                />
-            ),
+            cell: ({ row }) => {
+                const translation = translations[row.original.id] ?? "";
+
+                return (
+                    <TranslationInput
+                        key={`${row.original.id}-${translation}`}
+                        value={translation}
+                        onChange={(value) =>
+                            onTranslationChange(row.original.id, value)
+                        }
+                        placeholder={t("Enter translation...")}
+                    />
+                );
+            },
         },
     ];
 }

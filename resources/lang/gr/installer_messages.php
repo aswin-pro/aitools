@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'back' => 'Previous front',
+    'back' => 'dfsadf',
     'environment' => [
         'title' => 'Ρυθμίσεις Περιβάλλοντος',
         'save' => 'Αποθήκευση .env αρχείου',

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'back' => 'base',
+    'back' => null,
     'environment' => [
         'title' => 'الإعدادات',
         'save' => 'حفظ ملف .env',
@@ -11,7 +11,7 @@ return [
             'templateTitle' => 'fdsfds',
             'title' => 'dfsdfsd',
             'desc' => 'fdsafddsf',
-            'wizard-button' => 'dfsfdf',
+            'wizard-button' => 'wizard',
             'classic-button' => null,
         ],
         'wizard' => [

@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Head, router, useForm } from "@inertiajs/react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
+import AppLayout from "@/layouts/app/app-layout";
+import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,14 +16,16 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
+import { BreadcrumbItem } from "@/types";
 import {
     TranslationEditorRow,
     TranslationLanguage,
 } from "@/types/translation-manager";
+
 import { getEditColumns } from "./edit-columns";
-import AppLayout from "@/layouts/app/app-layout";
-import { DataTable } from "@/components/table/data-table";
-import { BreadcrumbItem } from "@/types";
+import { LoadingSwap } from "@/components/ui/loading-swap";
+import { Plus } from "lucide-react";
+import { FormSheet } from "@/components/admin/form-sheet";
 
 interface PaginationLink {
     url: string | null;
@@ -78,18 +84,24 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+type NavigateParams = {
+    page?: number;
+    per_page?: number;
+    search?: string;
+};
+
 export default function Edit({
     locale,
     languages,
-    files,
     selectedGroup,
     selectedType,
     search,
     sourceLocale,
     paginatedSourceKeys,
 }: Props) {
+    const { t } = useTranslation();
 
-    const initialTranslations = useMemo(() => {
+    const translations = useMemo(() => {
         return paginatedSourceKeys.data.reduce<Record<string, string>>(
             (result, row) => {
                 result[row.id] = row.translation ?? "";
@@ -99,50 +111,21 @@ export default function Edit({
         );
     }, [paginatedSourceKeys.data]);
 
-    const form = useForm<{
-        group: string;
-        type: string;
-        page: number;
-        per_page: number;
-        search: string;
-        translations: Record<string, string>;
-    }>({
+    const form = useForm({
         group: selectedGroup,
         type: selectedType,
         page: paginatedSourceKeys.current_page,
         per_page: paginatedSourceKeys.per_page,
         search: search ?? "",
-        translations: initialTranslations,
+        translations,
     });
 
-useEffect(() => {
-    const incomingTranslations =
-        paginatedSourceKeys.data.reduce<Record<string, string>>(
-            (result, row) => {
-                result[row.id] = row.translation ?? "";
-                return result;
-            },
-            {},
-        );
-
-    form.setData("translations", {
-        ...form.data.translations,
-        ...incomingTranslations,
-    });
-}, [paginatedSourceKeys.data]);
-    // const translationsRef = useRef(form.data.translations);
-
-    // translationsRef.current = form.data.translations;
     const navigate = useCallback(
         ({
             page = paginatedSourceKeys.current_page,
             per_page = paginatedSourceKeys.per_page,
             search: searchValue = search,
-        }: {
-            page?: number;
-            per_page?: number;
-            search?: string;
-        }) => {
+        }: NavigateParams) => {
             router.get(
                 route("translation-manager.edit", locale),
                 {
@@ -168,25 +151,43 @@ useEffect(() => {
         ],
     );
 
-    const handlePageChange = (pageIndex: number) => {
-        navigate({
-            page: pageIndex + 1,
-        });
-    };
+    const handlePageChange = useCallback(
+        (pageIndex: number) => {
+            navigate({
+                page: pageIndex + 1,
+            });
+        },
+        [navigate],
+    );
 
-    const handlePageSizeChange = (pageSize: number) => {
-        navigate({
-            page: 1,
-            per_page: pageSize,
-        });
-    };
+    const handlePageSizeChange = useCallback(
+        (pageSize: number) => {
+            navigate({
+                page: 1,
+                per_page: pageSize,
+            });
+        },
+        [navigate],
+    );
 
-    const handleSearch = (value: string) => {
-        navigate({
-            page: 1,
-            search: value,
-        });
-    };
+    const handleSearch = useCallback(
+        (value: string) => {
+            navigate({
+                page: 1,
+                search: value,
+            });
+        },
+        [navigate],
+    );
+
+    const [addKeyOpen, setAddKeyOpen] = useState(false);
+
+const addKeyForm = useForm({
+    source_value: "",
+    target_value: "",
+    locale: locale,
+});
+
     const handleTranslationChange = useCallback(
         (key: string, value: string) => {
             form.setData("translations", {
@@ -197,71 +198,95 @@ useEffect(() => {
         [form],
     );
 
-    // const columns = useMemo(
-    //     () =>
-    //         getEditColumns({
-    //             t: (key: string) => key,
-    //             sourceLocale,
-    //             locale,
-    //             translations: translationsRef.current,
-    //             onTranslationChange: handleTranslationChange,
-    //         }),
-    //     [
-    //         sourceLocale,
-    //         locale,
-    //         handleTranslationChange,
-    //     ],
-    // );
-
-const columns = useMemo(
-    () =>
-        getEditColumns({
-            t: (key: string) => key,
+    const columns = useMemo(
+        () =>
+            getEditColumns({
+                t,
+                sourceLocale,
+                locale,
+                translations: form.data.translations,
+                onTranslationChange: handleTranslationChange,
+            }),
+        [
+            t,
             sourceLocale,
             locale,
-            translations: form.data.translations,
-            onTranslationChange: handleTranslationChange,
-        }),
-    [
-        sourceLocale,
-        locale,
-        form.data.translations,
-        handleTranslationChange,
-    ],
-);
+            form.data.translations,
+            handleTranslationChange,
+        ],
+    );
 
-const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    form.post(route("translation-manager.update", locale), {
+        form.post(route("translation-manager.update", locale), {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                toast.success(t("Translations saved successfully."));
+            },
+
+            onError: () => {
+                toast.error(t("Unable to save translations."));
+            },
+        });
+    };
+
+const handleAddKeySubmit = (
+    e: React.FormEvent<HTMLFormElement>,
+) => {
+    e.preventDefault();
+
+    addKeyForm.post(route("translation-manager.add-key"), {
         preserveScroll: true,
+
+        onSuccess: () => {
+            toast.success(
+                t("New translation key added successfully."),
+            );
+
+            setAddKeyOpen(false);
+            addKeyForm.reset();
+        },
+
+        onError: () => {
+            toast.error(
+                t("Unable to add translation key."),
+            );
+        },
     });
 };
 
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Translation Editor" />
+            <Head title={t("Translation Editor")} />
 
             <div className="space-y-6 p-6">
-                {/* Header */}
-                <div>
-                    <h1 className="text-2xl font-semibold">
-                        Translation Editor
-                    </h1>
+                <div className="flex justify-between  items-center">
+                    <div>
+                        <h1 className="text-2xl font-semibold">
+                            {t("Translation Editor")}
+                        </h1>
 
-                    <p className="text-sm text-muted-foreground">
-                        Manage and customize translated values for each locale
-                        and category.
-                    </p>
+                        <p className="text-sm text-muted-foreground">
+                            {t(
+                                "Manage and customize translated values for each locale and category.",
+                            )}
+                        </p>
+                    </div>
+
+                    <div>
+                        <Button onClick={() => setAddKeyOpen(true)}>
+                            <Plus className="size-4" />
+                            {t("Add")}
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Filters */}
-                <div className="rounded-lg border bg-card p-4">
+                <div className="">
                     <div className="grid gap-4 md:grid-cols-2">
-                        {/* Target Language */}
                         <div className="space-y-2">
-                            <Label>Target Language</Label>
+                            <Label>{t("Target Language")}</Label>
 
                             <Select
                                 value={locale}
@@ -287,7 +312,9 @@ const handleSubmit = (event: React.FormEvent) => {
                                 }}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select language" />
+                                    <SelectValue
+                                        placeholder={t("Select language")}
+                                    />
                                 </SelectTrigger>
 
                                 <SelectContent>
@@ -303,26 +330,24 @@ const handleSubmit = (event: React.FormEvent) => {
                             </Select>
                         </div>
 
-                        {/* Search */}
-                        <div className="space-y-2">
-                            <Label>Filter / Search</Label>
+                        {/* <div className="space-y-2">
+                            <Label>{t("Filter / Search")}</Label>
 
                             <Input
                                 value={search}
-                                placeholder="Type to search..."
+                                placeholder={t("Type to search...")}
                                 onChange={(event) =>
                                     handleSearch(event.target.value)
                                 }
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
-                {/* Editor */}
-                <div className="flex items-center justify-between ">
+                <div className="flex items-center justify-between">
                     <div>
                         <h2 className="font-semibold">
-                            Editing Language Pack:{" "}
+                            {t("Editing Language Pack")}:{" "}
                             <span className="text-primary">
                                 {locale.toUpperCase()}
                             </span>
@@ -332,25 +357,69 @@ const handleSubmit = (event: React.FormEvent) => {
                     {paginatedSourceKeys.total > 0 && (
                         <Button
                             type="button"
-                            onClick={handleSubmit}
+                            onClick={() => {
+                                const formElement = document.getElementById(
+                                    "translation-form",
+                                ) as HTMLFormElement | null;
+
+                                formElement?.requestSubmit();
+                            }}
                             disabled={form.processing}
                         >
-                            {form.processing ? "Saving..." : "Save Changes"}
+                            <LoadingSwap isLoading={form.processing}>
+                                {t("Save Changes")}
+                            </LoadingSwap>
                         </Button>
                     )}
                 </div>
 
-                <DataTable
-                    columns={columns}
-                    data={paginatedSourceKeys.data}
-                    pageIndex={paginatedSourceKeys.current_page - 1}
-                    pageSize={paginatedSourceKeys.per_page}
-                    totalCount={paginatedSourceKeys.total}
-                    initialSearch={search ?? ""}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                    onSearch={handleSearch}
-                />
+                <form id="translation-form" onSubmit={handleSubmit}>
+                    <DataTable
+                        columns={columns}
+                        data={paginatedSourceKeys.data}
+                        pageIndex={paginatedSourceKeys.current_page - 1}
+                        pageSize={paginatedSourceKeys.per_page}
+                        totalCount={paginatedSourceKeys.total}
+                        initialSearch={search ?? ""}
+                        onPageChange={handlePageChange}
+                        onPageSizeChange={handlePageSizeChange}
+                        onSearch={handleSearch}
+                    />
+                </form>
+
+<FormSheet
+    open={addKeyOpen}
+    onOpenChange={setAddKeyOpen}
+    title={t("Add New Translation Word")}
+    description={t(
+        "Add a new translation key and its localized value.",
+    )}
+    form={addKeyForm}
+    fields={[
+        {
+            type: "input",
+            name: "source_value",
+            label: t(
+                `Source Word (${sourceLocale.toUpperCase()})`,
+            ),
+            placeholder: t("Default English Word"),
+            required: true,
+        },
+        {
+            type: "input",
+            name: "target_value",
+            label: t(
+                `Localized Word (${locale.toUpperCase()})`,
+            ),
+            placeholder: t(
+                "Local language translation (optional)",
+            ),
+        },
+    ]}
+    onSubmit={handleAddKeySubmit}
+    submitLabel={t("Save")}
+    cancelLabel={t("Cancel")}
+/>
             </div>
         </AppLayout>
     );
