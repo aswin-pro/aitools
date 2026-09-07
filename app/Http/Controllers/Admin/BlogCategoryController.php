@@ -126,51 +126,126 @@ class BlogCategoryController extends Controller
     }
 
     // Actions
-    public function actionBlog(Request $request)
-    {
-        $categoryId = $request->query('id');
-        $mode = $request->query('mode');
+    // public function actionBlog(Request $request)
+    // {
+    //     $categoryId = $request->query('id');
+    //     $mode = $request->query('mode');
 
-        // Find category
-        $category = BlogCategory::where(
-            'blog_category_id',
-            $categoryId
-        )->first();
+    //     // Find category
+    //     $category = BlogCategory::where(
+    //         'blog_category_id',
+    //         $categoryId
+    //     )->first();
 
-        if (!$category) {
+    //     if (!$category) {
+    //         return back()->with(
+    //             'failed',
+    //             trans('Category not found!')
+    //         );
+    //     }
+
+    //     // Determine status
+    //     switch ($mode) {
+    //         case 'publish':
+    //             $status = 1;
+    //             break;
+
+    //         case 'unpublish':
+    //             $status = 0;
+    //             break;
+
+    //         case 'delete':
+    //             $status = 2;
+    //             break;
+
+    //         default:
+    //             return back()->with(
+    //                 'failed',
+    //                 trans('Invalid action!')
+    //             );
+    //     }
+
+    //     // Update status
+    //     $category->status = $status;
+    //     $category->save();
+
+    //     // Redirect
+    //     return redirect()
+    //         ->route('dashboard.admin.blog.categories');
+    // }
+
+
+public function actionBlog(Request $request)
+{
+    $categoryId = $request->query('id');
+    $mode = $request->query('mode');
+
+    // Find category
+    $category = BlogCategory::where(
+        'blog_category_id',
+        $categoryId
+    )->first();
+
+    if (!$category) {
+        return back()->with(
+            'error',
+            trans('Category not found!')
+        );
+    }
+
+    // Determine status
+    switch ($mode) {
+        case 'publish':
+            $status = 1;
+            break;
+
+        case 'unpublish':
+            $status = 0;
+            break;
+
+        case 'delete':
+            $status = 2;
+            break;
+
+        default:
             return back()->with(
-                'failed',
-                trans('Category not found!')
+                'error',
+                trans('Invalid action!')
+            );
+    }
+
+    // Prevent unpublish/delete if category is being used
+    if (in_array($mode, ['unpublish', 'delete'])) {
+
+        $categoryUsed = Blog::where(
+            'category',
+            $categoryId
+        )->exists();
+
+        if ($categoryUsed) {
+            return back()->with(
+                'error',
+                trans(
+                    'This category is being used by one or more blogs and cannot be deleted or made inactive.'
+                )
             );
         }
-
-        // Determine status
-        switch ($mode) {
-            case 'publish':
-                $status = 1;
-                break;
-
-            case 'unpublish':
-                $status = 0;
-                break;
-
-            case 'delete':
-                $status = 2;
-                break;
-
-            default:
-                return back()->with(
-                    'failed',
-                    trans('Invalid action!')
-                );
-        }
-
-        // Update status
-        $category->status = $status;
-        $category->save();
-
-        // Redirect
-        return redirect()
-            ->route('dashboard.admin.blog.categories');
     }
+
+    // Update category
+    $category->status = $status;
+    $category->save();
+
+    // Success message
+    $message = match ($mode) {
+        'publish' => trans('Category published successfully!'),
+        'unpublish' => trans('Category unpublished successfully!'),
+        'delete' => trans('Category deleted successfully!'),
+    };
+
+    return redirect()
+        ->route('dashboard.admin.blog.categories')
+        ->with('success', $message);
+}
+
 }

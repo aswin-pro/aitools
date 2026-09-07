@@ -35,15 +35,6 @@ class WebsiteSettingsRequest extends FormRequest
                 'max:255',
             ],
 
-            'app_theme' => [
-                'nullable',
-                'string',
-            ],
-
-            'theme_id' => [
-                'required',
-            ],
-
             'site_logo' => [
                 'nullable',
                 'image',

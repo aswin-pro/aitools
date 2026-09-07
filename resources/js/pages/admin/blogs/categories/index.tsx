@@ -74,46 +74,94 @@ export default function Index({
         });
     };
 
+
     const handleAction = () => {
-        if (!selectedCategory || !selectedAction) {
-            return;
-        }
+    if (!selectedCategory || !selectedAction) {
+        return;
+    }
 
-        setActionLoading(true);
+    setActionLoading(true);
 
-        router.get(
-            route("dashboard.admin.action.blog.category"),
-            {
-                id: selectedCategory.blog_category_id,
-                mode: selectedAction,
-            },
-            {
-                preserveScroll: true,
+    router.get(
+        route("dashboard.admin.action.blog.category"),
+        {
+            id: selectedCategory.blog_category_id,
+            mode: selectedAction,
+        },
+        {
+            preserveScroll: true,
 
-                onSuccess: () => {
-                    const messages = {
-                        publish: t("Category published successfully!"),
-                        unpublish: t("Category unpublished successfully!"),
-                        delete: t("Category deleted successfully!"),
-                    };
+            onSuccess: (page) => {
+                const flash = page.props.flash as {
+                    success?: string;
+                    error?: string;
+                };
 
-                    toast.success(messages[selectedAction]);
+                if (flash?.error) {
+                    toast.error(flash.error);
+                    return;
+                }
+
+                if (flash?.success) {
+                    toast.success(flash.success);
 
                     setConfirmOpen(false);
                     setSelectedCategory(null);
                     setSelectedAction(null);
-                },
-
-                onError: () => {
-                    setActionLoading(false);
-                },
-
-                onFinish: () => {
-                    setActionLoading(false);
-                },
+                }
             },
-        );
-    };
+
+            onError: () => {
+                toast.error(t("Something went wrong!"));
+            },
+
+            onFinish: () => {
+                setActionLoading(false);
+            },
+        },
+    );
+};
+
+    // const handleAction = () => {
+    //     if (!selectedCategory || !selectedAction) {
+    //         return;
+    //     }
+
+    //     setActionLoading(true);
+
+    //     router.get(
+    //         route("dashboard.admin.action.blog.category"),
+    //         {
+    //             id: selectedCategory.blog_category_id,
+    //             mode: selectedAction,
+    //         },
+    //         {
+    //             preserveScroll: true,
+
+    //             onSuccess: () => {
+    //                 const messages = {
+    //                     publish: t("Category published successfully!"),
+    //                     unpublish: t("Category unpublished successfully!"),
+    //                     delete: t("Category deleted successfully!"),
+    //                 };
+
+    //                 toast.success(messages[selectedAction]);
+
+    //                 setConfirmOpen(false);
+    //                 setSelectedCategory(null);
+    //                 setSelectedAction(null);
+    //             },
+
+    //             onError: () => {
+    //                 setActionLoading(false);
+    //             },
+
+    //             onFinish: () => {
+    //                 setActionLoading(false);
+    //             },
+    //         },
+    //     );
+    // };
 
     const handleEdit = (category: BlogCategory) => {
         setSelectedCategory(category);

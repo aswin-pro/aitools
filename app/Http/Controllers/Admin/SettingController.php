@@ -133,105 +133,194 @@ class SettingController extends Controller
     }
 
     // Update Website Setting
-    public function changeWebsiteSettings(WebsiteSettingsRequest $request)
-    {
+    // public function changeWebsiteSettings(WebsiteSettingsRequest $request)
+    // {
 
-        Setting::where('id', '1')->update([
-            'site_name' => $request->site_name
+    //     Setting::where('id', '1')->update([
+    //         'site_name' => $request->site_name
+    //     ]);
+
+    //     Config::where('config_key', 'site_name')->update([
+    //         'config_value' => $request->site_name
+    //     ]);
+
+
+    //     // App name
+    //     $appName = str_replace('"', "", $request->app_name);
+    //     $appName = str_replace("'", "", $appName);
+
+    //     // Set new values using putenv
+    //     $this->updateEnvFile('APP_NAME', '"' . $appName . '"');
+
+    //     // Config::where('config_key', 'app_theme')->update([
+    //     //     'config_value' => $request->app_theme
+    //     // ]);
+
+    //     Config::where('config_key', 'default_theme')->update([
+    //         'config_value' => $request->theme_id
+    //     ]);
+
+    //     // Check website logo
+    //     if (isset($request->site_logo)) {
+    //         $validator = $request->validate([
+    //             'site_logo' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
+    //         ]);
+
+    //         $site_logo = '/images/web/elements/' . uniqid() . '.' . $request->site_logo->extension();
+    //         $request->site_logo->move(public_path('images/web/elements'), $site_logo);
+
+    //         // Update details
+    //         Setting::where('id', '1')->update([
+    //             'site_name' => $request->site_name,
+    //             'site_logo' => $site_logo
+    //         ]);
+    //     }
+
+    //     // Check site logo light
+    //     if (isset($request->site_logo_light)) {
+    //         $validator = $request->validate([
+    //             'site_logo_light' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
+    //         ]);
+
+    //         $site_logo_light = '/images/web/elements/' . uniqid() . '.' . $request->site_logo_light->extension();
+    //         $request->site_logo_light->move(public_path('images/web/elements'), $site_logo_light);
+
+    //         // Update details
+    //         Setting::where('id', '1')->update([
+    //             'site_name' => $request->site_name,
+    //             'site_logo_light' => $site_logo_light
+    //         ]);
+    //     }
+
+    //     // Check favicon
+    //     if (isset($request->favi_icon)) {
+    //         $validator = $request->validate([
+    //             'favi_icon' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
+    //         ]);
+
+    //         $favi_icon = '/images/web/elements/' . uniqid() . '.' . $request->favi_icon->extension();
+    //         $request->favi_icon->move(public_path('images/web/elements'), $favi_icon);
+
+    //         // Update details
+    //         Setting::where('id', '1')->update([
+    //             'site_name' => $request->site_name,
+    //             'favicon' => $favi_icon
+    //         ]);
+    //     }
+
+    //     // Check primary image for website banner
+    //     if ($request->hasFile('primary_image')) {
+
+    //         $request->validate([
+    //             'primary_image' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env('SIZE_LIMIT'),
+    //         ]);
+
+    //         $fileName = uniqid() . '.' . $request->file('primary_image')->extension();
+
+    //         $request->file('primary_image')->move(
+    //             public_path('images/web/elements'),
+    //             $fileName
+    //         );
+
+    //         $primaryImage = '/images/web/elements/' . $fileName;
+
+    //         Config::where('config_key', 'primary_image')->update([
+    //             'config_value' => $primaryImage,
+    //         ]);
+    //     }
+
+    //     // Page redirect
+    //     // return redirect()->route('dahsboard.admin.settings')->with('success', trans('Website Settings Updated Successfully!'));
+    // }
+
+
+public function changeWebsiteSettings(WebsiteSettingsRequest $request)
+{
+    Setting::where('id', 1)->update([
+        'site_name' => $request->site_name,
+    ]);
+
+    Config::where('config_key', 'site_name')->update([
+        'config_value' => $request->site_name,
+    ]);
+
+    // Update APP_NAME
+    $appName = str_replace(
+        ['"', "'"],
+        '',
+        $request->app_name
+    );
+
+    $this->updateEnvFile(
+        'APP_NAME',
+        '"' . $appName . '"'
+    );
+
+    // Website logo
+    if ($request->hasFile('site_logo')) {
+        $fileName = uniqid() . '.' .
+            $request->file('site_logo')->extension();
+
+        $request->file('site_logo')->move(
+            public_path('images/web/elements'),
+            $fileName
+        );
+
+        Setting::where('id', 1)->update([
+            'site_logo' => '/images/web/elements/' . $fileName,
         ]);
-
-        Config::where('config_key', 'site_name')->update([
-            'config_value' => $request->site_name
-        ]);
-
-
-        // App name
-        $appName = str_replace('"', "", $request->app_name);
-        $appName = str_replace("'", "", $appName);
-
-        // Set new values using putenv
-        $this->updateEnvFile('APP_NAME', '"' . $appName . '"');
-
-        Config::where('config_key', 'app_theme')->update([
-            'config_value' => $request->app_theme
-        ]);
-
-        Config::where('config_key', 'default_theme')->update([
-            'config_value' => $request->theme_id
-        ]);
-
-        // Check website logo
-        if (isset($request->site_logo)) {
-            $validator = $request->validate([
-                'site_logo' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-            ]);
-
-            $site_logo = '/images/web/elements/' . uniqid() . '.' . $request->site_logo->extension();
-            $request->site_logo->move(public_path('images/web/elements'), $site_logo);
-
-            // Update details
-            Setting::where('id', '1')->update([
-                'site_name' => $request->site_name,
-                'site_logo' => $site_logo
-            ]);
-        }
-
-        // Check site logo light
-        if (isset($request->site_logo_light)) {
-            $validator = $request->validate([
-                'site_logo_light' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-            ]);
-
-            $site_logo_light = '/images/web/elements/' . uniqid() . '.' . $request->site_logo_light->extension();
-            $request->site_logo_light->move(public_path('images/web/elements'), $site_logo_light);
-
-            // Update details
-            Setting::where('id', '1')->update([
-                'site_name' => $request->site_name,
-                'site_logo_light' => $site_logo_light
-            ]);
-        }
-
-        // Check favicon
-        if (isset($request->favi_icon)) {
-            $validator = $request->validate([
-                'favi_icon' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-            ]);
-
-            $favi_icon = '/images/web/elements/' . uniqid() . '.' . $request->favi_icon->extension();
-            $request->favi_icon->move(public_path('images/web/elements'), $favi_icon);
-
-            // Update details
-            Setting::where('id', '1')->update([
-                'site_name' => $request->site_name,
-                'favicon' => $favi_icon
-            ]);
-        }
-
-        // Check primary image for website banner
-        if ($request->hasFile('primary_image')) {
-
-            $request->validate([
-                'primary_image' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env('SIZE_LIMIT'),
-            ]);
-
-            $fileName = uniqid() . '.' . $request->file('primary_image')->extension();
-
-            $request->file('primary_image')->move(
-                public_path('images/web/elements'),
-                $fileName
-            );
-
-            $primaryImage = '/images/web/elements/' . $fileName;
-
-            Config::where('config_key', 'primary_image')->update([
-                'config_value' => $primaryImage,
-            ]);
-        }
-
-        // Page redirect
-        // return redirect()->route('dahsboard.admin.settings')->with('success', trans('Website Settings Updated Successfully!'));
     }
+
+    // Light logo
+    if ($request->hasFile('site_logo_light')) {
+        $fileName = uniqid() . '.' .
+            $request->file('site_logo_light')->extension();
+
+        $request->file('site_logo_light')->move(
+            public_path('images/web/elements'),
+            $fileName
+        );
+
+        Setting::where('id', 1)->update([
+            'site_logo_light' => '/images/web/elements/' . $fileName,
+        ]);
+    }
+
+    // Favicon
+    if ($request->hasFile('favi_icon')) {
+        $fileName = uniqid() . '.' .
+            $request->file('favi_icon')->extension();
+
+        $request->file('favi_icon')->move(
+            public_path('images/web/elements'),
+            $fileName
+        );
+
+        Setting::where('id', 1)->update([
+            'favicon' => '/images/web/elements/' . $fileName,
+        ]);
+    }
+
+    // Primary website image
+    if ($request->hasFile('primary_image')) {
+        $fileName = uniqid() . '.' .
+            $request->file('primary_image')->extension();
+
+        $request->file('primary_image')->move(
+            public_path('images/web/elements'),
+            $fileName
+        );
+
+        Config::where('config_key', 'primary_image')->update([
+            'config_value' => '/images/web/elements/' . $fileName,
+        ]);
+    }
+
+    return back()->with(
+        'success',
+        trans('Website Settings Updated Successfully!')
+    );
+}
 
     // Update Payments Setting
     public function changePaymentsSettings(Request $request)

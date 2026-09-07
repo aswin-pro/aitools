@@ -6,7 +6,6 @@ interface WebsiteBrandingFieldsProps {
     settings: any;
     errors: Record<string, string>;
     clearErrors: (field: string) => void;
-    showThemeCustomization: boolean;
 }
 
 export default function WebsiteBrandingFields({
@@ -14,7 +13,6 @@ export default function WebsiteBrandingFields({
     settings,
     errors,
     clearErrors,
-    showThemeCustomization,
 }: WebsiteBrandingFieldsProps) {
     const { t } = useTranslation();
 
@@ -44,7 +42,7 @@ export default function WebsiteBrandingFields({
                 onChange={() => clearErrors("site_name")}
             />
 
-            {showThemeCustomization && (
+            {/* {showThemeCustomization && (
                 <FormInput
                     id="primary_image"
                     name="primary_image"
@@ -55,13 +53,13 @@ export default function WebsiteBrandingFields({
                     onChange={() => clearErrors("primary_image")}
                     subLable={t("Recommended size: 1000 × 667")}
                 />
-            )}
+            )} */}
 
             <FormInput
                 id="site_logo"
                 name="site_logo"
                 type="file"
-                label={t("Website Logo")}
+                label={t("Logo for Dark Background")}
                 accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
                 error={errors.site_logo}
                 onChange={() => clearErrors("site_logo")}
@@ -72,7 +70,7 @@ export default function WebsiteBrandingFields({
                 id="site_logo_light"
                 name="site_logo_light"
                 type="file"
-                label={t("Website Logo (Light)")}
+                label={t("Logo for Light Background")}
                 accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
                 error={errors.site_logo_light}
                 onChange={() => clearErrors("site_logo_light")}

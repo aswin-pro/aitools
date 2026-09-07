@@ -98,7 +98,6 @@ const [actionLoading, setActionLoading] = useState(false);
                         </DropdownMenuItem>
                     )}
 
-                    {/* Failed */}
                     {transaction.payment_status !== "FAILED" && (
                         <DropdownMenuItem asChild>
                             <a

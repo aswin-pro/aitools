@@ -25,10 +25,8 @@ class LanguageExportService
         $this->langPath = config('translation-manager.lang_path', base_path('resources/lang'));
     }
 
-    public function exportLocale(string $locale): string
+public function exportLocale(string $locale): string
 {
-    $zip = new ZipArchive();
-
     $tempDir = storage_path('app/temp_exports');
 
     if (!File::exists($tempDir)) {
@@ -37,68 +35,37 @@ class LanguageExportService
 
     $zipFilePath = $tempDir . DIRECTORY_SEPARATOR . "{$locale}.zip";
 
-    // Remove old ZIP if it exists
     if (File::exists($zipFilePath)) {
         File::delete($zipFilePath);
     }
 
-    $result = $zip->open(
-        $zipFilePath,
-        ZipArchive::CREATE | ZipArchive::OVERWRITE
-    );
+    $zip = new ZipArchive();
 
-    if ($result !== true) {
-        throw new RuntimeException(
-            "Cannot create zip archive: {$zipFilePath}. Error code: {$result}"
-        );
+    if ($zip->open($zipFilePath, ZipArchive::CREATE) !== true) {
+        throw new RuntimeException('Unable to create ZIP file.');
     }
 
     $localeDir = $this->langPath . DIRECTORY_SEPARATOR . $locale;
 
-    if (File::exists($localeDir)) {
-        $files = File::allFiles($localeDir);
-
-        foreach ($files as $file) {
-            $relativePath = $locale . '/' . $file->getRelativePathname();
-
-            if (!$zip->addFile($file->getRealPath(), $relativePath)) {
-                $zip->close();
-
-                throw new RuntimeException(
-                    "Failed to add file to ZIP: {$file->getRealPath()}"
-                );
-            }
+    if (File::isDirectory($localeDir)) {
+        foreach (File::allFiles($localeDir) as $file) {
+            $zip->addFile(
+                $file->getRealPath(),
+                $locale . '/' . $file->getRelativePathname()
+            );
         }
     }
 
     $jsonFile = $this->langPath . DIRECTORY_SEPARATOR . "{$locale}.json";
 
     if (File::exists($jsonFile)) {
-        if (!$zip->addFile($jsonFile, "{$locale}.json")) {
-            $zip->close();
-
-            throw new RuntimeException(
-                "Failed to add JSON file to ZIP: {$jsonFile}"
-            );
-        }
+        $zip->addFile($jsonFile, "{$locale}.json");
     }
 
-    if (!$zip->close()) {
-        throw new RuntimeException(
-            "Failed to finalize ZIP archive: {$zipFilePath}"
-        );
-    }
+    $zip->close();
 
     if (!File::exists($zipFilePath)) {
-        throw new RuntimeException(
-            "ZIP file was not created: {$zipFilePath}"
-        );
-    }
-
-    if (File::size($zipFilePath) === 0) {
-        throw new RuntimeException(
-            "ZIP file is empty: {$zipFilePath}"
-        );
+        throw new RuntimeException('ZIP file was not created.');
     }
 
     return $zipFilePath;

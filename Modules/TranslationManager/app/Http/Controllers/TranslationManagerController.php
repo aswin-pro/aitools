@@ -606,7 +606,6 @@ class TranslationManagerController extends Controller
         return response()->json($status);
     }
 
-    // Export language pack
     public function export(string $locale)
     {
         try {
@@ -617,6 +616,9 @@ class TranslationManagerController extends Controller
                 ->with('failed', 'Error exporting files: ' . $e->getMessage());
         }
     }
+
+
+
 
     // Import language pack
     public function import(ImportLanguageRequest $request)

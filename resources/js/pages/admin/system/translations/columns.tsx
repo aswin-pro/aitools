@@ -62,29 +62,25 @@ export const getColumns = ({
                             {t("Edit")}
                         </DropdownMenuItem>
 
-
-<DropdownMenuItem
-    onClick={() =>
-        window.open(
-            route("translation-manager.export", language.code),
-            "_blank",
-        )
-    }
->
-    <Download className="mr-2 size-4" />
-    {t("Export")}
+                        {/* <DropdownMenuItem asChild>
+    <a
+        href={route("translation-manager.export", language.code)}
+        download
+    >
+        <Download className="mr-2 size-4" />
+        {t("Export")}
+    </a>
 </DropdownMenuItem>
 
                         {language.code !== defaultLocale && (
                             <DropdownMenuItem
                                 onClick={() => {
-                                    // Delete will be wired next
                                 }}
                             >
                                 <Trash2 className="mr-2 size-4" />
                                 {t("Delete")}
                             </DropdownMenuItem>
-                        )}
+                        )} */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
