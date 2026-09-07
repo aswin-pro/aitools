@@ -7,6 +7,7 @@ use App\Models\Config;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 
 class PageController extends Controller
 {
@@ -27,21 +28,63 @@ class PageController extends Controller
      */
 
     //  Pages
-    public function index()
-    {
-        // Queries
-        $settings = Setting::first();
-        $config = Config::get();
+    // public function index()
+    // {
+    //     // Queries
+    //     $settings = Setting::first();
+    //     $config = Config::get();
 
-        // Static pages
-        $pages = Page::where('theme_id', $config[48]->config_value)->where('name', '!=', "Custom Page")->get();
-        // Custom pages
-        $custom_pages = Page::where('name', 'Custom Page')->get();
+    //     // Static pages
+    //     $pages = Page::where('theme_id', $config[48]->config_value)->where('name', '!=', "Custom Page")->get();
+    //     // Custom pages
+    //     $custom_pages = Page::where('name', 'Custom Page')->get();
         
 
-        // View
-        return view('admin.pages.pages.index', compact('pages', 'custom_pages', 'settings', 'config'));
-    }
+    //     // View
+    //     return view('admin.pages.pages.index', compact('pages', 'custom_pages', 'settings', 'config'));
+    // }
+
+
+public function index(Request $request)
+{
+    $config = Config::get();
+
+    $pages = Page::where('theme_id', $config[48]->config_value)
+        ->where('name', '!=', 'Custom Page')
+        ->when($request->search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            });
+        })
+        ->orderBy('id')
+        ->paginate(
+            $request->integer('per_page', 10),
+            ['*'],
+            'page'
+        )
+        ->withQueryString();
+
+    $custom_pages = Page::where('name', 'Custom Page')
+        ->when($request->custom_search, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            });
+        })
+        ->orderByDesc('id')
+        ->paginate(
+            $request->integer('custom_per_page', 10),
+            ['*'],
+            'custom_page'
+        )
+        ->withQueryString();
+
+    return Inertia::render('admin/pages/index', [
+        'pages' => $pages,
+        'custom_pages' => $custom_pages,
+    ]);
+}
 
     // Add page
     public function addPage()
@@ -99,40 +142,77 @@ class PageController extends Controller
     }
 
     // Edit page
-    public function editPage($id)
-    {
-        // Queries
-        $settings = Setting::first();
-        $config = Config::get();
 
-        // Get page details
-        $sections = Page::where('theme_id', $config[48]->config_value)->where('slug', $id)->get();
-        // View
-        return view('admin.pages.pages.edit', compact('sections', 'settings', 'config'));
+
+public function editPage($id)
+{
+    $config = Config::get();
+
+    $sections = Page::where('theme_id', $config[48]->config_value)
+        ->where('slug', $id)
+        ->orderBy('id')
+        ->get();
+
+    if ($sections->isEmpty()) {
+        abort(404);
     }
+
+    return Inertia::render('admin/pages/editor', [
+        'page' => $sections->first(),
+        'sections' => $sections,
+        'theme' => 'modern-orange',
+    ]);
+}
 
     // Update page
-    public function updatePage(Request $request, $id)
-    {
-        // Queries
-        $config = Config::get();
+    // public function updatePage(Request $request, $id)
+    // {
+    //     // Queries
+    //     $config = Config::get();
 
-        // Update page
-        $sections = Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->get();
+    //     // Update page
+    //     $sections = Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->get();
         
-        for ($i = 0; $i < count($sections); $i++) {
-            $safe_section_content = $request->input('section' . $i);
-            Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['body' => $safe_section_content]);
-        }
+    //     for ($i = 0; $i < count($sections); $i++) {
+    //         $safe_section_content = $request->input('section' . $i);
+    //         Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['body' => $safe_section_content]);
+    //     }
 
-        // SEO
-        Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['page_title' => $request->page_title]);
-        Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['description' => $request->description]);
-        Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['keywords' => $request->keywords]);
+    //     // SEO
+    //     Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['page_title' => $request->page_title]);
+    //     Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['description' => $request->description]);
+    //     Page::where('slug', $id)->where('theme_id', $config[48]->config_value)->update(['keywords' => $request->keywords]);
 
-        // Page redirect
-        return redirect()->route('admin.pages')->with('success', trans('Website Content Updated Successfully!'));
-    }
+    //     // Page redirect
+    //     return redirect()->route('admin.pages')->with('success', trans('Website Content Updated Successfully!'));
+    // }
+
+    public function updatePage(Request $request, $id)
+{
+    $config = Config::get();
+
+    $page = Page::where('slug', $id)
+        ->where('theme_id', $config[48]->config_value)
+        ->firstOrFail();
+
+    $validated = $request->validate([
+        'body' => ['required', 'string'],
+        'page_title' => ['required', 'string', 'max:255'],
+        'description' => ['required', 'string'],
+        'keywords' => ['required', 'string'],
+    ]);
+
+    $page->body = $validated['body'];
+    $page->page_title = $validated['page_title'];
+    $page->description = $validated['description'];
+    $page->keywords = $validated['keywords'];
+
+    $page->save();
+
+    return redirect()
+        ->route('dashboard.admin.pages')
+        ->with('success', trans('Website Content Updated Successfully!'));
+}
 
     // Update custom page
     public function updateCustomPage(Request $request)

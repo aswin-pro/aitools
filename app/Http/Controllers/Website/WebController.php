@@ -340,60 +340,97 @@ class WebController extends Controller
     }
 
     // Web Contact
-    public function webContact()
-    {
-        // Queries
-        $config = Config::get();
+// public function webContact()
+// {
 
-        // Check website
-        if ($config[43]->config_value == "yes") {
-            // Queries
-            $page = Page::where('theme_id', $config[48]->config_value)->where('slug', 'contact')->where('status', 1)->get();
+//     $config = Config::get();
 
-            // Check page
-            if (!$page->isEmpty()) {
-                $config = Config::get();
-                $setting = Setting::where('status', 1)->first();
+//     // Check website
+//     if ($config[43]->config_value != "yes") {
+//         return redirect('/login');
+//     }
 
-                // Seo Tools
-                SEOTools::setTitle($page[0]->page_title);
-                SEOTools::setDescription($page[0]->description);
+//     // Get contact page
+//     $page = Page::where('theme_id', $config[48]->config_value)
+//         ->where('slug', 'contact')
+//         ->where('status', 1)
+//         ->first();
 
-                SEOMeta::setTitle($page[0]->page_title);
-                SEOMeta::setDescription($page[0]->description);
-                SEOMeta::addMeta('article:section', $page[0]->name . ' - ' . $page[0]->description, 'property');
-                SEOMeta::addKeyword([$page[0]->keywords]);
+//     // Check page
+//     if (!$page) {
+//         abort(404);
+//     }
 
-                OpenGraph::setTitle($page[0]->page_title);
-                OpenGraph::setDescription($page[0]->description);
-                OpenGraph::setUrl(URL::full());
-                OpenGraph::addImage([asset($setting->site_logo), 'size' => 300]);
+//     $setting = Setting::where('status', 1)->first();
 
-                JsonLd::setTitle($page[0]->page_title);
-                JsonLd::setDescription($page[0]->description);
-                JsonLd::addImage(asset($setting->site_logo));
+//     // SEO
+//     SEOTools::setTitle($page->page_title);
+//     SEOTools::setDescription($page->description);
 
-                // Return values
-                $returnValues = compact('config', 'setting');
+//     SEOMeta::setTitle($page->page_title);
+//     SEOMeta::setDescription($page->description);
+//     SEOMeta::addMeta(
+//         'article:section',
+//         $page->name . ' - ' . $page->description,
+//         'property'
+//     );
+//     SEOMeta::addKeyword([$page->keywords]);
 
-                // Check selected theme
-                if ($config[48]->config_value == "513402991882314") {
-                    // view
-                    return view("website.classic.pages.contact", $returnValues);
-                } else if ($config[48]->config_value == "330599619570398") {
-                    // view
-                    return view("website.modern.pages.contact", $returnValues);
-                } else if ($config[48]->config_value == "317109101703740") {
-                    // view
-                    return view("website.modern-orange.pages.contact", $returnValues);
-                }
-            } else {
-                abort(404);
-            }
-        } else {
-            return redirect('/login');
-        }
-    }
+//     OpenGraph::setTitle($page->page_title);
+//     OpenGraph::setDescription($page->description);
+//     OpenGraph::setUrl(URL::full());
+//     OpenGraph::addImage([
+//         asset($setting->site_logo),
+//         'size' => 300
+//     ]);
+
+//     JsonLd::setTitle($page->page_title);
+//     JsonLd::setDescription($page->description);
+//     JsonLd::addImage(asset($setting->site_logo));
+
+//     $returnValues = compact(
+//         'config',
+//         'setting',
+//         'page'
+//     );
+
+//     // Selected theme
+//     // if ($config[48]->config_value == "513402991882314") {
+//     //     return view(
+//     //         "website.classic.pages.contact",
+//     //         $returnValues
+//     //     );
+//     // }
+
+//     // if ($config[48]->config_value == "330599619570398") {
+//     //     return view(
+//     //         "website.modern.pages.contact",
+//     //         $returnValues
+//     //     );
+//     // }
+
+//     if ($config[48]->config_value == "317109101703740") {
+//         return view(
+//             "website.modern-orange.pages.contact",
+//             $returnValues
+//         );
+//     }
+
+//     abort(404);
+// }
+
+
+public function webContact()
+{
+    $config = Config::get();
+    $setting = Setting::where('status', 1)->first();
+
+    return view('website.modern-orange.pages.contact', compact('config', 'setting'));
+}
+
+
+
+
 
     // Web FAQs
     public function webFAQ()

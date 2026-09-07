@@ -55,6 +55,7 @@
         "concurrently": "^9.0.1",
         "date-fns": "^4.4.0",
         "globals": "^15.14.0",
+        "grapesjs": "^0.23.6",
         "html2canvas-pro": "^2.3.9",
         "html2pdf.js": "^0.14.0",
         "i18next": "^26.3.4",

@@ -472,9 +472,6 @@ class TranslationManagerController extends Controller
         }
     }
 
-
-
-
     // Missing keys page
     public function missing(Request $request, string $locale)
     {

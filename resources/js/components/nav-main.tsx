@@ -29,6 +29,7 @@ import {
     WalletCards,
     Form,
     FileBox,
+    StickyNote
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -128,6 +129,15 @@ export function NavMain() {
                                 ),
                             },
                         ],
+                    },
+
+                    {
+                        title: "Pages",
+                        url: "dashboard.admin.pages",
+                        icon: StickyNote,
+                        isActive: route().current(
+                            "dashboard.admin.pages",
+                        ),
                     },
 
                     {
