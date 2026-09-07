@@ -7,12 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-    MoreVertical,
-    Pencil,
-    Power,
-    Trash2,
-} from "lucide-react";
+import { Eye, EyeOff, MoreVertical, Pencil, Power, Trash2 } from "lucide-react";
 
 export type PageItem = {
     id: number;
@@ -39,23 +34,21 @@ export const getColumns = ({
     onDelete?: (page: PageItem) => void;
 }): ColumnDef<PageItem>[] => [
     {
-        accessorKey: "serial",
+        accessorKey: "S_No",
         header: t("S.No"),
         cell: ({ row }) => pageIndex * pageSize + row.index + 1,
     },
 
     {
-        accessorKey: "name",
+        accessorKey: "Name",
         header: t("Page"),
         cell: ({ row }) => (
-            <span className="capitalize">
-                {row.original.name}
-            </span>
+            <span className="capitalize">{row.original.name}</span>
         ),
     },
 
     {
-        accessorKey: "slug",
+        accessorKey: "Slug",
         header: t("Slug"),
         cell: ({ row }) => {
             const page = row.original;
@@ -67,8 +60,8 @@ export const getColumns = ({
                 : page.slug === "home" ||
                     page.slug === "hero" ||
                     page.slug === "footer"
-                    ? "/"
-                    : `/${page.slug}`;
+                  ? "/"
+                  : `/${page.slug}`;
 
             return (
                 <a
@@ -84,13 +77,11 @@ export const getColumns = ({
     },
 
     {
-        accessorKey: "status",
+        accessorKey: "Status",
         header: t("Status"),
         cell: ({ row }) =>
             CustomBadge(
-                row.original.status === 1
-                    ? t("Enabled")
-                    : t("Disabled"),
+                row.original.status === 1 ? t("Enabled") : t("Disabled"),
                 row.original.status === 1
                     ? "bg-green-500 text-white dark:bg-green-800"
                     : "bg-red-500 text-white dark:bg-red-800",
@@ -127,21 +118,24 @@ export const getColumns = ({
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                            onClick={() => onEdit(page)}
-                        >
+                        <DropdownMenuItem onClick={() => onEdit(page)}>
                             <Pencil className="mr-2 size-4" />
                             {t("Edit")}
                         </DropdownMenuItem>
 
                         {!cannotDisable && (
-                            <DropdownMenuItem
-                                onClick={() => onStatus(page)}
-                            >
-                                <Power className="mr-2 size-4" />
-                                {page.status === 1
-                                    ? t("Disable")
-                                    : t("Enable")}
+                            <DropdownMenuItem onClick={() => onStatus(page)}>
+                                {page.status === 1 ? (
+                                    <>
+                                        <EyeOff className="mr-2 size-4" />
+                                        {t("Disable")}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Eye className="mr-2 size-4" />
+                                        {t("Enable")}
+                                    </>
+                                )}
                             </DropdownMenuItem>
                         )}
 

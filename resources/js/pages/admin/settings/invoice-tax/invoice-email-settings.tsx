@@ -33,7 +33,7 @@ export default function InvoiceEmailSettings({
                 )}
             />
 
-            <Card className="p-5">
+            <Card className="p-5 mt-5">
                 <Form
                     action={route("dashboard.admin.update.email.setting")}
                     method="post"

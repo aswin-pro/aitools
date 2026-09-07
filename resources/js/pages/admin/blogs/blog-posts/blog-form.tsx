@@ -214,7 +214,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                             />
                         </div>
 
-                        {/* Short Description */}
                         <FormTextarea
                             name="short_description"
                             label={t("Short description")}
@@ -236,7 +235,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                     </CardContent>
                 </Card>
 
-                {/* Blog Settings */}
                 <Card>
                     <CardHeader>
                         <h2 className="text-lg font-semibold">
@@ -249,7 +247,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                     </CardHeader>
 
                     <CardContent className="space-y-5">
-                        {/* Cover */}
                         <div className="grid gap-2">
                             <Label required={!isEdit}>{t("Cover")}</Label>
 
@@ -272,7 +269,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                             <InputError message={form.errors.blog_cover} />
                         </div>
 
-                        {/* Category */}
                         <SearchableSelect
                             name="category_id"
                             label={t("Category")}
@@ -308,7 +304,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                 </Card>
             </div>
 
-            {/* Description */}
             <Card>
                 <CardHeader>
                     <h2 className="text-lg font-semibold">
@@ -336,7 +331,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                 </CardContent>
             </Card>
 
-            {/* SEO */}
             <Card>
                 <CardHeader>
                     <h2 className="text-lg font-semibold">
@@ -381,7 +375,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                         />
                     </div>
 
-                    {/* SEO Description */}
                     <FormTextarea
                         name="seo_description"
                         label={t("Description")}
@@ -400,7 +393,6 @@ export default function BlogForm({ mode, categories, blog }: BlogFormProps) {
                 </CardContent>
             </Card>
 
-            {/* Actions */}
             <div className="flex justify-end gap-3">
                 <Button
                     type="button"

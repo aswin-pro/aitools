@@ -1,16 +1,16 @@
     <?php
 
-use App\Http\Controllers\Admin\CurrencyController;
-use App\Http\Controllers\Admin\PluginController;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+    use App\Http\Controllers\Admin\CurrencyController;
+    use App\Http\Controllers\Admin\PluginController;
+    use Illuminate\Support\Facades\Route;
+    use Inertia\Inertia;
 
     Route::group(['as' => 'dashboard.admin.', 'prefix' => 'dashboard/admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'admin'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
         // Dashboard
         Route::get('overview', function () {
             return Inertia::render('admin/dashboard');
         })->name('overview');
-        
+
         // Users
         Route::get('users', [App\Http\Controllers\Admin\UserController::class, "index"])->name('users');
         // Route::get('edit-user/{id}', [App\Http\Controllers\Admin\UserController::class, "editUser"])->name('edit.user');
@@ -82,11 +82,11 @@ use Inertia\Inertia;
         Route::get('settings/password', [App\Http\Controllers\Admin\AccountController::class, "changePassword"])->name('change.password');
         Route::post('settings/update-password', [App\Http\Controllers\Admin\AccountController::class, "UpdatePassword"])->name('update.password')->middleware(['demo.mode']);
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-        
+
         //general settings
         Route::get('settings/system-configuration', [App\Http\Controllers\Admin\SettingController::class, "index"])->name('settings');
         Route::post('change-general-settings', [App\Http\Controllers\Admin\SettingController::class, "changeGeneralSettings"])->name('change.general.settings')->middleware(['demo.mode']);
-        
+
         Route::get('settings/website-configuration', [App\Http\Controllers\Admin\SettingController::class, "websiteSettings"])->name('website.settings')->middleware(['demo.mode']);
         Route::post('settings/update-website-settings', [App\Http\Controllers\Admin\SettingController::class, "changeWebsiteSettings"])->name('change.website.settings')->middleware(['demo.mode']);
 
@@ -104,8 +104,8 @@ use Inertia\Inertia;
         Route::get('settings/tax-setting', [App\Http\Controllers\Admin\SettingController::class, "taxSetting"])->name('tax.setting');
         Route::post('settings/update-tex-setting', [App\Http\Controllers\Admin\SettingController::class, "updateTaxSetting"])->name('update.tax.setting')->middleware(['demo.mode']);
         Route::post('settings/update-email-setting', [App\Http\Controllers\Admin\SettingController::class, "updateEmailSetting"])->name('update.email.setting')->middleware(['demo.mode']);
-        
-        
+
+
         //system - login activity | clear cache | generate sitemap
         Route::get('system/login-activity', [App\Http\Controllers\Admin\AuthenticationLogController::class, "index"])->name('system.login-activity');
         Route::get('system/clear-cache', [App\Http\Controllers\Admin\SettingController::class, 'clearCache'])->name('system.clear-cache')->middleware(['demo.mode']);
@@ -138,12 +138,15 @@ use Inertia\Inertia;
         Route::post('update-page/{id}', [App\Http\Controllers\Admin\PageController::class, "updatePage"])->name('update.page')->middleware(['demo.mode']);
         Route::get('disable-page', [App\Http\Controllers\Admin\PageController::class, "disablePage"])->name('disable.page')->middleware(['demo.mode']);
         Route::get('delete-page', [App\Http\Controllers\Admin\PageController::class, "deletePage"])->name('delete.page')->middleware(['demo.mode']);
-
+        Route::post('pages/upload-image', [App\Http\Controllers\Admin\PageController::class,  'uploadPageImage'])->name('pages.upload.image')->middleware(['demo.mode']);
+           
+           
+    
         // Blogs Categories
         Route::get('blog/blog-categories', [App\Http\Controllers\Admin\BlogCategoryController::class, "index"])->name('blog.categories');
         Route::post('blog/publish-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "publishBlogCategory"])->name('publish.blog.category')->middleware(['demo.mode']);
         // Route::get('edit-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "editBlogCategory"])->name('edit.blog.category');
-        Route::post('blog/update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']); 
+        Route::post('blog/update-blog-category/{id}', [App\Http\Controllers\Admin\BlogCategoryController::class, "updateBlogCategory"])->name('update.blog.category')->middleware(['demo.mode']);
         Route::get('blog/action-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "actionBlog"])->name('action.blog.category')->middleware(['demo.mode']); //actions for unplish/publish
         // Route::get('create-blog-category', [App\Http\Controllers\Admin\BlogCategoryController::class, "createBlogCategory"])->name('create.blog.category');
 
@@ -154,13 +157,13 @@ use Inertia\Inertia;
         Route::get('blog/edit-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "editBlog"])->name('edit.blog');
         Route::post('blog/update-blog/{id}', [App\Http\Controllers\Admin\BlogController::class, "updateBlog"])->name('update.blog')->middleware(['demo.mode']);
         Route::get('blog/action-blog', [App\Http\Controllers\Admin\BlogController::class, "actionBlog"])->name('action.blog')->middleware(['demo.mode']);
-        
+
         Route::post('change-payments-settings', [App\Http\Controllers\Admin\SettingController::class, "changePaymentsSettings"])->name('change.payments.settings')->middleware(['demo.mode']);
-        
+
         // License
         Route::get('license', [App\Http\Controllers\Admin\LicenseController::class, "license"])->name('license');
         Route::post('verify-license', [App\Http\Controllers\Admin\LicenseController::class, "verifyLicense"])->name('verify.license')->middleware(['demo.mode']);
-       
+
         // Backup
         Route::get('system/backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('system.backups');
         // Route::get('backups/get-database-backup', [App\Http\Controllers\Admin\BackupController::class, 'getDatabaseBackup'])->name('get.database.backup');
@@ -174,6 +177,4 @@ use Inertia\Inertia;
         Route::get('check', [App\Http\Controllers\Admin\UpdateController::class, 'check'])->name('check');
         Route::post('check-update', [App\Http\Controllers\Admin\UpdateController::class, 'checkUpdate'])->name('check.update');
         Route::post('update-code', [App\Http\Controllers\Admin\UpdateController::class, 'updateCode'])->name('update.code')->middleware(['demo.mode']);
-
-        
     });

@@ -1,17 +1,15 @@
-
-
 import AppLayout from "@/layouts/app/app-layout";
 import Heading from "@/components/heading";
+import FormInput from "@/components/admin/form-input";
+import FormTextarea from "@/components/admin/form-textarea";
 import { Button } from "@/components/ui/button";
-import { Head, router, usePage } from "@inertiajs/react";
-import { useEffect, useRef, useState } from "react";
+import { LoadingSwap } from "@/components/ui/loading-swap";
+import { BreadcrumbItem } from "@/types";
+import { Head, useForm, usePage } from "@inertiajs/react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import grapesjs from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
-import FormInput from "@/components/admin/form-input";
-import FormTextarea from "@/components/admin/form-textarea";
-import { LoadingSwap } from "@/components/ui/loading-swap";
-import { BreadcrumbItem } from "@/types";
 
 type PageData = {
     id: number;
@@ -26,42 +24,43 @@ type PageData = {
 
 type PageProps = {
     page: PageData;
-    theme: string;
 };
 
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: "Dashboard",
-            href: route("dashboard.admin.overview"),
-        },
-        {
-            title: "Pages",
-            href: "dashboard.admin.pages",
-        },
-        {
-            title: "Page Builder",
-            href: "#",
-        },
-    ];
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: "Dashboard",
+        href: route("dashboard.admin.overview"),
+    },
+    {
+        title: "Pages",
+        href: route("dashboard.admin.pages"),
+    },
+    {
+        title: "Page Builder",
+        href: "#",
+    },
+];
 
 export default function Editor() {
     const { t } = useTranslation();
     const { page } = usePage<PageProps>().props;
 
     const editorRef = useRef<HTMLDivElement>(null);
-    const editorInstance = useRef<any>(null);
+    const editor = useRef<any>(null);
 
-    const [pageTitle, setPageTitle] = useState(page.page_title ?? "");
-    const [description, setDescription] = useState(page.description ?? "");
-    const [keywords, setKeywords] = useState(page.keywords ?? "");
-    const [saving, setSaving] = useState(false);
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        body: page.body ?? "",
+        page_title: page.page_title ?? "",
+        description: page.description ?? "",
+        keywords: page.keywords ?? "",
+    });
 
     useEffect(() => {
         if (!editorRef.current) {
             return;
         }
 
-        const editor = grapesjs.init({
+        editor.current = grapesjs.init({
             container: editorRef.current,
             height: "600px",
 
@@ -77,44 +76,85 @@ export default function Editor() {
                 ],
             },
 
+            assetManager: {
+                upload: route("dashboard.admin.pages.upload.image"),
+                uploadName: "file",
+                autoAdd: true,
+                multiUpload: false,
+
+                headers: {
+                    "X-CSRF-TOKEN":
+                        document
+                            .querySelector('meta[name="csrf-token"]')
+                            ?.getAttribute("content") ?? "",
+                    Accept: "application/json",
+                },
+            },
+
+            deviceManager: {
+                devices: [
+                    {
+                        id: "desktop",
+                        name: "Desktop",
+                        width: "",
+                    },
+                    {
+                        id: "tablet",
+                        name: "Tablet",
+                        width: "768px",
+                        widthMedia: "992px",
+                    },
+                    {
+                        id: "mobile",
+                        name: "Mobile",
+                        width: "320px",
+                        widthMedia: "480px",
+                    },
+                ],
+            },
+
+            styleManager: {
+                sectors: [
+                    {
+                        id: "classes",
+                        name: "Classes",
+                        open: true,
+                        properties: [],
+                    },
+                ],
+            },
+
             blockManager: {
                 blocks: [],
             },
         });
 
-        editorInstance.current = editor;
-
         return () => {
-            editor.destroy();
-            editorInstance.current = null;
+            editor.current?.destroy();
+            editor.current = null;
         };
-    }, [page.body]);
+    }, []);
 
     const handleUpdate = () => {
-        if (!editorInstance.current) {
+        if (!editor.current) {
             return;
         }
 
-        setSaving(true);
+        const html = editor.current.getHtml();
+        const css = editor.current.getCss();
 
-        const body = editorInstance.current.getHtml();
+        const body = `
+<style>
+${css}
+</style>
+${html}
+`.trim();
 
-        router.post(
-            route("dashboard.admin.update.page", page.slug),
-            {
-                body,
-                page_title: pageTitle,
-                description,
-                keywords,
-            },
-            {
-                preserveScroll: true,
+        setData("body", body);
 
-                onFinish: () => {
-                    setSaving(false);
-                },
-            },
-        );
+        post(route("dashboard.admin.update.page", page.slug), {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -127,7 +167,6 @@ export default function Editor() {
                     description={t("Edit your page visually")}
                 />
 
-                {/* GrapesJS Editor */}
                 <div className="overflow-hidden rounded-lg border bg-white">
                     <div ref={editorRef} />
                 </div>
@@ -149,19 +188,31 @@ export default function Editor() {
                             name="page_title"
                             type="text"
                             label={t("Page Title")}
-                            value={pageTitle}
-                            onChange={(e) => setPageTitle(e.target.value)}
+                            required
+                            value={data.page_title}
                             placeholder={t("Enter page title")}
+                            error={errors.page_title}
+                            disabled={processing}
+                            onChange={(e) => {
+                                clearErrors("page_title");
+                                setData("page_title", e.target.value);
+                            }}
                         />
 
                         <FormTextarea
                             id="description"
                             name="description"
                             label={t("Description")}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
+                            required
+                            value={data.description}
                             placeholder={t("Enter page description")}
                             rows={4}
+                            error={errors.description}
+                            disabled={processing}
+                            onChange={(e) => {
+                                clearErrors("description");
+                                setData("description", e.target.value);
+                            }}
                         />
 
                         <FormInput
@@ -169,23 +220,28 @@ export default function Editor() {
                             name="keywords"
                             type="text"
                             label={t("Keywords")}
-                            value={keywords}
-                            onChange={(e) => setKeywords(e.target.value)}
+                            required
+                            value={data.keywords}
                             placeholder={t(
                                 "Enter keywords separated by commas",
                             )}
+                            error={errors.keywords}
+                            disabled={processing}
+                            onChange={(e) => {
+                                clearErrors("keywords");
+                                setData("keywords", e.target.value);
+                            }}
                         />
                     </div>
                 </div>
 
-                {/* Update */}
                 <div className="flex justify-end">
                     <Button
                         type="button"
                         onClick={handleUpdate}
-                        disabled={saving}
+                        disabled={processing}
                     >
-                        <LoadingSwap isLoading={false}>
+                        <LoadingSwap isLoading={processing}>
                             {t("Update")}
                         </LoadingSwap>
                     </Button>
@@ -194,5 +250,3 @@ export default function Editor() {
         </AppLayout>
     );
 }
-
-

@@ -106,7 +106,7 @@ export default function Index({
 
                 onEdit: (page) => {
                     router.get(
-                        route("admin.edit.custom.page", page.id),
+                        route("dashboard.admin.edit.custom.page", page.id),
                     );
                 },
 
@@ -136,8 +136,8 @@ export default function Index({
             pageToChange.name === "Custom Page";
 
         const routeName = isCustomPage
-            ? "admin.status.page"
-            : "admin.disable.page";
+            ? "dashboard.admin.status.page"
+            : "dashboard.admin.disable.page";
 
         const id = isCustomPage
             ? pageToChange.id
@@ -176,7 +176,7 @@ export default function Index({
         setActionLoading(true);
 
         router.get(
-            route("admin.delete.page"),
+            route("dashboard.admin.delete.page"),
             {
                 id: pageToDelete.id,
             },
@@ -217,7 +217,7 @@ export default function Index({
 
                 <div className="space-y-3">
                     <Heading
-                        title={t("Pages")}
+                        title={t("Standard Pages")}
                         description={t(
                             "Manage your website's standard pages",
                         )}
@@ -270,7 +270,7 @@ export default function Index({
                         <Button
                             onClick={() =>
                                 router.get(
-                                    route("admin.add.page"),
+                                    route("dashboard.admin.add.page"),
                                 )
                             }
                         >
@@ -324,9 +324,9 @@ export default function Index({
                     open={statusDialogOpen}
                     onOpenChange={setStatusDialogOpen}
                     title={t("Are you sure?")}
-                    icon={
-                        <Power className="size-6" />
-                    }
+                    // icon={
+                    //     <Power className="size-6" />
+                    // }
                     description={t(
                         "If you proceed, you will enable/disable this page.",
                     )}

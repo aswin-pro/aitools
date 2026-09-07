@@ -311,15 +311,17 @@ export default function Index() {
                                         </Button>
                                     </div>
                                 </Card>
-
-                                <InvoiceEmailSettings
-    emailHeading={configValues.email_heading || ""}
-    emailFooter={configValues.email_footer || ""}
-/>
                             </>
                         )}
                     </Form>
+                    <div>
+ <InvoiceEmailSettings
+                    emailHeading={configValues.email_heading || ""}
+                    emailFooter={configValues.email_footer || ""}
+                />
+                    </div>
                 </div>
+               
             </SettingsLayout>
         </AppLayout>
     );

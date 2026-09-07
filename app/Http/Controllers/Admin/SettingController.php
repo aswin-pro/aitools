@@ -234,93 +234,93 @@ class SettingController extends Controller
     // }
 
 
-public function changeWebsiteSettings(WebsiteSettingsRequest $request)
-{
-    Setting::where('id', 1)->update([
-        'site_name' => $request->site_name,
-    ]);
-
-    Config::where('config_key', 'site_name')->update([
-        'config_value' => $request->site_name,
-    ]);
-
-    // Update APP_NAME
-    $appName = str_replace(
-        ['"', "'"],
-        '',
-        $request->app_name
-    );
-
-    $this->updateEnvFile(
-        'APP_NAME',
-        '"' . $appName . '"'
-    );
-
-    // Website logo
-    if ($request->hasFile('site_logo')) {
-        $fileName = uniqid() . '.' .
-            $request->file('site_logo')->extension();
-
-        $request->file('site_logo')->move(
-            public_path('images/web/elements'),
-            $fileName
-        );
-
+    public function changeWebsiteSettings(WebsiteSettingsRequest $request)
+    {
         Setting::where('id', 1)->update([
-            'site_logo' => '/images/web/elements/' . $fileName,
+            'site_name' => $request->site_name,
         ]);
-    }
 
-    // Light logo
-    if ($request->hasFile('site_logo_light')) {
-        $fileName = uniqid() . '.' .
-            $request->file('site_logo_light')->extension();
+        Config::where('config_key', 'site_name')->update([
+            'config_value' => $request->site_name,
+        ]);
 
-        $request->file('site_logo_light')->move(
-            public_path('images/web/elements'),
-            $fileName
+        // Update APP_NAME
+        $appName = str_replace(
+            ['"', "'"],
+            '',
+            $request->app_name
         );
 
-        Setting::where('id', 1)->update([
-            'site_logo_light' => '/images/web/elements/' . $fileName,
-        ]);
-    }
-
-    // Favicon
-    if ($request->hasFile('favi_icon')) {
-        $fileName = uniqid() . '.' .
-            $request->file('favi_icon')->extension();
-
-        $request->file('favi_icon')->move(
-            public_path('images/web/elements'),
-            $fileName
+        $this->updateEnvFile(
+            'APP_NAME',
+            '"' . $appName . '"'
         );
 
-        Setting::where('id', 1)->update([
-            'favicon' => '/images/web/elements/' . $fileName,
-        ]);
-    }
+        // Website logo
+        if ($request->hasFile('site_logo')) {
+            $fileName = uniqid() . '.' .
+                $request->file('site_logo')->extension();
 
-    // Primary website image
-    if ($request->hasFile('primary_image')) {
-        $fileName = uniqid() . '.' .
-            $request->file('primary_image')->extension();
+            $request->file('site_logo')->move(
+                public_path('images/web/elements'),
+                $fileName
+            );
 
-        $request->file('primary_image')->move(
-            public_path('images/web/elements'),
-            $fileName
+            Setting::where('id', 1)->update([
+                'site_logo' => '/images/web/elements/' . $fileName,
+            ]);
+        }
+
+        // Light logo
+        if ($request->hasFile('site_logo_light')) {
+            $fileName = uniqid() . '.' .
+                $request->file('site_logo_light')->extension();
+
+            $request->file('site_logo_light')->move(
+                public_path('images/web/elements'),
+                $fileName
+            );
+
+            Setting::where('id', 1)->update([
+                'site_logo_light' => '/images/web/elements/' . $fileName,
+            ]);
+        }
+
+        // Favicon
+        if ($request->hasFile('favi_icon')) {
+            $fileName = uniqid() . '.' .
+                $request->file('favi_icon')->extension();
+
+            $request->file('favi_icon')->move(
+                public_path('images/web/elements'),
+                $fileName
+            );
+
+            Setting::where('id', 1)->update([
+                'favicon' => '/images/web/elements/' . $fileName,
+            ]);
+        }
+
+        // Primary website image
+        if ($request->hasFile('primary_image')) {
+            $fileName = uniqid() . '.' .
+                $request->file('primary_image')->extension();
+
+            $request->file('primary_image')->move(
+                public_path('images/web/elements'),
+                $fileName
+            );
+
+            Config::where('config_key', 'primary_image')->update([
+                'config_value' => '/images/web/elements/' . $fileName,
+            ]);
+        }
+
+        return back()->with(
+            'success',
+            trans('Website Settings Updated Successfully!')
         );
-
-        Config::where('config_key', 'primary_image')->update([
-            'config_value' => '/images/web/elements/' . $fileName,
-        ]);
     }
-
-    return back()->with(
-        'success',
-        trans('Website Settings Updated Successfully!')
-    );
-}
 
     // Update Payments Setting
     public function changePaymentsSettings(Request $request)
@@ -601,8 +601,9 @@ public function changeWebsiteSettings(WebsiteSettingsRequest $request)
             'config_value' => $request->email_footer,
         ]);
 
-        // Page redirect
-        // return redirect()->route('admin.tax.setting')->with('success', trans('Email Setting Updated Successfully!'));
+        return redirect()
+            ->back()
+            ->with('success', 'Email Setting Updated Successfully!');
     }
 
     // Clear cache

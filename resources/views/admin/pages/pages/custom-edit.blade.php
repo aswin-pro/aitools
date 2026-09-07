@@ -62,7 +62,7 @@
             <div class="row row-deck row-cards">
                 {{-- Update page --}}
                 <div class="col-sm-12 col-lg-12">
-                    <form action="{{ route('admin.update.custom.page') }}" method="post" enctype="multipart/form-data"
+                    <form action="{{ route('dashboard.admin.update.custom.page') }}" method="post" enctype="multipart/form-data"
                         class="card" id="customPageForm">
                         @csrf
                         <div class="card-body">
