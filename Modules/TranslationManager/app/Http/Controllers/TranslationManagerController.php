@@ -629,7 +629,7 @@ class TranslationManagerController extends Controller
                 ->with('success', trans('Translations successfully updated via imported ZIP package.'));
         } catch (\Exception $e) {
             return redirect()->route('translation-manager.index')
-                ->with('failed', __('Error during package extraction: ' . $e->getMessage()));
+                ->with('failed', 'Error during package extraction: ' . $e->getMessage());
         }
     }
 
@@ -638,6 +638,6 @@ class TranslationManagerController extends Controller
     {
         $this->languageService->deleteLanguage($locale);
         return redirect()->route('translation-manager.index')
-            ->with('success', __("Language files for '{locale}' removed.", ['locale' => $locale]));
+            ->with('success', "Language files for '{locale}' removed.", ['locale' => $locale]);
     }
 }

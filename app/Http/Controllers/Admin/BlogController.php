@@ -140,7 +140,7 @@ class BlogController extends Controller
             ->route('dashboard.admin.blogs.post')
             ->with(
                 'success',
-                trans('Blog published successfully!')
+                'Blog published successfully!'
             );
     }
     // Edit Blog

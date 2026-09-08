@@ -111,7 +111,7 @@ class CategoryController extends Controller
         $action = $request->query('action');
 
         if ($action === 'active') {
-            DB::table('custom_template_categories')
+            DB::table('content_template_categories')
                 ->where('id', $category->id)
                 ->update([
                     'status' => 1,
@@ -124,7 +124,7 @@ class CategoryController extends Controller
         }
 
         if ($action === 'inactive') {
-            $templateExists = DB::table('custom_templates')
+            $templateExists = DB::table('content_templates')
                 ->where('category_id', $category->id)
                 ->exists();
 
@@ -136,7 +136,7 @@ class CategoryController extends Controller
                 ]);
             }
 
-            DB::table('custom_template_categories')
+            DB::table('content_template_categories')
                 ->where('id', $category->id)
                 ->update([
                     'status' => 0,
@@ -149,7 +149,7 @@ class CategoryController extends Controller
         }
 
         if ($action === 'delete') {
-            $templateExists = DB::table('custom_templates')
+            $templateExists = DB::table('content_templates')
                 ->where('category_id', $category->id)
                 ->exists();
 
@@ -161,7 +161,7 @@ class CategoryController extends Controller
                 ]);
             }
 
-            DB::table('custom_template_categories')
+            DB::table('content_template_categories')
                 ->where('id', $category->id)
                 ->delete();
 

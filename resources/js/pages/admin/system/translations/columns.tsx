@@ -13,7 +13,9 @@ import { router } from "@inertiajs/react";
 export const getColumns = ({
     t,
     defaultLocale,
+    onDelete,
 }: {
+    onDelete: (language: TranslationLanguage) => void;
     t: (key: string) => string;
     defaultLocale?: string;
 }): ColumnDef<TranslationLanguage>[] => [
@@ -62,25 +64,14 @@ export const getColumns = ({
                             {t("Edit")}
                         </DropdownMenuItem>
 
-                        {/* <DropdownMenuItem asChild>
-    <a
-        href={route("translation-manager.export", language.code)}
-        download
+{language.code !== defaultLocale && (
+    <DropdownMenuItem
+        onClick={() => onDelete(language)}
     >
-        <Download className="mr-2 size-4" />
-        {t("Export")}
-    </a>
-</DropdownMenuItem>
-
-                        {language.code !== defaultLocale && (
-                            <DropdownMenuItem
-                                onClick={() => {
-                                }}
-                            >
-                                <Trash2 className="mr-2 size-4" />
-                                {t("Delete")}
-                            </DropdownMenuItem>
-                        )} */}
+        <Trash2 className="mr-2 size-4" />
+        {t("Delete")}
+    </DropdownMenuItem>
+)}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ContentTemplate;
 use App\Models\ContentTemplateCategory;
 use App\Models\ContentTemplateField;
-
+use App\Models\GeneratedContent;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -90,70 +90,70 @@ class TemplateController extends Controller
     // }
 
     public function index(Request $request)
-{
-    $perPage = $request->integer('per_page', 10);
-    $search = $request->input('search');
+    {
+        $perPage = $request->integer('per_page', 10);
+        $search = $request->input('search');
 
-    $templates = ContentTemplate::join(
-        'content_template_categories',
-        'content_templates.category_id',
-        '=',
-        'content_template_categories.id'
-    )
-        ->join(
-            'content_template_fields',
-            'content_templates.id',
+        $templates = ContentTemplate::join(
+            'content_template_categories',
+            'content_templates.category_id',
             '=',
-            'content_template_fields.template_id'
+            'content_template_categories.id'
         )
-        ->select(
-            'content_templates.*',
-            'content_template_categories.category_name',
-            'content_template_fields.ai_input',
-            'content_template_fields.field_type',
-            'content_template_fields.field_name',
-            'content_template_fields.field_description'
-        )
-        ->when($search, function ($query) use ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->where(
-                    'content_templates.name',
-                    'like',
-                    "%{$search}%"
-                )
-                    ->orWhere(
-                        'content_templates.description',
+            ->join(
+                'content_template_fields',
+                'content_templates.id',
+                '=',
+                'content_template_fields.template_id'
+            )
+            ->select(
+                'content_templates.*',
+                'content_template_categories.category_name',
+                'content_template_fields.ai_input',
+                'content_template_fields.field_type',
+                'content_template_fields.field_name',
+                'content_template_fields.field_description'
+            )
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where(
+                        'content_templates.name',
                         'like',
                         "%{$search}%"
                     )
-                    ->orWhere(
-                        'content_template_categories.category_name',
-                        'like',
-                        "%{$search}%"
-                    );
-            });
-        })
-        ->orderBy('content_templates.id', 'DESC')
-        ->groupBy('content_templates.id')
-        ->paginate($perPage)
-        ->withQueryString();
+                        ->orWhere(
+                            'content_templates.description',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'content_template_categories.category_name',
+                            'like',
+                            "%{$search}%"
+                        );
+                });
+            })
+            ->orderBy('content_templates.id', 'DESC')
+            ->groupBy('content_templates.id')
+            ->paginate($perPage)
+            ->withQueryString();
 
-    $templates->getCollection()->transform(function ($template) {
-        $template->formatted_updated_at = formatDateForUser(
-            $template->updated_at
-        );
+        $templates->getCollection()->transform(function ($template) {
+            $template->formatted_updated_at = formatDateForUser(
+                $template->updated_at
+            );
 
-        return $template;
-    });
+            return $template;
+        });
 
-    return Inertia::render('admin/content-templates/templates/index', [
-        'templates' => $templates,
-        'filters' => [
-            'search' => $search,
-            'per_page' => $perPage,
-        ],
-    ]);
-}
+        return Inertia::render('admin/content-templates/templates/index', [
+            'templates' => $templates,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
+        ]);
+    }
 
     // Add Template
     public function addTemplate()
@@ -213,7 +213,7 @@ class TemplateController extends Controller
         for ($i = 0; $i < count($request->fieldTitle); $i++) {
             if (isset($request->fieldType[$i]) && isset($request->fieldTitle[$i]) && isset($request->fieldDescription[$i])) {
                 // Save Template Field
-                $field = new ContentTemplateCategory();
+                $field = new ContentTemplateField();
                 $field->template_id = $template->id;
                 $field->ai_input = $request->aiInput[$i];
                 $field->field_type = $request->fieldType[$i];
@@ -340,30 +340,37 @@ class TemplateController extends Controller
             )
             ->with(
                 'success',
-                
-                    'Template Details Updated Successfully!'
-                
+
+                'Template Details Updated Successfully!'
+
             );
     }
 
     // Deactivate Template
     // Activate / Deactivate Template
-    public function deleteTemplate(Request $request)
-    {
-        $template = ContentTemplate::find($request->query('id'));
+public function deleteTemplate(Request $request)
+{
+    $template = ContentTemplate::find($request->query('id'));
 
-        if (!$template) {
-            return back()->withErrors([
-                'action' => __('Template not found.')
-            ]);
-        }
-
-        $status = $template->status == 0 ? 1 : 0;
-
-        $template->update([
-            'status' => $status
+    if (!$template) {
+        return back()->withErrors([
+            'action' => 'Template not found.'
         ]);
-
-        return back()->with('success', 'Template status updated successfully!');
     }
+
+    $isUsed = GeneratedContent::where('type', $template->unique_slug)->exists();
+
+    if ($isUsed) {
+        return back()->withErrors([
+            'action' => "You can't deactivate this template because it is already being used by users.",
+        ]);
+    }
+
+    $status = $template->status == 0 ? 1 : 0;
+
+    $template->status = $status;
+    $template->save();
+
+    return back()->with('success', 'Template status updated successfully!');
+}
 }

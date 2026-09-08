@@ -40,7 +40,7 @@
         Route::post('update-template', [App\Http\Controllers\Admin\TemplateController::class, "updateTemplate"])->name('update.template')->middleware(['demo.mode']);
         Route::get('delete-template', [App\Http\Controllers\Admin\TemplateController::class, "deleteTemplate"])->name('delete.template')->middleware(['demo.mode']);
 
-        // Chat Genius
+        // Chat assistant
         Route::get('chat-assitant', [App\Http\Controllers\Admin\ChatAssitantController::class, "index"])->name('chatgenius');
         // Route::get('create-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "createChatgenius"])->name('create.chatgenius');
         Route::post('save-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "saveChatgenius"])->name('save.chatgenius')->middleware(['demo.mode']);

@@ -77,7 +77,7 @@ export default function Index({ plans, filters }: Props) {
 
                 onAction: (plan, action) => {
                     router.get(
-                        route("admin.delete.plan"),
+                        route("dashboard.admin.delete.plan"),
                         {
                             id: plan.id,
                             action,

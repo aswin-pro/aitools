@@ -8,8 +8,10 @@ import { DataTable } from "@/components/table/data-table";
 import { getColumns } from "./columns";
 import { TranslationLanguage } from "@/types/translation-manager";
 import { FormSheet } from "@/components/admin/form-sheet";
-import { Plus } from "lucide-react";
+import { Download, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -34,6 +36,78 @@ interface Props {
 
 export default function Index({ languages, allLanguages, settings }: Props) {
     const { t } = useTranslation();
+const [importOpen, setImportOpen] = useState(false);
+
+const importForm = useForm<{
+    locale: string;
+    zip_file: File | null;
+}>({
+    locale: "",
+    zip_file: null,
+});
+
+const [deleteOpen, setDeleteOpen] = useState(false);
+const [languageToDelete, setLanguageToDelete] =
+    useState<TranslationLanguage | null>(null);
+
+
+const handleImportSubmit = (
+    e: React.FormEvent<HTMLFormElement>,
+) => {
+    e.preventDefault();
+
+    importForm.post(route("translation-manager.import"), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            setImportOpen(false);
+            importForm.reset();
+
+            toast.success(
+                t(
+                    "Translations successfully updated via imported ZIP package.",
+                ),
+            );
+        },
+        onError: () => {
+            toast.error(
+                t("Unable to import translation package."),
+            );
+        },
+    });
+};
+
+const handleDelete = (language: TranslationLanguage) => {
+    setLanguageToDelete(language);
+    setDeleteOpen(true);
+};
+
+const handleDeleteConfirm = () => {
+    if (!languageToDelete) return;
+
+    router.delete(
+        route(
+            "translation-manager.destroy",
+            languageToDelete.code,
+        ),
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteOpen(false);
+                setLanguageToDelete(null);
+
+                toast.success(
+                    t("Language deleted successfully."),
+                );
+            },
+            onError: () => {
+                toast.error(
+                    t("Unable to delete language."),
+                );
+            },
+        },
+    );
+};
 
     const [createOpen, setCreateOpen] = useState(false);
 
@@ -43,17 +117,18 @@ export default function Index({ languages, allLanguages, settings }: Props) {
         copy_from: "en",
     });
 
-    const columns = useMemo(
-        () =>
-            getColumns({
-                t,
-                defaultLocale:
-                    typeof settings?.default_locale === "string"
-                        ? settings.default_locale
-                        : undefined,
-            }),
-        [t, settings],
-    );
+const columns = useMemo(
+    () =>
+        getColumns({
+            t,
+            defaultLocale:
+                typeof settings?.default_locale === "string"
+                    ? settings.default_locale
+                    : undefined,
+            onDelete: handleDelete,
+        }),
+    [t, settings],
+);
 
     const navigate = (params: {
         page?: number;
@@ -105,6 +180,22 @@ export default function Index({ languages, allLanguages, settings }: Props) {
             })),
         },
     ];
+const importFields = [
+    {
+        type: "input" as const,
+        name: "locale",
+        label: t("Language Code"),
+        placeholder: "e.g., ta",
+        required: true,
+    },
+    {
+        type: "file" as const,
+        name: "zip_file",
+        label: t("ZIP File"),
+        accept: ".zip,application/zip,application/x-zip-compressed",
+        required: true,
+    },
+];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -120,7 +211,14 @@ export default function Index({ languages, allLanguages, settings }: Props) {
                     />
                 </div>
 
-                <div>
+                <div className="flex gap-3 flex-wrap">
+                        <Button
+        variant="outline"
+        onClick={() => setImportOpen(true)}
+    >
+        <Download className="size-4" />
+        {t("Import")}
+    </Button>
                     <Button onClick={() => setCreateOpen(true)}>
                         <Plus className=" size-4" />
                         {t("Create New")}
@@ -173,6 +271,38 @@ export default function Index({ languages, allLanguages, settings }: Props) {
                 submitLabel={t("Save Language")}
                 cancelLabel={t("Cancel")}
             />
+
+<FormSheet
+    open={importOpen}
+    onOpenChange={setImportOpen}
+    title={t("Import Translation")}
+    description={t(
+        "Upload a translation ZIP package for a language.",
+    )}
+    form={importForm}
+    fields={importFields}
+    onSubmit={handleImportSubmit}
+    submitLabel={t("Import")}
+    cancelLabel={t("Cancel")}
+/>
+
+<ConfirmDialog
+    open={deleteOpen}
+    onOpenChange={setDeleteOpen}
+    icon={<Trash2 className="size-6" />}
+    title={t("Delete Language")}
+    description={
+        languageToDelete
+            ? t(
+                  `Are you sure you want to delete the ${languageToDelete.name} language? This action cannot be undone.`,
+              )
+            : ""
+    }
+    confirmLabel={t("Delete")}
+    cancelLabel={t("Cancel")}
+    onConfirm={handleDeleteConfirm}
+    loading={false}
+/>
         </AppLayout>
     );
 }

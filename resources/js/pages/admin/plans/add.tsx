@@ -172,6 +172,7 @@ export default function AddPlan({ templates }: Props) {
                             name="price"
                             type="number"
                             label={t("Price")}
+                            min="0"
                             required
                             value={data.price}
                             placeholder={t("Enter plan price")}
@@ -188,6 +189,8 @@ export default function AddPlan({ templates }: Props) {
                             type="number"
                             label={t("Validity")}
                             required
+                            min="0"
+                            max="9999"
                             value={data.validity}
                             placeholder={t("Enter validity in days")}
                             error={errors.validity}
