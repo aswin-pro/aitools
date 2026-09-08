@@ -44,8 +44,8 @@ interface GeneratedContent {
 
 interface GeneratedImage {
     id: number;
-    generate_id: string;
-    generate_by: string;
+    generation_id: string;
+    generated_by: string;
     name: string;
     type: string;
     prompt: string;

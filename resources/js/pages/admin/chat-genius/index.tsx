@@ -49,20 +49,20 @@ export default function Index({
     const [createOpen, setCreateOpen] = useState(false);
 
     const form = useForm({
-        chat_genius_image: null as File | null,
-        chat_genius_name: "",
-        chat_genius_expert: "",
-        chat_genius_description: "",
-        chat_genius_message: "",
+        chat_assistant_image: null as File | null,
+        chat_assistant_name: "",
+        chat_assistant_expert: "",
+        chat_assistant_description: "",
+        chat_assistant_message: "",
     });
 
     const editForm = useForm({
-        chat_genius_id: "",
-        chat_genius_name: "",
-        chat_genius_expert: "",
-        chat_genius_description: "",
-        chat_genius_message: "",
-        chat_genius_image: null as File | null,
+        chat_assistant_id: "",
+        chat_assistant_name: "",
+        chat_assistant_expert: "",
+        chat_assistant_description: "",
+        chat_assistant_message: "",
+        chat_assistant_image: null as File | null,
     });
 
     const openActionDialog = (
@@ -100,12 +100,12 @@ export default function Index({
         setSelectedChatGenius(chatgenius);
 
         editForm.setData({
-            chat_genius_id: chatgenius.chat_genius_id,
-            chat_genius_name: chatgenius.chat_genius_name,
-            chat_genius_expert: chatgenius.chat_genius_expert,
-            chat_genius_description: chatgenius.chat_genius_description,
-            chat_genius_message: chatgenius.chat_genius_message,
-            chat_genius_image: null,
+            chat_assistant_id: chatgenius.chat_assistant_id,
+            chat_assistant_name: chatgenius.chat_assistant_name,
+            chat_assistant_expert: chatgenius.chat_assistant_expert,
+            chat_assistant_description: chatgenius.chat_assistant_description,
+            chat_assistant_message: chatgenius.chat_assistant_message,
+            chat_assistant_image: null,
         });
 
         editForm.clearErrors();
@@ -151,7 +151,7 @@ export default function Index({
         router.get(
             route(routeName),
             {
-                id: selectedChatGenius.chat_genius_id,
+                id: selectedChatGenius.chat_assistant_id,
             },
             {
                 preserveScroll: true,
@@ -305,13 +305,13 @@ export default function Index({
                 fields={[
                     {
                         type: "file",
-                        name: "chat_genius_image",
+                        name: "chat_assistant_image",
                         label: t("Thumbnail"),
                         required: true,
                     },
                     {
                         type: "input",
-                        name: "chat_genius_name",
+                        name: "chat_assistant_name",
                         label: t("Name"),
                         placeholder: t("Ex: Fitness Guru"),
                         required: true,
@@ -319,7 +319,7 @@ export default function Index({
                     },
                     {
                         type: "input",
-                        name: "chat_genius_expert",
+                        name: "chat_assistant_expert",
                         label: t("Expert"),
                         placeholder: t("Ex: Personal Trainer"),
                         required: true,
@@ -327,7 +327,7 @@ export default function Index({
                     },
                     {
                         type: "textarea",
-                        name: "chat_genius_description",
+                        name: "chat_assistant_description",
                         label: t("Description"),
                         placeholder: t(
                             "Ex: I am a personal trainer and I can help you achieve your fitness goals.",
@@ -336,7 +336,7 @@ export default function Index({
                     },
                     {
                         type: "textarea",
-                        name: "chat_genius_message",
+                        name: "chat_assistant_message",
                         label: t("System Prompt"),
                         placeholder: t(
                             "Ex: Hi, I'm John and I'm a personal trainer. How can I help you achieve your fitness goals?",
@@ -359,7 +359,7 @@ export default function Index({
                 fields={[
                     {
                         type: "input",
-                        name: "chat_genius_name",
+                        name: "chat_assistant_name",
                         label: t("Name"),
                         placeholder: t("Enter chat assistant name"),
                         required: true,
@@ -368,7 +368,7 @@ export default function Index({
 
                     {
                         type: "input",
-                        name: "chat_genius_expert",
+                        name: "chat_assistant_expert",
                         label: t("Expert"),
                         placeholder: t("Enter expert name"),
                         required: true,
@@ -377,7 +377,7 @@ export default function Index({
 
                     {
                         type: "textarea",
-                        name: "chat_genius_description",
+                        name: "chat_assistant_description",
                         label: t("Description"),
                         placeholder: t("Enter description"),
                         required: true,
@@ -385,7 +385,7 @@ export default function Index({
 
                     {
                         type: "textarea",
-                        name: "chat_genius_message",
+                        name: "chat_assistant_message",
                         label: t("System Prompt"),
                         placeholder: t("Enter system prompt"),
                         required: true,
@@ -393,7 +393,7 @@ export default function Index({
 
                     {
                         type: "file",
-                        name: "chat_genius_image",
+                        name: "chat_assistant_image",
                         label: t("Thumbnail"),
                         required: false,
                     },

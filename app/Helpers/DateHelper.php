@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use App\Models\Config;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 
 // Get date time formats
 if (!function_exists('getDateTimeFormats')) {
@@ -46,14 +45,7 @@ if (!function_exists('getDateTimeFormats')) {
 
 // Get date time formats
 if (!function_exists('formatDateForUser')) {
-    /**
-     * Format a date based on the user's locale and timezone.
-     *
-     * @param string|\DateTimeInterface|null $date The date to format.
-     * @param string $format The format type: 'full', 'short', 'time', 'datetime'.
-     * @return string|null
-     */
-    function formatDateForUser($date, $format = 'full')
+    function formatDateForUser($date)
     {
         // Get application timezone
         $configs = Config::get();
@@ -72,6 +64,32 @@ if (!function_exists('formatDateForUser')) {
         $carbonDate = Carbon::parse($date)->setTimezone($timezone);
         $carbonDate->locale($locale); // Set locale for translation
 
+        // return translated format
         return $carbonDate->translatedFormat($configs[61]->config_value ?? 'M d, Y h:i A');
+    }
+}
+
+// Get date formats
+if (!function_exists('formatDateOnlyForUser')) {
+    function formatDateOnlyForUser($date)
+    {
+        // Get application timezone
+        $configs = Config::get();
+
+        if (!$date) {
+            return null;
+        }
+
+        // Get user locale (default to 'en' if not set)
+        $locale = App::getLocale() ?? 'en';
+
+        // Get user timezone (default to 'UTC' if not set)
+        $timezone = $configs[2]->config_value ?? 'UTC';
+
+        // Format the date
+        $carbonDate = Carbon::parse($date)->setTimezone($timezone)->locale($locale);
+
+        // return human readable format
+        return $carbonDate->diffForHumans();
     }
 }

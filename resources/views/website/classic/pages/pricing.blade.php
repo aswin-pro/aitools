@@ -99,18 +99,18 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
                         {{-- AI Words --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
-                            <span>{{ $plan->max_words == 9999 ? __('Unlimited') : $plan->max_words }} {{ __('AI Words') }}</span>
+                            <span>{{ $plan->ai_credits == 9999 ? __('Unlimited') : $plan->ai_credits }} {{ __('AI Words') }}</span>
                         </li>
 
                         {{-- AI Images --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
-                            <span>{{ $plan->max_images == 9999 ? __('Unlimited') : $plan->max_images }} {{ __('AI Images') }}</span>
+                            <span>{{ $plan->ai_image_credits == 9999 ? __('Unlimited') : $plan->ai_image_credits }} {{ __('AI Images') }}</span>
                         </li>
 
                         {{-- AI Speech to Text --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_speech_to_text == 1)
+                            @if ($plan->speech_to_text == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">
@@ -120,7 +120,7 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
 
                         {{-- AI Text to Speech --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_text_to_speech == 1)
+                            @if ($plan->text_to_speech == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">
@@ -130,7 +130,7 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
 
                         {{-- AI Code --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_code == 1)
+                            @if ($plan->code_generator == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">
@@ -140,7 +140,7 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
 
                         {{-- AI Chat Assistant --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_chatgenius == 1)
+                            @if ($plan->personalized_chat == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">
@@ -150,7 +150,7 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
 
                         {{-- AI File Analyzer --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_docsassist == 1)
+                            @if ($plan->document_analyzer == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">
@@ -160,7 +160,7 @@ $page = Page::where('slug', 'pricing')->where('status', 1)->get();
 
                         {{-- AI Web Chat --}}
                         <li class="flex items-center mb-3 text-gray-500 font-medium">
-                            @if ($plan->ai_webchat == 1)
+                            @if ($plan->site_analyzer == 1)
                             <img class="mr-3" src="{{ asset('images/web/elements/checkbox-green.svg') }}">
                             @else
                             <img class="mr-3" src="{{ asset('images/web/elements/icons8-cancel-1.svg') }}">

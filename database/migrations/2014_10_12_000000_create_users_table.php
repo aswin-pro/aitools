@@ -38,7 +38,7 @@ class CreateUsersTable extends Migration
             $table->string('billing_country')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();
-            $table->longText('api_key')->nullable();
+            $table->string('lang')->default('en');
             $table->integer('status')->default(1);
             $table->rememberToken();
             $table->timestamp('created_at')->useCurrent();

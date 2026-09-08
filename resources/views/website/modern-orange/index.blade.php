@@ -120,21 +120,29 @@ $pricing = Page::where('theme_id', '317109101703740')->where('slug', 'pricing-ho
             </div>
             <div class="flex flex-wrap -mx-4 -mb-8">
               {{-- Images --}}
-              @if (count($images) > 0)
-                @foreach ($images as $image)
-                <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-8">
-                  <a class="spotlight" href="{{ asset(json_decode($image->result)[0]) }}">
-                    <div class="max-w-xs md:max-w-none mx-auto h-full pt-3 px-3 pb-5 bg-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
-                      <img class="block w-full mb-4 h-64 object-cover" src="{{ asset(json_decode($image->result)[0]) }}" alt="">
-                      <div class="text-center">
-                        <h5 class="text-xl font-bold capitalize">{{ __($image->name) }}</h5>
-                        <span class="text-sm font-bold text-gray-400 capitalize">{{ __($image->type) }}</span>
-                      </div>
+@if (count($images) > 0)
+    @foreach ($images as $image)
+        <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-8">
+            <a class="spotlight" href="{{ asset($image->result[0]) }}">
+                <div class="max-w-xs md:max-w-none mx-auto h-full pt-3 px-3 pb-5 bg-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
+                    <img
+                        class="block w-full mb-4 h-64 object-cover"
+                        src="{{ asset($image->result[0]) }}"
+                        alt=""
+                    >
+                    <div class="text-center">
+                        <h5 class="text-xl font-bold capitalize">
+                            {{ __($image->name) }}
+                        </h5>
+                        <span class="text-sm font-bold text-gray-400 capitalize">
+                            {{ __($image->type) }}
+                        </span>
                     </div>
-                  </a>
                 </div>
-                @endforeach 
-              @else
+            </a>
+        </div>
+    @endforeach
+@else
                 {{-- Sample images --}}
                 @for ($i = 1; $i <= 4; $i++)
                 <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-4 mb-8">
@@ -228,39 +236,39 @@ $pricing = Page::where('theme_id', '317109101703740')->where('slug', 'pricing-ho
                                 </li>
                                 <li class="flex mb-4 items-center">
                                     <img src="{{ asset('themes/modern-orange/assets/images/pricing/green-check.svg') }}"
-                                        alt="" /><span class="ml-2 text-gray-900 font-medium">{{ $plan->max_words == 9999 ? __('Unlimited') : $plan->max_words }} {{ __('AI Words') }}</span>
+                                        alt="" /><span class="ml-2 text-gray-900 font-medium">{{ $plan->ai_credits == 9999 ? __('Unlimited') : $plan->ai_credits }} {{ __('AI Words') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
                                     <img src="{{ asset('themes/modern-orange/assets/images/pricing/green-check.svg') }}"
-                                        alt="" /><span class="ml-2 text-gray-900 font-medium">{{ $plan->max_images == 9999 ? __('Unlimited') : $plan->max_images }} {{ __('AI Images') }}</span>
+                                        alt="" /><span class="ml-2 text-gray-900 font-medium">{{ $plan->ai_image_credits == 9999 ? __('Unlimited') : $plan->ai_image_credits }} {{ __('AI Images') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                    <img src="{{ asset($plan->ai_speech_to_text == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
-                                        alt="" /><span class="ml-2 font-medium {{ $plan->ai_speech_to_text == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Speech to Text') }}</span>
+                                    <img src="{{ asset($plan->speech_to_text == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                        alt="" /><span class="ml-2 font-medium {{ $plan->speech_to_text == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Speech to Text') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                    <img src="{{ asset($plan->ai_text_to_speech == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
-                                        alt="" /><span class="ml-2 font-medium {{ $plan->ai_text_to_speech == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Text to Speech') }}</span>
+                                    <img src="{{ asset($plan->text_to_speech == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                        alt="" /><span class="ml-2 font-medium {{ $plan->text_to_speech == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Text to Speech') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                    <img src="{{ asset($plan->ai_code == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                    <img src="{{ asset($plan->code_generator == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
                                         alt="" /><span
-                                        class="ml-2 font-medium {{ $plan->ai_code == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Code') }}</span>
+                                        class="ml-2 font-medium {{ $plan->code_generator == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Code') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                    <img src="{{ asset($plan->ai_chatgenius == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                    <img src="{{ asset($plan->personalized_chat == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
                                         alt="" /><span
-                                        class="ml-2 font-medium {{ $plan->ai_chatgenius == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Chat Assistant') }}</span>
+                                        class="ml-2 font-medium {{ $plan->personalized_chat == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Chat Assistant') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                  <img src="{{ asset($plan->ai_docsassist == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                  <img src="{{ asset($plan->document_analyzer == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
                                       alt="" /><span
-                                      class="ml-2 font-medium {{ $plan->ai_docsassist == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI File Analyzer') }}</span>
+                                      class="ml-2 font-medium {{ $plan->document_analyzer == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI File Analyzer') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
-                                  <img src="{{ asset($plan->ai_webchat == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
+                                  <img src="{{ asset($plan->site_analyzer == 1 ? 'themes/modern-orange/assets/images/pricing/green-check.svg' : 'themes/modern-orange/assets/images/pricing/check-circle-grey.svg') }}"
                                       alt="" /><span
-                                      class="ml-2 font-medium {{ $plan->ai_webchat == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Web Chat') }}</span>
+                                      class="ml-2 font-medium {{ $plan->site_analyzer == 1 ? 'text-gray-900' : 'text-gray-500 line-through' }}">{{ __('AI Web Chat') }}</span>
                                 </li>
                                 <li class="flex mb-4 items-center">
                                     <img src="{{ asset('themes/modern-orange/assets/images/pricing/green-check.svg') }}"

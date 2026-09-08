@@ -33,123 +33,60 @@ class BackupController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    // Get File Backup
-    // public function index(Request $request)
-    // {
-    //     // Backups
-    //     if ($request->ajax()) {
-    //         $data = Backup::where('status', 1)->where('type', 'file')->get();
-
-    //         // Files Backups
-    //         return DataTables::of($data)
-    //             ->addIndexColumn()
-    //             ->addColumn('version', function ($row) {
-    //                 return $row->version;
-    //             })
-    //             ->addColumn('status', function ($row) {
-    //                 return $row->status == 0
-    //                     ? '<span class="badge bg-red text-white text-white">' . __('Not Backuped') . '</span>'
-    //                     : '<span class="badge bg-green text-white text-white">' . __('Backuped') . '</span>';
-    //             })
-    //             ->addColumn('action', function ($row) {
-    //                 $downloadButton = '<a href="' . route('admin.backup.download') . '?id=' . $row->backup_id . '" class="dropdown-item">' . __('Download') . '</a>';
-
-    //                 return '<span class="dropdown">
-    //                             <button class="btn small-btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">' . __('Actions') . '</button>
-    //                             <div class="actions dropdown-menu dropdown-menu-end">
-    //                                 <a class="dropdown-item" href="#" onclick="deleteBackup(\'' . $row->backup_id . '\'); return false;">' . __('Delete') . '</a>
-    //                             </div>
-    //                         </span>';
-    //             })
-    //             ->rawColumns(['version', 'status', 'action'])
-    //             ->make(true);
-    //     }
-
-    //     // Queries
-    //     $settings = Setting::where('status', 1)->first();
-    //     $config = Config::get();
-
-    //     return view('admin.pages.backups.index', compact('settings', 'config'));
-    // }
-
-    // public function index()
-    // {
-    //     $fileBackups = Backup::where('status', 1)
-    //         ->where('type', 'file')
-    //         ->orderBy('id', 'desc')
-    //         ->get();
-
-    //     $databaseBackups = Backup::where('status', 1)
-    //         ->where('type', 'database')
-    //         ->orderBy('id', 'desc')
-    //         ->get();
-
-    //     $settings = Setting::where('status', 1)->first();
-
-    //     $config = Config::get();
-
-    //     return Inertia::render('admin/system/backups/index', [
-    //         'fileBackups' => $fileBackups,
-    //         'databaseBackups' => $databaseBackups,
-    //         'settings' => $settings,
-    //         'config' => $config,
-    //     ]);
-    // }
-
 
     public function index(Request $request)
-{
-    $fileSearch = $request->input('file_search');
+    {
+        $fileSearch = $request->input('file_search');
 
-    $databaseSearch = $request->input('database_search');
+        $databaseSearch = $request->input('database_search');
 
-    $fileBackups = Backup::where('status', 1)
-        ->where('type', 'file')
-        ->when($fileSearch, function ($query) use ($fileSearch) {
-            $query->where(function ($query) use ($fileSearch) {
-                $query->where('version', 'like', "%{$fileSearch}%")
-                   ->orWhereDate('created_at', "%{$fileSearch}%"); 
-            });
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(
-            $request->integer('file_per_page', 10),
-            ['*'],
-            'file_page'
-        )
-        ->withQueryString();
+        $fileBackups = Backup::where('status', 1)
+            ->where('type', 'file')
+            ->when($fileSearch, function ($query) use ($fileSearch) {
+                $query->where(function ($query) use ($fileSearch) {
+                    $query->where('version', 'like', "%{$fileSearch}%")
+                        ->orWhereDate('created_at', "%{$fileSearch}%");
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(
+                $request->integer('file_per_page', 10),
+                ['*'],
+                'file_page'
+            )
+            ->withQueryString();
 
-    $databaseBackups = Backup::where('status', 1)
-        ->where('type', 'database')
-        ->when($databaseSearch, function ($query) use ($databaseSearch) {
-            $query->where(function ($query) use ($databaseSearch) {
-                $query->where('version', 'like', "%{$databaseSearch}%")
-                    ->orWhere('created_at', 'like', "%{$databaseSearch}%");
-            });
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(
-            $request->integer('database_per_page', 10),
-            ['*'],
-            'database_page'
-        )
-        ->withQueryString();
+        $databaseBackups = Backup::where('status', 1)
+            ->where('type', 'database')
+            ->when($databaseSearch, function ($query) use ($databaseSearch) {
+                $query->where(function ($query) use ($databaseSearch) {
+                    $query->where('version', 'like', "%{$databaseSearch}%")
+                        ->orWhere('created_at', 'like', "%{$databaseSearch}%");
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(
+                $request->integer('database_per_page', 10),
+                ['*'],
+                'database_page'
+            )
+            ->withQueryString();
 
-    $settings = Setting::where('status', 1)->first();
+        $settings = Setting::where('status', 1)->first();
 
-    $config = Config::get();
+        $config = Config::get();
 
-    return Inertia::render('admin/system/backups/index', [
-        'fileBackups' => $fileBackups,
-        'databaseBackups' => $databaseBackups,
-        'settings' => $settings,
-        'config' => $config,
-        'filters' => [
-            'file_search' => $fileSearch,
-            'database_search' => $databaseSearch,
-        ],
-    ]);
-}
+        return Inertia::render('admin/system/backups/index', [
+            'fileBackups' => $fileBackups,
+            'databaseBackups' => $databaseBackups,
+            'settings' => $settings,
+            'config' => $config,
+            'filters' => [
+                'file_search' => $fileSearch,
+                'database_search' => $databaseSearch,
+            ],
+        ]);
+    }
 
     // Get Database Backup
     public function getDatabaseBackup(Request $request)
@@ -191,21 +128,16 @@ class BackupController extends Controller
 
     // Create File Backup
     public function createFileBackup()
-
-
     {
-            set_time_limit(300);
+        set_time_limit(300);
 
-        // Fetch the application version from the config table
         $version = Config::where('config_key', 'app_version')->value('config_value');
 
-        // Check if the version exists
         if (!$version) {
             return redirect()->route('dashboard.admin.system.backups')->with('failed', trans('Version not found!'));
         }
 
         try {
-            // Step 1: Prepare file backup
             $zipVersion = str_replace('.', '', $version);
             $zipFileName = 'file_backup_v' . $zipVersion . '_' . date('Y-m-d') . '.zip';
             $zipFilePath = storage_path('app/backups/' . $zipFileName);
@@ -224,13 +156,12 @@ class BackupController extends Controller
                 return redirect()->route('dashboard.admin.system.backups')->with('failed', trans('First, back up the database, and then try to create a new backup.'));
             }
 
-            // Step 5: Store backup details in the database
             $backup = new Backup;
             $backup->backup_id = uniqid();
             $backup->type = 'file';
             $backup->version = $version;
             $backup->file_name = $zipFileName;
-            $backup->path = 'backups/' . $zipFileName; // Corrected to store the relative path
+            $backup->path = 'backups/' . $zipFileName;
             $backup->save();
 
             return redirect()->route('dashboard.admin.system.backups')->with('success', trans('Created!'));
@@ -242,26 +173,20 @@ class BackupController extends Controller
     // Create Database Backup
     public function createDatabaseBackup()
     {
-        // Fetch the application version from the config table
         $version = Config::where('config_key', 'app_version')->value('config_value');
 
-        // Check if the version exists
         if (!$version) {
             return redirect()->route('dashboard.admin.system.backups')->with('failed', trans('Version not found!'));
         }
 
         try {
-            // Get database connection settings from .env
             $dbName = env('DB_DATABASE');
 
-            // Generate a backup file name with timestamp
             $timestamp = Carbon::now()->format('Y-m-d_H-i-s');
 
-            // File name and path
             $includeVersionName = str_replace('.', '', $version);
             $backupFileName = "database_backup_v{$includeVersionName}_{$timestamp}.sql";
 
-            // Create a new backup record
             $backup = new Backup();
             $backup->backup_id = uniqid();
             $backup->type = 'database';
@@ -270,28 +195,22 @@ class BackupController extends Controller
             $backup->path = 'backups/database/' . $backupFileName; // Corrected to store the relative path
             $backup->save();
 
-            // Start the SQL backup file content
             $backupContent = "-- Database backup for {$dbName}\n";
             $backupContent .= "-- Created on {$timestamp}\n\n";
 
-            // Get all tables from the database
             $tables = DB::select('SHOW TABLES');
 
             foreach ($tables as $table) {
                 $tableName = $table->{"Tables_in_{$dbName}"};
 
-                // Escape the table name to handle reserved words
                 $escapedTableName = "`{$tableName}`";  // Correct escape with backticks
 
-                // Get the CREATE TABLE statement with escaped table name
                 $createTable = DB::select("SHOW CREATE TABLE {$escapedTableName}");
                 $backupContent .= "--\n-- Create table {$tableName}\n--\n";
                 $backupContent .= $createTable[0]->{"Create Table"} . ";\n\n";
 
-                // Get all rows from the table
                 $rows = DB::table(str_replace('`', '', $escapedTableName))->get();
 
-                // Insert rows into the backup
                 foreach ($rows as $row) {
                     $columns = array_keys((array) $row); // Get column names
                     $values = array_map(function ($value) {
@@ -307,10 +226,8 @@ class BackupController extends Controller
                 $backupContent .= "\n";
             }
 
-            // Save the backup content to the file
             Storage::put("backups/database/{$backupFileName}", $backupContent);
 
-            // Return the success message
             return redirect()->route('dashboard.admin.system.backups')->with('success', __('Created!'));
         } catch (\Exception $e) {
             return redirect()->route('dashboard.admin.system.backups')->with('failed', $e->getMessage());
@@ -372,7 +289,6 @@ class BackupController extends Controller
         $backup = Backup::where('backup_id', $request->query('id'))->first();
 
         if ($backup) {
-            // Zip existing files
             try {
                 return response()->download(storage_path('app/' . $backup->path));
             } catch (\Exception $e) {
@@ -383,10 +299,8 @@ class BackupController extends Controller
         return redirect()->route('admin.backups')->with('failed', trans('Not Found!'));
     }
 
-    // Delete backup
     public function delete(Request $request)
     {
-        // Get the backup
         $backup = Backup::where('backup_id', $request->query('id'))->first();
 
         if ($backup) {
@@ -412,26 +326,7 @@ class BackupController extends Controller
         return redirect()->route('dashboard.admin.system.backups')->with('failed', trans('Not Found!'));
     }
 
-    // Helper function to add folders to a zip file
-    //     private function addFolderToZip($folder, $zip, $folderInZip)
-    //     {
-    //         $files = scandir($folder);
 
-    //         foreach ($files as $file) {
-    //             if ($file === '.' || $file === '..') {
-    //                 continue;
-    //             }
-
-    //             $filePath = $folder . DIRECTORY_SEPARATOR . $file;
-
-    //             if (is_dir($filePath)) {
-    //                 $this->addFolderToZip($filePath, $zip, $folderInZip . '/' . $file);
-    //             } else {
-    //                 $zip->addFile($filePath, $folderInZip . '/' . $file);
-    //             }
-    //         }
-    //     }
-    // }
 
     private function addFolderToZip($folder, $zip, $folderInZip)
     {

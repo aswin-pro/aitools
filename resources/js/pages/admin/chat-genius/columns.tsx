@@ -18,6 +18,7 @@ import {
     UserCheck,
     UserX,
 } from "lucide-react";
+import { assetUrl } from "@/helpers/asset-url";
 
 interface GetColumnsProps {
     pageIndex: number;
@@ -54,14 +55,14 @@ export const getColumns = ({
 
             return (
                 <div className="flex items-center gap-3">
-                    <img
-                        src={`/${chatgenius.chat_genius_image}`}
-                        alt={chatgenius.chat_genius_name}
-                        className="size-10 rounded-full object-cover"
-                    />
+<img
+    src={assetUrl(chatgenius.chat_assistant_image)}
+    alt={chatgenius.chat_assistant_name}
+    className="size-10 rounded-full object-cover"
+/>
 
                     <span className="font-medium">
-                        {chatgenius.chat_genius_name}
+                        {chatgenius.chat_assistant_name}
                     </span>
                 </div>
             );
@@ -71,33 +72,20 @@ export const getColumns = ({
     {
         accessorKey: "Expert",
         header: t("Expert"),
-        cell: ({ row }) => row.original.chat_genius_expert ?? "-",
+        cell: ({ row }) => row.original.chat_assistant_expert ?? "-",
     },
 
     {
         accessorKey: "Description",
         header: t("Description"),
         cell: ({ row }) => {
-            const description = row.original.chat_genius_description ?? "";
+            const description = row.original.chat_assistant_description ?? "";
 
             return description.length > 80
                 ? `${description.substring(0, 80)}...`
                 : description;
         },
     },
-
-    // {
-    //     accessorKey: "chat_genius_message",
-    //     header: t("Message"),
-    //     cell: ({ row }) => {
-    //         const message =
-    //             row.original.chat_genius_message ?? "";
-
-    //         return message.length > 80
-    //             ? `${message.substring(0, 80)}...`
-    //             : message;
-    //     },
-    // },
 
     {
         accessorKey: "Status",

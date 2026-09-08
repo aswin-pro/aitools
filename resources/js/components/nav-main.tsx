@@ -61,7 +61,7 @@ export function NavMain() {
                         ),
                         children: [
                             {
-                                title: "Tempalates",
+                                title: "Templates",
                                 url: "dashboard.admin.templates",
                                 isActive: route().current(
                                     "dashboard.admin.templates",

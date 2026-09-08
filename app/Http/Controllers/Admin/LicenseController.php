@@ -77,7 +77,6 @@ class LicenseController extends Controller
             return redirect()->route('admin.license')->with('failed', $errorMessage);
         }
 
-        // Failed message and redirect
-        return redirect()->route('admin.license')->with('success', trans('Purchase code verified failed.'));
+        
     }
 }

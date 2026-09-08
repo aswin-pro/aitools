@@ -1,5 +1,6 @@
     <?php
 
+    use App\Http\Controllers\Admin\ChatAssitantController;
     use App\Http\Controllers\Admin\CurrencyController;
     use App\Http\Controllers\Admin\PluginController;
     use Illuminate\Support\Facades\Route;
@@ -40,13 +41,13 @@
         Route::get('delete-template', [App\Http\Controllers\Admin\TemplateController::class, "deleteTemplate"])->name('delete.template')->middleware(['demo.mode']);
 
         // Chat Genius
-        Route::get('chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "index"])->name('chatgenius');
-        Route::get('create-chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "createChatgenius"])->name('create.chatgenius');
-        Route::post('save-chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "saveChatgenius"])->name('save.chatgenius')->middleware(['demo.mode']);
-        Route::get('edit-chatgenius/{id}', [App\Http\Controllers\Admin\ChatGeniusController::class, "editChatgenius"])->name('edit.chatgenius');
-        Route::post('update-chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "updateChatgenius"])->name('update.chatgenius')->middleware(['demo.mode']);
-        Route::get('action-chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "actionChatgenius"])->name('action.chatgenius')->middleware(['demo.mode']);
-        Route::get('delete-chatgenius', [App\Http\Controllers\Admin\ChatGeniusController::class, "deleteChatgenius"])->name('delete.chatgenius')->middleware(['demo.mode']);
+        Route::get('chat-assitant', [App\Http\Controllers\Admin\ChatAssitantController::class, "index"])->name('chatgenius');
+        // Route::get('create-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "createChatgenius"])->name('create.chatgenius');
+        Route::post('save-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "saveChatgenius"])->name('save.chatgenius')->middleware(['demo.mode']);
+        // Route::get('edit-chat-assistant/{id}', [App\Http\Controllers\Admin\ChatAssitantController::class, "editChatgenius"])->name('edit.chatgenius');
+        Route::post('update-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "updateChatgenius"])->name('update.chatgenius')->middleware(['demo.mode']);
+        Route::get('action-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "actionChatgenius"])->name('action.chatgenius')->middleware(['demo.mode']);
+        Route::get('delete-chat-assistant', [App\Http\Controllers\Admin\ChatAssitantController::class, "deleteChatgenius"])->name('delete.chatgenius')->middleware(['demo.mode']);
 
         // Plans
         Route::get('plans', [App\Http\Controllers\Admin\PlanController::class, "index"])->name('index.plans');

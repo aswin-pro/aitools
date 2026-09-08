@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateCurrencyRequest;
 use App\Http\Requests\Admin\UpdateCurrencyRequest;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
+
 use Inertia\Inertia;
 
 class CurrencyController extends Controller
@@ -74,7 +72,7 @@ class CurrencyController extends Controller
 
         return redirect()
             ->route('dashboard.admin.currencies')
-            ->with('success', __('Currency created successfully.'));
+            ->with('success', 'Currency created successfully.');
     }
 
 
@@ -90,7 +88,6 @@ class CurrencyController extends Controller
                 ->with('error', __('Currency not found!'));
         }
 
-        // If priority is empty, keep the existing priority.
         $priority = $validated['priority'] ?? $currency->priority;
 
         $currency->update([
@@ -124,17 +121,16 @@ class CurrencyController extends Controller
                 ->with('failed', __('Currency not found!'));
         }
 
-        // Check if this is the last active currency
         $activeCount = Currency::where('status', 1)->count();
         if ($activeCount <= 1 && $currency->status == 1) {
             return redirect()->route('admin.currencies')
-                ->with('failed', __('Unable to delete currency. Please keep at least one active currency.'));
+                ->with('failed', 'Unable to delete currency. Please keep at least one active currency.');
         }
 
         // Soft delete (set status = 0)
         Currency::where('id', $id)->update(['status' => 0]);
 
         return redirect()->route('dashboard.admin.currencies')
-            ->with('success', __('Currency deleted successfully.'));
+            ->with('success', 'Currency deleted successfully.');
     }
 }

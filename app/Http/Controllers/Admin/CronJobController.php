@@ -31,60 +31,6 @@ class CronJobController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    // Cron Jobs
-    // public function index()
-    // {
-    //     // Queries
-    //     $settings = Setting::first();
-    //     $config = Config::get();
-
-    //     // Separate dates in array
-    //     $config[59]->config_value = str_replace('[', '', $config[59]->config_value);
-    //     $config[59]->config_value = str_replace(']', '', $config[59]->config_value);
-
-
-
-    //     // return view('admin.settings.cron-jobs.index', compact('settings', 'config'));
-
-    //     return Inertia::render('admin/settings/cron-job/index', compact('settings', 'config', 'cronCommand'));
-    // }
-
-
-
-    // // Update cron jobs
-    // public function update(Request $request)
-    // {
-    //     // Validate form
-    //     $validator = Validator::make($request->all(), [
-    //         'dates_in_array' => 'required',
-    //     ]);
-
-    //     // Check validation
-    //     if ($validator->fails()) {
-    //         return redirect()->route('admin.cron.jobs')->with('failed', trans('Please fill all the fields.'));
-    //     }
-
-    //     // dates_in_array in array (Like [10, 5, 3, 1])
-    //     $dates_in_array = explode(',', $request->dates_in_array);
-    //     $dates_in_array = array_map('intval', $dates_in_array);
-    //     $dates_in_array = array_unique($dates_in_array);
-
-    //     // Check $dates_in_array is min -30 to max 366
-    //     foreach ($dates_in_array as $date) {
-    //         if ($date < -30 || $date > 366) {
-    //             return redirect()->route('admin.cron.jobs')->with('failed', trans('Please enter a valid number of dates.'));
-    //         }
-    //     }
-
-    //     // Update config
-    //     Config::where('config_key', 'cronjob_dates_in_array')->update([
-    //         'config_value' => $dates_in_array,
-    //     ]);
-
-    //     // Success message
-    //     // return redirect()->route('admin.cron.jobs')->with('success', trans('Updated!'));
-    // }
-
 
     // Cron Jobs
     public function index()
@@ -115,7 +61,6 @@ class CronJobController extends Controller
         );
     }
 
-
     // Update cron jobs
     public function update(Request $request)
     {
@@ -137,124 +82,46 @@ class CronJobController extends Controller
         foreach ($dates as $date) {
             if ($date < -30 || $date > 366) {
                 return back()->withErrors([
-                    'dates_in_array' => trans(
-                        'Please enter a valid number of dates between -30 and 366.'
-                    ),
+                    'dates_in_array' =>
+                    'Please enter a valid number of dates between -30 and 366.'
+
                 ]);
             }
         }
 
-        // Update reminder dates
         Config::where('config_key', 'cronjob_dates_in_array')->update([
             'config_value' => implode(',', $dates),
         ]);
 
-        // Update cron hour
         Config::where('config_key', 'cron_hour')->update([
             'config_value' => $request->cron_hour,
         ]);
-
-
     }
 
     public function testReminder()
-{
-    $details = [
-        'name' => Auth::user()->name,
-        'email' => Auth::user()->email,
-    ];
+    {
+        $details = [
+            'name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+        ];
 
-    try {
-        Mail::to(Auth::user()->email)
-            ->send(new \App\Mail\TestMail($details));
+        try {
+            Mail::to(Auth::user()->email)
+                ->send(new \App\Mail\TestMail($details));
 
-        return redirect()
-            ->back()
-            ->with(
-                'success',
-                trans('Test reminder email sent successfully.')
-            );
-    } catch (\Exception $e) {
-        return redirect()
-            ->back()
-            ->with(
-                'failed',
-                trans('Failed to send test reminder email.')
-            );
+            return redirect()
+                ->back()
+                ->with(
+                    'success',
+                    'Test reminder email sent successfully.'
+                );
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with(
+                    'failed',
+                    'Failed to send test reminder email.'
+                );
+        }
     }
-}
-
-    // Set cronjob time
-    // public function setCronjobTime(Request $request)
-    // {
-    //     // Validate form
-    //     $validator = Validator::make(request()->all(), [
-    //         'cron_hour' => 'required|integer|between:0,23',
-    //     ]);
-
-    //     // Check validation
-    //     if ($validator->fails()) {
-    //         return redirect()->route('admin.cron.jobs')->with('failed', trans('Please fill all the fields.'));
-    //     }
-
-    //     // Update config
-    //     Config::where('config_key', 'cron_hour')->update([
-    //         'config_value' => $request->cron_hour,
-    //     ]);
-
-    //     // Success message
-    //     return redirect()->route('admin.cron.jobs')->with('success', trans('Updated!'));
-    // }
-
-    // Test reminder
-    // public function testReminder()
-    // {
-    //     // Reminder intervals (fetch from settings or define statically)
-    //     $reminderDays = Config::get()[60]->config_value;
-
-    //     // Convert to array
-    //     $reminderDays = explode(',', $reminderDays);
-    //     $reminderDays = array_map('intval', $reminderDays);
-
-    //     $currentDate = Carbon::now();
-
-    //     foreach ($reminderDays as $daysBefore) {
-    //         // Calculate target expiry range
-    //         $expiryDate = $currentDate->copy()->addDays($daysBefore);
-
-    //         // Get users whose plans expire on the target date
-    //         $users = DB::table('users')
-    //             ->where('status', 1)
-    //             ->whereDate('plan_validity', $expiryDate)
-    //             ->get();
-
-    //         if ($users->isEmpty()) {
-    //             // $this->info("No users found for reminders {$daysBefore} days before expiry.");
-    //             continue;
-    //         }
-
-    //         foreach ($users as $user) {
-    //             $details = [
-    //                 'name' => Auth::user()->name,
-    //                 'email' => Auth::user()->email,
-    //             ];
-
-    //             // Send email
-    //             try {
-    //                 // Check $daysBefore is below 0
-    //                 if ($daysBefore <= 0) {
-    //                     Mail::to(Auth::user()->email)->send(new \App\Mail\TestMail($details));
-    //                     // $this->info("Reminder email sent to {$user->email} ({$daysBefore} days before expiry)");
-    //                 } else {
-    //                     Mail::to(Auth::user()->email)->send(new \App\Mail\TestMail($details));
-    //                     // $this->info("Reminder email sent to {$user->email} ({$daysBefore} days before expiry)");
-    //                 }
-    //             } catch (\Exception $e) {
-    //                 // $this->error("Failed to send email to {$user->email}: {$e->getMessage()}");
-    //             }
-    //         }
-    //     }
-
-    //     return redirect()->back()->with('success', trans('Reminder emails have been sent successfully.'));
-    // }
 }

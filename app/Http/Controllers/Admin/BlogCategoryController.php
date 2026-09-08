@@ -77,7 +77,6 @@ class BlogCategoryController extends Controller
                 ->withInput();
         }
 
-        // Save Blog Category
         $blogCategory = new BlogCategory();
         $blogCategory->published_by = Auth::user()->id;
         $blogCategory->blog_category_id = uniqid();
@@ -86,7 +85,7 @@ class BlogCategoryController extends Controller
         $blogCategory->save();
 
         // Redirect
-        return redirect()->route('dashboard.admin.blog.categories')->with('success', trans('Category created successfully!'));
+        return redirect()->route('dashboard.admin.blog.categories')->with('success', 'Category created successfully!');
     }
 
     public function updateBlogCategory(Request $request, $id)
@@ -122,65 +121,16 @@ class BlogCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.admin.blog.categories')
-            ->with('success', trans('Category details update successfully!'));
+            ->with('success', 'Category details update successfully!');
     }
 
-    // Actions
-    // public function actionBlog(Request $request)
-    // {
-    //     $categoryId = $request->query('id');
-    //     $mode = $request->query('mode');
-
-    //     // Find category
-    //     $category = BlogCategory::where(
-    //         'blog_category_id',
-    //         $categoryId
-    //     )->first();
-
-    //     if (!$category) {
-    //         return back()->with(
-    //             'failed',
-    //             trans('Category not found!')
-    //         );
-    //     }
-
-    //     // Determine status
-    //     switch ($mode) {
-    //         case 'publish':
-    //             $status = 1;
-    //             break;
-
-    //         case 'unpublish':
-    //             $status = 0;
-    //             break;
-
-    //         case 'delete':
-    //             $status = 2;
-    //             break;
-
-    //         default:
-    //             return back()->with(
-    //                 'failed',
-    //                 trans('Invalid action!')
-    //             );
-    //     }
-
-    //     // Update status
-    //     $category->status = $status;
-    //     $category->save();
-
-    //     // Redirect
-    //     return redirect()
-    //         ->route('dashboard.admin.blog.categories');
-    // }
-
+    
 
 public function actionBlog(Request $request)
 {
     $categoryId = $request->query('id');
     $mode = $request->query('mode');
 
-    // Find category
     $category = BlogCategory::where(
         'blog_category_id',
         $categoryId
@@ -214,7 +164,6 @@ public function actionBlog(Request $request)
             );
     }
 
-    // Prevent unpublish/delete if category is being used
     if (in_array($mode, ['unpublish', 'delete'])) {
 
         $categoryUsed = Blog::where(
@@ -232,15 +181,13 @@ public function actionBlog(Request $request)
         }
     }
 
-    // Update category
     $category->status = $status;
     $category->save();
 
-    // Success message
     $message = match ($mode) {
-        'publish' => trans('Category published successfully!'),
-        'unpublish' => trans('Category unpublished successfully!'),
-        'delete' => trans('Category deleted successfully!'),
+        'publish' => 'Category published successfully!',
+        'unpublish' => 'Category unpublished successfully!',
+        'delete' => 'Category deleted successfully!',
     };
 
     return redirect()

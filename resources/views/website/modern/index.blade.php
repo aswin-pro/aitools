@@ -208,54 +208,54 @@ $pricing = Page::where('theme_id', '330599619570398')->where('slug', 'pricing-ho
               <div class="flex items-center justify-center w-5 h-5 mr-4 border border-green-400 rounded-full">
                 <img class="w-2" src="{{ asset('themes/modern/assets/images/modals/check.svg') }}" alt="">
               </div>
-              <p class="text-white">{{ $plan->max_words == 9999 ? __('Unlimited') : $plan->max_words }} {{ __('AI Words') }}</p>
+              <p class="text-white">{{ $plan->ai_credits == 9999 ? __('Unlimited') : $plan->ai_credits }} {{ __('AI Words') }}</p>
             </li>
             {{-- AI Images --}}
             <li class="flex items-center mb-3">
               <div class="flex items-center justify-center w-5 h-5 mr-4 border border-green-400 rounded-full">
                 <img class="w-2" src="{{ asset('themes/modern/assets/images/modals/check.svg') }}" alt="">
               </div>
-              <p class="text-white">{{ $plan->max_images == 9999 ? __('Unlimited') : $plan->max_images }} {{ __('AI Images') }}</p>
+              <p class="text-white">{{ $plan->ai_image_credits == 9999 ? __('Unlimited') : $plan->ai_image_credits }} {{ __('AI Images') }}</p>
             </li>
             {{-- AI Speech to Text --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_speech_to_text == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_speech_to_text == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->speech_to_text == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->speech_to_text == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI Speech to Text') }}</p>
             </li>
             {{-- AI Text to Speech --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_text_to_speech == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_text_to_speech == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->text_to_speech == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->text_to_speech == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI Text to Speech') }}</p>
             </li>
             {{-- AI Code --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_code == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_code == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->code_generator == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->code_generator == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI Code') }}</p>
             </li>
             {{-- AI Chat Assistant --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_code == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_chatgenius == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->code_generator == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->personalized_chat == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI Chat Assistant') }}</p>
             </li>
             {{-- AI File Analyzer --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_code == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_docsassist == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->code_generator == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->document_analyzer == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI File Analyzer') }}</p>
             </li>
             {{-- AI Web Chat --}}
             <li class="flex items-center mb-3">
-              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->ai_code == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
-                <img class="w-2" src="{{ asset($plan->ai_webchat == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
+              <div class="flex items-center justify-center w-5 h-5 mr-4 border {{ $plan->code_generator == 1 ? "border-green-400" : "border-gray-400" }} rounded-full">
+                <img class="w-2" src="{{ asset($plan->site_analyzer == 1 ? "themes/modern/assets/images/modals/check.svg" : "themes/modern/assets/images/modals/close-icon.png") }}" alt="">
               </div>
               <p class="text-white">{{ __('AI Web Chat') }}</p>
             </li>

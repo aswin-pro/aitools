@@ -42,7 +42,6 @@ class AccountController extends Controller
 
         return Inertia::render('admin/settings/profile', compact('account_details', 'settings', 'config'));
 
-        // return view('admin.pages.account.index', compact('account_details', 'settings', 'config'));
     }
 
     // Edit account
@@ -54,7 +53,6 @@ class AccountController extends Controller
         $config = Config::get();
 
         return Inertia::render('admin/settings/profile', compact('account_details', 'settings', 'config'));
-        // return view('admin.pages.profile', compact('account_details', 'settings', 'config'));
     }
 
     public function updateAccount(Request $request)
@@ -82,7 +80,6 @@ class AccountController extends Controller
         // Upload profile picture
         if ($request->hasFile('profile_picture')) {
 
-            // Delete old image
             if (
                 $user->profile_image &&
                 File::exists(public_path($user->profile_image))
@@ -130,7 +127,6 @@ class AccountController extends Controller
 
         return Inertia::render('admin/settings/password', compact('account_details', 'settings', 'config'));
 
-        // return view('admin.pages.account.change-password', compact('account_details', 'settings', 'config'));
     }
 
     public function updatePassword(Request $request)

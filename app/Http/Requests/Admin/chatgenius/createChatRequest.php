@@ -25,34 +25,34 @@ class createChatRequest extends FormRequest
         $sizeLimit = env('SIZE_LIMIT');
 
         return [
-            'chat_genius_image' => [
+            'chat_assistant_image' => [
                 'required',
                 'file',
                 'mimes:jpg,jpeg,png,webp',
                 'max:' . $sizeLimit,
             ],
 
-            'chat_genius_name' => [
+            'chat_assistant_name' => [
                 'required',
                 'string',
                 'min:2',
                 'max:200',
             ],
 
-            'chat_genius_expert' => [
+            'chat_assistant_expert' => [
                 'required',
                 'string',
                 'min:2',
                 'max:200',
             ],
 
-            'chat_genius_description' => [
+            'chat_assistant_description' => [
                 'required',
                 'string',
                 'min:10',
             ],
 
-            'chat_genius_message' => [
+            'chat_assistant_message' => [
                 'required',
                 'string',
                 'min:10',
@@ -65,29 +65,29 @@ class createChatRequest extends FormRequest
         $sizeLimit = env('SIZE_LIMIT');
 
         return [
-            'chat_genius_image.required' =>
+            'chat_assistant_image.required' =>
             trans('The image is required.'),
 
-            'chat_genius_image.mimes' =>
+            'chat_assistant_image.mimes' =>
             trans('The image must be a file of type: jpg, jpeg, png, webp.'),
 
-            'chat_genius_image.max' =>
+            'chat_assistant_image.max' =>
             trans(
                 'The image may not be greater than ' .
                     ($sizeLimit / 1024) .
                     ' MB.'
             ),
 
-            'chat_genius_name.required' =>
+            'chat_assistant_name.required' =>
             trans('The name field is required.'),
 
-            'chat_genius_expert.required' =>
+            'chat_assistant_expert.required' =>
             trans('The expert field is required.'),
 
-            'chat_genius_description.required' =>
+            'chat_assistant_description.required' =>
             trans('The description is required.'),
 
-            'chat_genius_message.required' =>
+            'chat_assistant_message.required' =>
             trans('The message is required.'),
         ];
     }

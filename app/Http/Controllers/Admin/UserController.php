@@ -7,13 +7,12 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Models\Config;
 use App\Models\Setting;
-use App\Models\AiImages;
-use App\Models\Generate;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\users\updateUserRequest;
+use App\Models\GeneratedContent;
+use App\Models\GeneratedImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -83,7 +82,7 @@ class UserController extends Controller
 
         $paginateType = $request->input('paginate', 'content');
 
-        $allContents = Generate::where('generate_by', $user_details->id)
+        $allContents = GeneratedContent::where('generated_by', $user_details->id)
             ->orderBy('id', 'desc')
             ->get();
 
@@ -112,7 +111,7 @@ class UserController extends Controller
             ]
         );
 
-        $allImages = AiImages::where('generate_by', $user_details->id)
+        $allImages = GeneratedImage::where('generated_by', $user_details->id)
             ->orderBy('id', 'desc')
             ->get();
 
@@ -265,7 +264,7 @@ class UserController extends Controller
             $transaction->transaction_id = $transaction_id;
             $transaction->user_id = $user_details->id;
             $transaction->plan_id = $plan_data->id;
-            $transaction->desciption = $plan_data->name . " Plan";
+            $transaction->description = $plan_data->name . " Plan";
             $transaction->payment_gateway_name = "Offline";
             $transaction->transaction_amount = $amountToBePaid;
             $transaction->invoice_prefix = $config[15]->config_value;
@@ -327,9 +326,9 @@ class UserController extends Controller
 
                 // Check if the $plan_data object exists
                 if ($plan_data) {
-                    // Add PLAN DATAS to the max_words attribute
-                    $plan_data->max_words += $plan_data->max_words;
-                    $plan_data->max_images += $plan_data->max_images;
+                    // Add PLAN DATAS to the ai_credits attribute
+                    $plan_data->ai_credits += $plan_data->ai_credits;
+                    $plan_data->ai_image_credits += $plan_data->ai_image_credits;
                 }
 
                 // Check remaining days
@@ -392,7 +391,7 @@ class UserController extends Controller
             $transaction->transaction_id = $transaction_id;
             $transaction->user_id = $user_details->id;
             $transaction->plan_id = $plan_data->id;
-            $transaction->desciption = $plan_data->name . " Plan";
+            $transaction->description = $plan_data->name . " Plan";
             $transaction->payment_gateway_name = "Offline";
             $transaction->transaction_amount = $amountToBePaid;
             $transaction->invoice_prefix = $config[15]->config_value;
@@ -482,8 +481,8 @@ class UserController extends Controller
             ->with(
                 'success',
                 $mode === 'activate'
-                    ? trans('User activated successfully!')
-                    : trans('User deactivated successfully!')
+                    ? 'User activated successfully!'
+                    : 'User deactivated successfully!'
             );
     }
 
@@ -500,9 +499,9 @@ class UserController extends Controller
         }
 
         // Delete generated content
-        Generate::where('generate_by', $user->id)->delete();
+        GeneratedContent::where('generated_by', $user->id)->delete();
 
-        AiImages::where('generate_by', $user->id)->delete();
+        GeneratedImage::where('generated_by', $user->id)->delete();
 
         // Delete transactions
         Transaction::where('user_id', $user->id)->delete();
@@ -512,7 +511,7 @@ class UserController extends Controller
 
         return back()->with(
             'success',
-            trans('User deleted successfully!')
+            'User deleted successfully!'
         );
     }
 

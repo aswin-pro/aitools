@@ -37,7 +37,6 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $transactions = Transaction::dataWithPagination(
-            
             $request->search,
             $request->integer('per_page', 10),
             ['user', 'plan', 'currency'],
@@ -66,7 +65,7 @@ class TransactionController extends Controller
         ]);
 
         // Page redirect
-        return redirect()->back()->with('success', trans('Transaction Status Updated Successfully!'));
+        return redirect()->back()->with('success', 'Transaction Status Updated Successfully!');
     }
 
 
@@ -298,7 +297,7 @@ public function viewInvoice($id)
             ]);
 
             // Page redirect
-            return redirect()->route('admin.offline.transactions')->with('success', trans("Transaction updated successfully"));
+            return redirect()->route('admin.offline.transactions')->with('success', "Transaction updated successfully");
         }
     }
 }

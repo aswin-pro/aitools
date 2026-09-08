@@ -77,16 +77,16 @@ export interface Plan {
     validity: number;
     template_counts: number;
     templates: Record<string, number>;
-    max_words: number;
-    max_images: number;
-    ai_speech_to_text: number;
-    ai_text_to_speech: number;
-    ai_code: number;
-    ai_chatgenius: number;
-    ai_docsassist: number;
-    ai_webchat: number;
+    ai_credits: number;
+    ai_image_credits: number;
+    speech_to_text: number;
+    text_to_speech: number;
+    code_generator: number;
+    personalized_chat: number;
+    document_analyzer: number;
+    site_analyzer: number;
     additional_tools: number;
-    recommended: number;
+    is_recommended: number;
     support: number;
 }
 
@@ -261,12 +261,12 @@ export interface Blog {
 
 export interface ChatGenius {
     id: number;
-    chat_genius_id: string;
-    chat_genius_image: string;
-    chat_genius_name: string;
-    chat_genius_expert: string;
-    chat_genius_description: string;
-    chat_genius_message: string;
+    chat_assistant_id: string;
+    chat_assistant_image: string;
+    chat_assistant_name: string;
+    chat_assistant_expert: string;
+    chat_assistant_description: string;
+    chat_assistant_message: string;
     status: number;
     created_at: string;
     updated_at: string;

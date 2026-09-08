@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomTemplate;
-use App\Models\CustomTemplateCategory;
+use App\Models\ContentTemplateCategory;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +35,7 @@ class CategoryController extends Controller
         $perPage = $request->integer('per_page', 10);
         $search = $request->input('search');
 
-        $categories = CustomTemplateCategory::query()
+        $categories = ContentTemplateCategory::query()
             ->when($search, function ($query) use ($search) {
                 $query->where('category_name', 'like', "%{$search}%");
             })
@@ -53,11 +53,6 @@ class CategoryController extends Controller
     }
 
 
-    // Add Category
-    // public function addCategory()
-    // {
-    //     return view('admin.pages.categories.add');
-    // }
 
     // Save Category
     public function saveCategory(Request $request)
@@ -68,7 +63,7 @@ class CategoryController extends Controller
         ]);
 
         // Save Category
-        $category = new CustomTemplateCategory();
+        $category = new ContentTemplateCategory();
         $category->category_name = ucfirst($request->category_name);
         $category->save();
 
@@ -78,25 +73,11 @@ class CategoryController extends Controller
         );
     }
 
-    // // Edit Category
-    // public function editCategory(Request $request, $id)
-    // {
-    //     // Queries
-    //     $id = $request->id;
-    //     $category_details = CustomTemplateCategory::where('id', $id)->first();
-
-    //     // Category Checking
-    //     if ($category_details == null) {
-    //         return view('errors.404');
-    //     } else {
-    //         return view('admin.pages.categories.edit', compact('category_details'));
-    //     }
-    // }
+   
 
     // Update Category
     public function updateCategory(Request $request)
     {
-        // dd($request->all());
 
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:custom_template_categories,id',
@@ -107,19 +88,19 @@ class CategoryController extends Controller
             return back()->withErrors($validator);
         }
 
-        CustomTemplateCategory::where('id', $request->category_id)->update([
+        ContentTemplateCategory::where('id', $request->category_id)->update([
             'category_name' => ucfirst($request->category_name),
         ]);
 
         return back()->with(
             'success',
-            __('Category Details Updated Successfully!')
+            'Category Details Updated Successfully!'
         );
     }
 
     public function deleteCategory(Request $request)
     {
-        $category = CustomTemplateCategory::find($request->query('id'));
+        $category = ContentTemplateCategory::find($request->query('id'));
 
         if (!$category) {
             return back()->withErrors([
@@ -138,7 +119,7 @@ class CategoryController extends Controller
 
             return back()->with(
                 'success',
-                __('Category activated successfully!')
+                'Category activated successfully!'
             );
         }
 
@@ -149,9 +130,9 @@ class CategoryController extends Controller
 
             if ($templateExists) {
                 return back()->withErrors([
-                    'action' => __(
+                    'action' => 
                         'This category cannot be deactivated because it is being used by a template.'
-                    ),
+                    
                 ]);
             }
 
@@ -163,7 +144,7 @@ class CategoryController extends Controller
 
             return back()->with(
                 'success',
-                __('Category deactivated successfully!')
+                'Category deactivated successfully!'
             );
         }
 
@@ -186,14 +167,8 @@ class CategoryController extends Controller
 
             return back()->with(
                 'success',
-                __('Category deleted successfully!')
+                'Category deleted successfully!'
             );
-
-
-
-            return back()->withErrors([
-                'action' => __('Invalid category action.'),
-            ]);
         };
     }
 }

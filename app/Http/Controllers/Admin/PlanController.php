@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Config;
-use App\Models\CustomTemplate;
+use App\Models\ContentTemplate;
 use App\Models\Plan;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -59,7 +59,7 @@ class PlanController extends Controller
 
         $settings = Setting::where('status', 1)->first();
 
-        $templates = CustomTemplate::where('status', 1)
+        $templates = ContentTemplate::where('status', 1)
             ->groupBy('id')
             ->get();
 
@@ -109,7 +109,7 @@ class PlanController extends Controller
         }
 
   
-        $templates = CustomTemplate::where('status', 1)
+        $templates = ContentTemplate::where('status', 1)
             ->groupBy('id')
             ->get();
 
@@ -161,7 +161,7 @@ class PlanController extends Controller
 
         return redirect()
             ->route('dashboard.admin.add.plan')
-            ->with('success', __('Plan added successfully!'));
+            ->with('success', 'Plan added successfully!');
     }
 
     /**
@@ -180,7 +180,7 @@ class PlanController extends Controller
         $settings = Setting::where('status', 1)->first();
 
       
-        $templates = CustomTemplate::query()
+        $templates = ContentTemplate::query()
             ->groupBy('id')
             ->get();
 
@@ -244,7 +244,7 @@ class PlanController extends Controller
         }
 
        
-        $templates = CustomTemplate::query()
+        $templates = ContentTemplate::query()
             ->groupBy('id')
             ->get();
 
@@ -291,30 +291,28 @@ class PlanController extends Controller
 
         return redirect()
             ->route('dashboard.admin.edit.plan', $plan->id)
-            ->with('success', __('Plan updated successfully!'));
+            ->with('success', 'Plan updated successfully!');
     }
 
-    /**
-     * Activate / deactivate a plan.
-     */
+
     public function deletePlan(Request $request)
     {
         $plan = Plan::find($request->query('id'));
 
         if (!$plan) {
             return back()->withErrors([
-                'action' => __('Plan not found.'),
+                'action' => 'Plan not found.',
             ]);
         }
 
         if ($plan->status == 1) {
             $plan->status = 0;
 
-            $message = __('Plan deactivated successfully!');
+            $message = 'Plan deactivated successfully!';
         } else {
             $plan->status = 1;
 
-            $message = __('Plan activated successfully!');
+            $message = 'Plan activated successfully!';
         }
 
         $plan->save();

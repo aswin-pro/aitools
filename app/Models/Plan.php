@@ -10,6 +10,10 @@ class Plan extends Model
 {
     use HasFactory;
 
+    // static statuses
+    public const STATUS_ACTIVE  = 1;
+    public const STATUS_DELETED = 0;
+
     static $ACTIVE = 1;
     static $DELETED = 0;
 
@@ -51,14 +55,23 @@ class Plan extends Model
     protected static function booted(): void
     {
         static::creating(function ($plan) {
-            $plan->plan_id ??= (string) Str::uuid();
+            $plan->plan_id ??= uniqid();
         });
     }
 
+// active plans
     public static function activePlans()
     {
-        return self::where('status', self::$ACTIVE)
-            ->where('is_private', 0)
-            ->get();
+        // currency
+        $currency = Config::where('config_key', 'currency')->first()->config_value ?? 'USD';
+
+        // return plans
+        return self::where('status', self::STATUS_ACTIVE)->where('is_private', 0)->get()->map(function ($plan) use ($currency) {
+            $plan->formatted_price = formatCurrency($plan->price, $currency);
+            $plan->content_templates_count = count($plan->content_templates);
+
+            // return plan
+            return $plan;
+        });
     }
 }

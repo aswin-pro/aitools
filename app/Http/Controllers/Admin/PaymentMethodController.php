@@ -100,7 +100,7 @@ public function index(Request $request)
         $paymentMethod->save();
 
         // Page redirect
-        return redirect()->route('admin.payment.methods')->with('success', trans('New Payment Method Created Successfully!'));
+        return redirect()->route('admin.payment.methods')->with('success', 'New Payment Method Created Successfully!');
     }
 
     // Edit Payment Method
@@ -211,7 +211,7 @@ public function index(Request $request)
             ->route('dashboard.admin.payment.methods')
             ->with(
                 'success',
-                trans('Payment Gateway Details Updated Successfully!')
+                'Payment Gateway Details Updated Successfully!'
             );
     }
 
@@ -233,7 +233,7 @@ public function index(Request $request)
         // Page redirect
         return redirect()
             ->route('dashboard.admin.payment.methods')
-            ->with('success', __('Payment method status updated successfully.'));
+            ->with('success', 'Payment method status updated successfully.');
     }
 
     // Payment Configuration
@@ -522,7 +522,7 @@ public function index(Request $request)
             ->route('dashboard.admin.payment.methods')
             ->with(
                 'success',
-                __('Payment configuration updated successfully.')
+                'Payment configuration updated successfully.'
             );
     }
 }

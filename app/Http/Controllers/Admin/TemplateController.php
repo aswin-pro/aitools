@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Models\CustomTemplate;
 use App\Http\Controllers\Controller;
-use App\Models\CustomTemplateCategory;
-use App\Models\CustomTemplateField;
+use App\Models\ContentTemplate;
+use App\Models\ContentTemplateCategory;
+use App\Models\ContentTemplateField;
+
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -28,80 +29,136 @@ class TemplateController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-    // All Templates
-    // public function index()
-    // {
-    //     // Queries
-    //     $templates = CustomTemplate::join('custom_template_categories', 'custom_templates.category_id', '=', 'custom_template_categories.id')->join('custom_template_fields', 'custom_templates.id', '=', 'custom_template_fields.template_id')->select('custom_templates.*', 'custom_template_categories.category_name', 'custom_template_fields.ai_input', 'custom_template_fields.field_type', 'custom_template_fields.field_name', 'custom_template_fields.field_description')->orderBy('custom_templates.id', 'DESC')->groupBy('custom_templates.id')->get();
 
-    //     return view('admin.pages.templates.index', compact('templates'));
+    // All Templates
+    // public function index(Request $request)
+    // {
+    //     $perPage = $request->integer('per_page', 10);
+    //     $search = $request->input('search');
+
+    //     $templates = ContentTemplate::join(
+    //         'content_template_categories',
+    //         'content_templates.category_id',
+    //         '=',
+    //         'content_template_categories.id'
+    //     )
+    //         ->join(
+    //             'content_template_fields',
+    //             'content_template.id',
+    //             '=',
+    //             'content_template_fields.template_id'
+    //         )
+    //         ->select(
+    //             'content_templates.*',
+    //             'content_template_categories.category_name',
+    //             'content_template_fields.ai_input',
+    //             'content_template_fields.field_type',
+    //             'content_template_fields.field_name',
+    //             'content_template_fields.field_description'
+    //         )
+    //         ->when($search, function ($query) use ($search) {
+    //             $query->where(function ($query) use ($search) {
+    //                 $query->where('content_templates.name', 'like', "%{$search}%")
+    //                     ->orWhere('content_templates.description', 'like', "%{$search}%")
+    //                     ->orWhere(
+    //                         'content_template_categories.category_name',
+    //                         'like',
+    //                         "%{$search}%"
+    //                     );
+    //             });
+    //         })
+    //         ->orderBy('content_templates.id', 'DESC')
+    //         ->groupBy('content_templates.id')
+    //         ->paginate($perPage)
+    //         ->withQueryString();
+
+    //     $templates->getCollection()->transform(function ($template) {
+    //         $template->formatted_updated_at = formatDateForUser(
+    //             $template->updated_at
+    //         );
+
+    //         return $template;
+    //     });
+
+    //     return Inertia::render('admin/content-templates/templates/index', [
+    //         'templates' => $templates,
+    //         'filters' => [
+    //             'search' => $search,
+    //             'per_page' => $perPage,
+    //         ],
+    //     ]);
     // }
 
-
-
-    // All Templates
     public function index(Request $request)
-    {
-        $perPage = $request->integer('per_page', 10);
-        $search = $request->input('search');
+{
+    $perPage = $request->integer('per_page', 10);
+    $search = $request->input('search');
 
-        $templates = CustomTemplate::join(
-            'custom_template_categories',
-            'custom_templates.category_id',
+    $templates = ContentTemplate::join(
+        'content_template_categories',
+        'content_templates.category_id',
+        '=',
+        'content_template_categories.id'
+    )
+        ->join(
+            'content_template_fields',
+            'content_templates.id',
             '=',
-            'custom_template_categories.id'
+            'content_template_fields.template_id'
         )
-            ->join(
-                'custom_template_fields',
-                'custom_templates.id',
-                '=',
-                'custom_template_fields.template_id'
-            )
-            ->select(
-                'custom_templates.*',
-                'custom_template_categories.category_name',
-                'custom_template_fields.ai_input',
-                'custom_template_fields.field_type',
-                'custom_template_fields.field_name',
-                'custom_template_fields.field_description'
-            )
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('custom_templates.name', 'like', "%{$search}%")
-                        ->orWhere('custom_templates.description', 'like', "%{$search}%")
-                        ->orWhere(
-                            'custom_template_categories.category_name',
-                            'like',
-                            "%{$search}%"
-                        );
-                });
-            })
-            ->orderBy('custom_templates.id', 'DESC')
-            ->groupBy('custom_templates.id')
-            ->paginate($perPage)
-            ->withQueryString();
+        ->select(
+            'content_templates.*',
+            'content_template_categories.category_name',
+            'content_template_fields.ai_input',
+            'content_template_fields.field_type',
+            'content_template_fields.field_name',
+            'content_template_fields.field_description'
+        )
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where(
+                    'content_templates.name',
+                    'like',
+                    "%{$search}%"
+                )
+                    ->orWhere(
+                        'content_templates.description',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'content_template_categories.category_name',
+                        'like',
+                        "%{$search}%"
+                    );
+            });
+        })
+        ->orderBy('content_templates.id', 'DESC')
+        ->groupBy('content_templates.id')
+        ->paginate($perPage)
+        ->withQueryString();
 
-        $templates->getCollection()->transform(function ($template) {
-            $template->formatted_updated_at = formatDateForUser(
-                $template->updated_at
-            );
+    $templates->getCollection()->transform(function ($template) {
+        $template->formatted_updated_at = formatDateForUser(
+            $template->updated_at
+        );
 
-            return $template;
-        });
+        return $template;
+    });
 
-        return Inertia::render('admin/content-templates/templates/index', [
-            'templates' => $templates,
-            'filters' => [
-                'search' => $search,
-                'per_page' => $perPage,
-            ],
-        ]);
-    }
+    return Inertia::render('admin/content-templates/templates/index', [
+        'templates' => $templates,
+        'filters' => [
+            'search' => $search,
+            'per_page' => $perPage,
+        ],
+    ]);
+}
 
     // Add Template
     public function addTemplate()
     {
-        $categories = CustomTemplateCategory::where('status', 1)->get();
+        $categories = ContentTemplateCategory::where('status', 1)->get();
 
         return Inertia::render(
             'admin/content-templates/templates/create',
@@ -144,7 +201,7 @@ class TemplateController extends Controller
         }
 
         // Save Template
-        $template = new CustomTemplate();
+        $template = new ContentTemplate();
         $template->category_id = $request->category_id;
         $template->unique_slug = Strtolower(str_replace(' ', '_', $request->name));
         $template->name = ucfirst($request->name);
@@ -156,7 +213,7 @@ class TemplateController extends Controller
         for ($i = 0; $i < count($request->fieldTitle); $i++) {
             if (isset($request->fieldType[$i]) && isset($request->fieldTitle[$i]) && isset($request->fieldDescription[$i])) {
                 // Save Template Field
-                $field = new CustomTemplateField();
+                $field = new ContentTemplateCategory();
                 $field->template_id = $template->id;
                 $field->ai_input = $request->aiInput[$i];
                 $field->field_type = $request->fieldType[$i];
@@ -174,15 +231,15 @@ class TemplateController extends Controller
     // Edit Template
     public function editTemplate(Request $request, $id)
     {
-        $template = CustomTemplate::find($id);
+        $template = ContentTemplate::find($id);
 
         if (!$template) {
             abort(404);
         }
 
-        $categories = CustomTemplateCategory::where('status', 1)->get();
+        $categories = ContentTemplateCategory::where('status', 1)->get();
 
-        $fields = CustomTemplateField::where('template_id', $template->id)
+        $fields = ContentTemplateField::where('template_id', $template->id)
             ->orderBy('id')
             ->get();
 
@@ -222,7 +279,7 @@ class TemplateController extends Controller
             return back()->withErrors($validator);
         }
 
-        $template = CustomTemplate::find($request->template_id);
+        $template = ContentTemplate::find($request->template_id);
 
         if (!$template) {
             return back()->withErrors([
@@ -230,7 +287,7 @@ class TemplateController extends Controller
             ]);
         }
 
-        CustomTemplate::where('id', $request->template_id)->update([
+        ContentTemplate::where('id', $request->template_id)->update([
             'category_id' => $request->category_id,
             'name' => ucfirst($request->name),
             'description' => ucfirst($request->description),
@@ -238,7 +295,7 @@ class TemplateController extends Controller
         ]);
 
 
-        CustomTemplateField::where(
+        ContentTemplateField::where(
             'template_id',
             $request->template_id
         )->delete();
@@ -254,7 +311,7 @@ class TemplateController extends Controller
                 isset($request->fieldTitle[$i]) &&
                 isset($request->fieldDescription[$i])
             ) {
-                $field = new CustomTemplateField();
+                $field = new ContentTemplateField();
 
                 $field->template_id =
                     $request->template_id;
@@ -283,9 +340,9 @@ class TemplateController extends Controller
             )
             ->with(
                 'success',
-                trans(
+                
                     'Template Details Updated Successfully!'
-                )
+                
             );
     }
 
@@ -293,7 +350,7 @@ class TemplateController extends Controller
     // Activate / Deactivate Template
     public function deleteTemplate(Request $request)
     {
-        $template = CustomTemplate::find($request->query('id'));
+        $template = ContentTemplate::find($request->query('id'));
 
         if (!$template) {
             return back()->withErrors([
@@ -307,6 +364,6 @@ class TemplateController extends Controller
             'status' => $status
         ]);
 
-        return back()->with('success', __('Template status updated successfully!'));
+        return back()->with('success', 'Template status updated successfully!');
     }
 }

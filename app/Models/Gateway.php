@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Gateway extends Model
 {
     use HasFactory;
+
+    // statuses
+    public const STATUS_ENABLED  = 'enabled';
 }

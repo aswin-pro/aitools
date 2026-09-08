@@ -16,6 +16,14 @@ class Transaction extends Model
     // static statuses
     static $ACTIVE = 1;
 
+    // static statuses
+    public const STATUS_ACTIVE  = 1;
+
+    public const PAYMENT_PENDING = 'PENDING';
+    public const PAYMENT_SUCCESS = 'SUCCESS';
+    public const PAYMENT_FAILED  = 'FAILED';
+    public const PAYMENT_CANCELLED  = 'CANCELLED';
+
 
     // append formatted created at
     protected $appends = [
@@ -24,49 +32,43 @@ class Transaction extends Model
     ];
 
 
+   /**
+     * Paginated data.
+     */
     public static function dataWithPagination(
         ?string $search,
         int $perPage,
         array $with,
-        string $for,
-        string $transactionType,
+        string $scope = 'user',
+        string $transactionType = 'all'
     ): LengthAwarePaginator {
         return self::query()
             ->with($with)
-            ->when($for == 'admin', fn($query) => $query->where('id', '!=', 1))
-            ->when($for == 'user', fn($query) => $query->where('user_id', Auth::id()))
+            ->when($scope === 'admin', fn($query) => $query->where('id', '!=', 1))
+            ->when($scope === 'user', fn($query) => $query->where('user_id', Auth::id()))
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('transaction_id', 'like', "%{$search}%")
-                        ->orWhere('payment_gateway_name', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($userQuery) use ($search) {
-                            $userQuery->where('name', 'like', "%{$search}%");
-                        });
+                        ->orWhere('payment_gateway_name', 'like', "%{$search}%");
                 });
             })
-
-            //online - offline -> Admin 
             ->when(
-                $for == 'admin' && $transactionType == 'online',
+                $scope == 'admin' && $transactionType == 'online',
                 fn($query) => $query->where('payment_gateway_name', '!=', 'Bank Transfer')
             )
             ->when(
-                $for == 'admin' && $transactionType == 'offline',
+                $scope == 'admin' && $transactionType == 'offline',
                 fn($query) => $query->where('payment_gateway_name', 'Bank Transfer')
             )
-
-            ->where('status', self::$ACTIVE)
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
     }
 
-
-
     protected function formattedCreatedAt(): Attribute
     {
         return Attribute::make(
-            get: fn() => formatDateForUser($this->created_at),
+            get: fn() => formatDateOnlyForUser($this->created_at),
         );
     }
 

@@ -14,9 +14,9 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
-        $this->call(CustomTemplateCategorySeeder::class);
-        $this->call(CustomTemplateSeeder::class);
-        $this->call(CustomTemplateFieldsSeeder::class);
+        $this->call(ContentTemplateCategorySeeder::class);
+        $this->call(ContentTemplateSeeder::class);
+        $this->call(ContentTemplateFieldsSeeder::class);
         $this->call(PlansTableSeeder::class);
         $this->call(GatewayTableSeeder::class);
 	    $this->call(RolesTableSeeder::class);
@@ -25,6 +25,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(ThemeTableSeeder::class);
         $this->call(CurrencyTableSeeder::class);
-        $this->call(ChatGeniusSeeder::class);
+        $this->call(ChatAssistantSeeder::class);
     }
 }

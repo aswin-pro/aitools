@@ -52,13 +52,13 @@ use Illuminate\Support\Facades\Route;
         Route::get('ai/gcode/export-docs/{id}', [App\Http\Controllers\User\AiCodeController::class, "exportDocsAiCode"])->name('export.docs.code');
 
         // Chat Genius
-        Route::get('ai/chatgenius', [App\Http\Controllers\User\ChatGeniusController::class, "indexAllAiChatGenius"])->name('all.ai.chatgenius');
-        Route::get('ai/chatgenius/new/{slug}', [App\Http\Controllers\User\ChatGeniusController::class, "indexNewAiChatGenius"])->name('new.ai.chatgenius');
-        Route::post('ai/chatgenius/generate', [App\Http\Controllers\User\ChatGeniusController::class, "generateAiChatGenius"])->name('generate.ai.chatgenius');
-        Route::any('ai/chatgenius/new-conversation/{slug}', [App\Http\Controllers\User\ChatGeniusController::class, "newConversationAiChatGenius"])->name('new.ai.chatgenius.conversation');
-        Route::post('ai/chatgenius/update-details', [App\Http\Controllers\User\ChatGeniusController::class, 'updateAiChatGeniusDetails'])->name('update.ai.chatgenius.details');
-        Route::post('ai/chatgenius/delete', [App\Http\Controllers\User\ChatGeniusController::class, "deleteAiChatGenius"])->name('delete.ai.chatgenius');
-        Route::get('ai/chatgenius/export-docs/{id}', [App\Http\Controllers\User\ChatGeniusController::class, "exportAiChatGenius"])->name('export.ai.chatgenius');
+        Route::get('ai/chatgenius', [App\Http\Controllers\User\ChatAssistantController::class, "indexAllAiChatGenius"])->name('all.ai.chatgenius');
+        Route::get('ai/chatgenius/new/{slug}', [App\Http\Controllers\User\ChatAssistantController::class, "indexNewAiChatGenius"])->name('new.ai.chatgenius');
+        Route::post('ai/chatgenius/generate', [App\Http\Controllers\User\ChatAssistantController::class, "generateAiChatGenius"])->name('generate.ai.chatgenius');
+        Route::any('ai/chatgenius/new-conversation/{slug}', [App\Http\Controllers\User\ChatAssistantController::class, "newConversationAiChatGenius"])->name('new.ai.chatgenius.conversation');
+        Route::post('ai/chatgenius/update-details', [App\Http\Controllers\User\ChatAssistantController::class, 'updateAiChatGeniusDetails'])->name('update.ai.chatgenius.details');
+        Route::post('ai/chatgenius/delete', [App\Http\Controllers\User\ChatAssistantController::class, "deleteAiChatGenius"])->name('delete.ai.chatgenius');
+        Route::get('ai/chatgenius/export-docs/{id}', [App\Http\Controllers\User\ChatAssistantController::class, "exportAiChatGenius"])->name('export.ai.chatgenius');
 
         // DocuAssistant
         Route::get('ai/docu-assistant', [App\Http\Controllers\User\DocuAssistController::class, "indexAllAiDocuAssistant"])->name('all.ai.docuassistant');

@@ -41,14 +41,12 @@ class SettingController extends Controller
     // Settings
     public function index()
     {
-        // Queries
         $timezonelist = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
         $themes = Theme::get();
         $currencies = Currency::get();
         $settings = Setting::first();
         $config = Config::get();
 
-        // Get image limit
         $image_limit = [
             'SIZE_LIMIT' => env('SIZE_LIMIT', '')
         ];
@@ -57,13 +55,10 @@ class SettingController extends Controller
 
         $dateTimeFormats = getDateTimeFormats();
 
-        // Get all languages from the config
         $languages = config('app.languages');
 
-        // Define all languages as selected (or you can replace this with any subset of languages)
-        $selectedLanguages = array_keys($languages); // This will make all languages selected
+        $selectedLanguages = array_keys($languages); 
 
-        // Get the default language
         $defaultLanguage = config('app.locale');
 
         return Inertia::render('admin/settings/systemsetting', compact('settings', 'themes', 'timezonelist', 'currencies', 'config', 'languages', 'dateTimeFormats', 'selectedLanguages', 'defaultLanguage', 'image_limit'));
@@ -132,108 +127,7 @@ class SettingController extends Controller
         return Inertia::render('admin/settings/website-configuration/index', compact('settings', 'themes', 'config', 'customizableThemeIds', 'appName'));
     }
 
-    // Update Website Setting
-    // public function changeWebsiteSettings(WebsiteSettingsRequest $request)
-    // {
-
-    //     Setting::where('id', '1')->update([
-    //         'site_name' => $request->site_name
-    //     ]);
-
-    //     Config::where('config_key', 'site_name')->update([
-    //         'config_value' => $request->site_name
-    //     ]);
-
-
-    //     // App name
-    //     $appName = str_replace('"', "", $request->app_name);
-    //     $appName = str_replace("'", "", $appName);
-
-    //     // Set new values using putenv
-    //     $this->updateEnvFile('APP_NAME', '"' . $appName . '"');
-
-    //     // Config::where('config_key', 'app_theme')->update([
-    //     //     'config_value' => $request->app_theme
-    //     // ]);
-
-    //     Config::where('config_key', 'default_theme')->update([
-    //         'config_value' => $request->theme_id
-    //     ]);
-
-    //     // Check website logo
-    //     if (isset($request->site_logo)) {
-    //         $validator = $request->validate([
-    //             'site_logo' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-    //         ]);
-
-    //         $site_logo = '/images/web/elements/' . uniqid() . '.' . $request->site_logo->extension();
-    //         $request->site_logo->move(public_path('images/web/elements'), $site_logo);
-
-    //         // Update details
-    //         Setting::where('id', '1')->update([
-    //             'site_name' => $request->site_name,
-    //             'site_logo' => $site_logo
-    //         ]);
-    //     }
-
-    //     // Check site logo light
-    //     if (isset($request->site_logo_light)) {
-    //         $validator = $request->validate([
-    //             'site_logo_light' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-    //         ]);
-
-    //         $site_logo_light = '/images/web/elements/' . uniqid() . '.' . $request->site_logo_light->extension();
-    //         $request->site_logo_light->move(public_path('images/web/elements'), $site_logo_light);
-
-    //         // Update details
-    //         Setting::where('id', '1')->update([
-    //             'site_name' => $request->site_name,
-    //             'site_logo_light' => $site_logo_light
-    //         ]);
-    //     }
-
-    //     // Check favicon
-    //     if (isset($request->favi_icon)) {
-    //         $validator = $request->validate([
-    //             'favi_icon' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env("SIZE_LIMIT") . '',
-    //         ]);
-
-    //         $favi_icon = '/images/web/elements/' . uniqid() . '.' . $request->favi_icon->extension();
-    //         $request->favi_icon->move(public_path('images/web/elements'), $favi_icon);
-
-    //         // Update details
-    //         Setting::where('id', '1')->update([
-    //             'site_name' => $request->site_name,
-    //             'favicon' => $favi_icon
-    //         ]);
-    //     }
-
-    //     // Check primary image for website banner
-    //     if ($request->hasFile('primary_image')) {
-
-    //         $request->validate([
-    //             'primary_image' => 'mimes:jpeg,png,jpg,webp,svg|max:' . env('SIZE_LIMIT'),
-    //         ]);
-
-    //         $fileName = uniqid() . '.' . $request->file('primary_image')->extension();
-
-    //         $request->file('primary_image')->move(
-    //             public_path('images/web/elements'),
-    //             $fileName
-    //         );
-
-    //         $primaryImage = '/images/web/elements/' . $fileName;
-
-    //         Config::where('config_key', 'primary_image')->update([
-    //             'config_value' => $primaryImage,
-    //         ]);
-    //     }
-
-    //     // Page redirect
-    //     // return redirect()->route('dahsboard.admin.settings')->with('success', trans('Website Settings Updated Successfully!'));
-    // }
-
-
+ 
     public function changeWebsiteSettings(WebsiteSettingsRequest $request)
     {
         Setting::where('id', 1)->update([
@@ -318,7 +212,7 @@ class SettingController extends Controller
 
         return back()->with(
             'success',
-            trans('Website Settings Updated Successfully!')
+            'Website Settings Updated Successfully!'
         );
     }
 
@@ -407,7 +301,7 @@ class SettingController extends Controller
         ]);
 
         // Page redirect
-        return redirect()->route('admin.settings')->with('success', trans('Payment Settings Updated Successfully!'));
+        return redirect()->route('admin.settings')->with('success', 'Payment Settings Updated Successfully!');
     }
 
 
@@ -456,8 +350,7 @@ class SettingController extends Controller
         ]);
 
 
-        // Page redirect
-        // return redirect()->route('admin.settings')->with('success', trans('AI Settings Updated Successfully!'));
+        return back()->with('succes', 'AI Settings Updated Successfully');
     }
 
 
@@ -513,8 +406,7 @@ class SettingController extends Controller
         $this->updateEnvFile('AWS_BUCKET', $bucket);
         $this->updateEnvFile('AWS_USE_PATH_STYLE_ENDPOINT', $request->end_point);
 
-        // Page redirect
-        // return redirect()->route('admin.settings')->with('success', trans('AWS configuration settings updated successfully!'));
+        return back()->with('success', 'AWS configuration settings updated successfully!');
     }
 
     // Tax settings
@@ -525,7 +417,6 @@ class SettingController extends Controller
         $settings = Setting::first();
 
         // Page view
-        // return view('admin.pages.tax.index', compact('config', 'settings'));
         return Inertia::render('admin/settings/invoice-tax/index', compact('config', 'settings'));
     }
 
@@ -610,7 +501,7 @@ class SettingController extends Controller
     public function clearCache()
     {
         try {
-            // Clear application cache
+           
             Cache::flush();
 
             // Clear caches using Artisan

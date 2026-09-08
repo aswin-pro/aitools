@@ -15,8 +15,9 @@ return new class extends Migration
             $table->increments('id')->uniqid();
             $table->string('chat_id'); 
             $table->string('chat_type')->default('chat');
-            $table->string('generate_by');
-            $table->string('chat_genius_id');
+            $table->string('attachment')->nullable();
+            $table->string('generated_by');
+            $table->string('chat_assistant_id');
             $table->string('chat_title');
             $table->string('word_count')->default(0);
             $table->integer('status')->default(1);

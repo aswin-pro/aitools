@@ -16,6 +16,8 @@ use App\Models\CustomTemplate;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use App\Models\AiImages;
+use App\Models\ContentTemplate;
+use App\Models\GeneratedImage;
 use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Schema;
@@ -52,10 +54,10 @@ class WebController extends Controller
                 $setting = Setting::where('status', 1)->first();
 
                 // Tools
-                $tools = CustomTemplate::where('status', 1)->limit(6)->get();
+                $tools = ContentTemplate::where('status', 1)->limit(6)->get();
 
                 // Images
-                $images = AiImages::where('format', 'url')->where('status', 1)->limit(4)->orderBy('id', 'desc')->get();
+                $images = GeneratedImage::where('format', 'url')->where('status', 1)->limit(4)->orderBy('id', 'desc')->get();
 
                 // Check plan for free
                 $planPrices = [];
@@ -123,7 +125,7 @@ class WebController extends Controller
             // Check page
             if (!$page->isEmpty()) {
                 // Templates
-                $templates = CustomTemplate::where('status', 1)->get();
+                $templates = ContentTemplate::where('status', 1)->get();
 
                 // Queries
                 $config = Config::get();
@@ -339,98 +341,14 @@ class WebController extends Controller
         }
     }
 
-    // Web Contact
-// public function webContact()
-// {
 
-//     $config = Config::get();
+    public function webContact()
+    {
+        $config = Config::get();
+        $setting = Setting::where('status', 1)->first();
 
-//     // Check website
-//     if ($config[43]->config_value != "yes") {
-//         return redirect('/login');
-//     }
-
-//     // Get contact page
-//     $page = Page::where('theme_id', $config[48]->config_value)
-//         ->where('slug', 'contact')
-//         ->where('status', 1)
-//         ->first();
-
-//     // Check page
-//     if (!$page) {
-//         abort(404);
-//     }
-
-//     $setting = Setting::where('status', 1)->first();
-
-//     // SEO
-//     SEOTools::setTitle($page->page_title);
-//     SEOTools::setDescription($page->description);
-
-//     SEOMeta::setTitle($page->page_title);
-//     SEOMeta::setDescription($page->description);
-//     SEOMeta::addMeta(
-//         'article:section',
-//         $page->name . ' - ' . $page->description,
-//         'property'
-//     );
-//     SEOMeta::addKeyword([$page->keywords]);
-
-//     OpenGraph::setTitle($page->page_title);
-//     OpenGraph::setDescription($page->description);
-//     OpenGraph::setUrl(URL::full());
-//     OpenGraph::addImage([
-//         asset($setting->site_logo),
-//         'size' => 300
-//     ]);
-
-//     JsonLd::setTitle($page->page_title);
-//     JsonLd::setDescription($page->description);
-//     JsonLd::addImage(asset($setting->site_logo));
-
-//     $returnValues = compact(
-//         'config',
-//         'setting',
-//         'page'
-//     );
-
-//     // Selected theme
-//     // if ($config[48]->config_value == "513402991882314") {
-//     //     return view(
-//     //         "website.classic.pages.contact",
-//     //         $returnValues
-//     //     );
-//     // }
-
-//     // if ($config[48]->config_value == "330599619570398") {
-//     //     return view(
-//     //         "website.modern.pages.contact",
-//     //         $returnValues
-//     //     );
-//     // }
-
-//     if ($config[48]->config_value == "317109101703740") {
-//         return view(
-//             "website.modern-orange.pages.contact",
-//             $returnValues
-//         );
-//     }
-
-//     abort(404);
-// }
-
-
-public function webContact()
-{
-    $config = Config::get();
-    $setting = Setting::where('status', 1)->first();
-
-    return view('website.modern-orange.pages.contact', compact('config', 'setting'));
-}
-
-
-
-
+        return view('website.modern-orange.pages.contact', compact('config', 'setting'));
+    }
 
     // Web FAQs
     public function webFAQ()

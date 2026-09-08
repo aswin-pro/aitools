@@ -247,7 +247,5 @@ class UpdateController extends Controller
             return redirect()->route('admin.check')->with('failed', $resp_data['message']);
         }
 
-        // Failed message and redirect
-        return redirect()->route('admin.check')->with('failed', trans('Purchase code verified failed.'));
     }
 }

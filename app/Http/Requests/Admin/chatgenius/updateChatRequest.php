@@ -26,38 +26,38 @@ class updateChatRequest extends FormRequest
         $sizeLimit = env('SIZE_LIMIT');
 
         return [
-            'chat_genius_id' => [
+            'chat_assistant_id' => [
                 'required',
                 'string',
             ],
 
-            'chat_genius_name' => [
-                'required',
-                'string',
-                'min:2',
-                'max:200',
-            ],
-
-            'chat_genius_expert' => [
+            'chat_assistant_name' => [
                 'required',
                 'string',
                 'min:2',
                 'max:200',
             ],
 
-            'chat_genius_description' => [
+            'chat_assistant_expert' => [
+                'required',
+                'string',
+                'min:2',
+                'max:200',
+            ],
+
+            'chat_assistant_description' => [
                 'required',
                 'string',
                 'min:10',
             ],
 
-            'chat_genius_message' => [
+            'chat_assistant_message' => [
                 'required',
                 'string',
                 'min:10',
             ],
 
-            'chat_genius_image' => [
+            'chat_assistant_image' => [
                 'nullable',
                 'file',
                 'mimes:jpg,jpeg,png,webp',

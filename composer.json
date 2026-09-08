@@ -64,8 +64,10 @@
         "files": [
             "app/helpers.php",
             "app/Helpers/DateHelper.php",
-            "app/Helpers/CommonHelper.php"
-
+            "app/Helpers/CommonHelper.php",
+            "app/Helpers/UserHelper.php",
+            "app/Helpers/PaymentHelper.php",
+            "app/Helpers/helper.php"
         ],
         "classmap": [
             "app/Classes",

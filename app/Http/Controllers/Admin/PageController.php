@@ -79,57 +79,56 @@ class PageController extends Controller
         // Queries
         $config = Config::get();
 
-            return Inertia::render('admin/pages/create-custom-page');
-
+        return Inertia::render('admin/pages/create-custom-page');
     }
 
     // Save page
-public function savePage(Request $request)
-{
-    $request->validate([
-        'title' => ['required', 'string', 'max:255'],
-        'slug' => ['required', 'string', 'max:255', 'unique:pages,slug'],
-        'body' => ['required', 'string'],
-        'page_title' => ['required', 'string', 'max:255'],
-        'description' => ['required', 'string'],
-        'keywords' => ['required', 'string', 'max:255'],
-    ]);
+    public function savePage(Request $request)
+    {
+        $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'unique:pages,slug'],
+            'body' => ['required', 'string'],
+            'page_title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'keywords' => ['required', 'string', 'max:255'],
+        ]);
 
-    $config = Config::get();
+        $config = Config::get();
 
-    $page = new Page();
+        $page = new Page();
 
-    $page->theme_id = $config[48]->config_value;
-    $page->name = 'Custom Page';
-    $page->title = $request->title;
-    $page->slug = $request->slug;
-    $page->body = $request->body;
-    $page->page_title = $request->page_title;
-    $page->description = $request->description;
-    $page->keywords = $request->keywords;
-    $page->status = 1;
+        $page->theme_id = $config[48]->config_value;
+        $page->name = 'Custom Page';
+        $page->title = $request->title;
+        $page->slug = $request->slug;
+        $page->body = $request->body;
+        $page->page_title = $request->page_title;
+        $page->description = $request->description;
+        $page->keywords = $request->keywords;
+        $page->status = 1;
 
-    $page->save();
+        $page->save();
 
-    return redirect()
-        ->route('dashboard.admin.pages')
-        ->with('success', 'Custom page created successfully.');
-}
+        return redirect()
+            ->route('dashboard.admin.pages')
+            ->with('success', 'Custom page created successfully.');
+    }
 
     // Edit custom page
 
-public function editCustomPage($id)
-{
-    $config = Config::get();
+    public function editCustomPage($id)
+    {
+        $config = Config::get();
 
-    $page = Page::where('theme_id', $config[48]->config_value)
-        ->where('id', $id)
-        ->firstOrFail();
+        $page = Page::where('theme_id', $config[48]->config_value)
+            ->where('id', $id)
+            ->firstOrFail();
 
-    return Inertia::render('admin/pages/edit-custom-page', [
-        'page' => $page,
-    ]);
-}
+        return Inertia::render('admin/pages/edit-custom-page', [
+            'page' => $page,
+        ]);
+    }
 
     // Edit page
 
@@ -180,42 +179,42 @@ public function editCustomPage($id)
 
         return redirect()
             ->route('dashboard.admin.pages')
-            ->with('success', trans('Website Content Updated Successfully!'));
+            ->with('success', 'Website Content Updated Successfully!');
     }
 
     // Update custom page
-public function updateCustomPage(Request $request)
-{
-    $request->validate([
-        'page_id' => ['required', 'exists:pages,id'],
-        'title' => ['required', 'string', 'max:255'],
-        'slug' => [
-            'required',
-            'string',
-            'max:255',
-            Rule::unique('pages', 'slug')->ignore($request->page_id),
-        ],
-        'body' => ['required', 'string'],
-        'page_title' => ['required', 'string', 'max:255'],
-        'description' => ['required', 'string'],
-        'keywords' => ['required', 'string', 'max:255'],
-    ]);
+    public function updateCustomPage(Request $request)
+    {
+        $request->validate([
+            'page_id' => ['required', 'exists:pages,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('pages', 'slug')->ignore($request->page_id),
+            ],
+            'body' => ['required', 'string'],
+            'page_title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'keywords' => ['required', 'string', 'max:255'],
+        ]);
 
-    $page = Page::findOrFail($request->page_id);
+        $page = Page::findOrFail($request->page_id);
 
-    $page->title = $request->title;
-    $page->slug = $request->slug;
-    $page->body = $request->body;
-    $page->page_title = $request->page_title;
-    $page->description = $request->description;
-    $page->keywords = $request->keywords;
+        $page->title = $request->title;
+        $page->slug = $request->slug;
+        $page->body = $request->body;
+        $page->page_title = $request->page_title;
+        $page->description = $request->description;
+        $page->keywords = $request->keywords;
 
-    $page->save();
+        $page->save();
 
-    return redirect()
-        ->route('dashboard.admin.pages')
-        ->with('success', __('Custom page updated successfully.'));
-}
+        return redirect()
+            ->route('dashboard.admin.pages')
+            ->with('success', 'Custom page updated successfully.');
+    }
 
     // Status Page
     public function statusPage(Request $request)
@@ -232,7 +231,7 @@ public function updateCustomPage(Request $request)
 
         // Update status
         Page::where('id', $request->query('id'))->update(['status' => $status]);
-        return redirect()->route('dashboard.admin.pages')->with('success', trans('Page Status Updated Successfully!'));
+        return redirect()->route('dashboard.admin.pages')->with('success', 'Page Status Updated Successfully!');
     }
 
     // Disable Page
@@ -250,7 +249,7 @@ public function updateCustomPage(Request $request)
 
         // Update status
         Page::where('slug', $request->query('id'))->update(['status' => $status]);
-        return redirect()->route('dashboard.admin.pages')->with('success', trans('Page Status Updated Successfully!'));
+        return redirect()->route('dashboard.admin.pages')->with('success', 'Page Status Updated Successfully!');
     }
 
     // Delete Page
@@ -258,7 +257,7 @@ public function updateCustomPage(Request $request)
     {
         // Update status
         Page::where('id', $request->query('id'))->delete();
-        return redirect()->route('dashboard.admin.pages')->with('success', trans('Page Deleted Successfully!'));
+        return redirect()->route('dashboard.admin.pages')->with('success', 'Page Deleted Successfully!');
     }
 
 

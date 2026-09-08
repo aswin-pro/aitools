@@ -36,8 +36,6 @@ class SitemapController extends Controller
         $settings = Setting::first();
         $config   = Config::get();
 
-        // return view('admin.pages.sitemap.index', compact('settings', 'config'));
-
         return Inertia::render('admin/system/sitemap/index', compact('settings', 'config'));
     }
 
@@ -94,6 +92,7 @@ class SitemapController extends Controller
         // Save sitemap to public directory
         $sitemap->writeToFile(public_path('sitemap.xml'));
 
-        // return redirect()->route('admin.sitemap')->with('success', trans('Generated!'));
+        return back()->with('success', 'Generated!');
+
     }
 }

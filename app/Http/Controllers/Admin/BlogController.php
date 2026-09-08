@@ -26,26 +26,20 @@ class BlogController extends Controller
         $this->middleware('auth');
     }
 
-    // Check slug exists
     public function createSlug($title, $count = 0)
     {
-        // Generate the initial slug from the title
         $slug = Str::slug($title);
 
-        // If a count is provided, append it to the slug
         if ($count > 0) {
             $slug .= '-' . $count;
         }
 
-        // Check if the slug already exists in the database
         $existingSlug = Blog::where('slug', $slug)->first();
 
-        // If the slug exists, recursively call this method with an incremented count
         if ($existingSlug) {
             return $this->createSlug($title, $count + 1);
         }
 
-        // If the slug does not exist, return it
         return $slug;
     }
 
@@ -231,7 +225,7 @@ class BlogController extends Controller
             ->route('dashboard.admin.blogs.post')
             ->with(
                 'success',
-                trans('Blog updated successfully!')
+                 'Blog updated successfully!'
             );
     }
 
@@ -253,12 +247,10 @@ class BlogController extends Controller
                 break;
         }
 
-        // Update status
         Blog::where('blog_id', $request->query('id'))->update(['status' => $status]);
 
-        // Redirect
         return redirect()
             ->route('dashboard.admin.blogs.post')
-            ->with('success', trans('Status updated successfully!'));
+            ->with('success', 'Status updated successfully!');
     }
 }
