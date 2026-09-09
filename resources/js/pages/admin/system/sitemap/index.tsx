@@ -59,6 +59,7 @@ export default function Index() {
 
             <div className=" space-y-6">
                 <HeadingSmall
+                t={t}
                     title={t("Generate Sitemap")}
                     description={t(
                         "Select the content categories you want to include in your sitemap.",

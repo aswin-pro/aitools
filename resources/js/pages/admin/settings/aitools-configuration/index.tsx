@@ -62,6 +62,7 @@ export default function index() {
             <SettingsLayout>
                 <div className="space-y-6 max-w-[5xl]">
                     <HeadingSmall
+                    t={t}
                         title={t("AI Tools Configuration Settings")}
                         description={"General Website configuration settings"}
                     />

@@ -53,6 +53,7 @@ export default function MSG91SmsSettings({
         <>
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Heading
+                t={t}
                     title={t("MSG91 SMS Notification Settings")}
                     description={t(
                         "Configure Twilio SMS notification credentials and templates.",

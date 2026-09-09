@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import AppLayout from "@/layouts/app/app-layout";
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
     Select,
@@ -182,11 +181,11 @@ export default function Edit({
 
     const [addKeyOpen, setAddKeyOpen] = useState(false);
 
-const addKeyForm = useForm({
-    source_value: "",
-    target_value: "",
-    locale: locale,
-});
+    const addKeyForm = useForm({
+        source_value: "",
+        target_value: "",
+        locale: locale,
+    });
 
     const handleTranslationChange = useCallback(
         (key: string, value: string) => {
@@ -232,30 +231,24 @@ const addKeyForm = useForm({
         });
     };
 
-const handleAddKeySubmit = (
-    e: React.FormEvent<HTMLFormElement>,
-) => {
-    e.preventDefault();
+    const handleAddKeySubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    addKeyForm.post(route("translation-manager.add-key"), {
-        preserveScroll: true,
+        addKeyForm.post(route("translation-manager.add-key"), {
+            preserveScroll: true,
 
-        onSuccess: () => {
-            toast.success(
-                t("New translation key added successfully."),
-            );
+            onSuccess: () => {
+                toast.success(t("New translation key added successfully."));
 
-            setAddKeyOpen(false);
-            addKeyForm.reset();
-        },
+                setAddKeyOpen(false);
+                addKeyForm.reset();
+            },
 
-        onError: () => {
-            toast.error(
-                t("Unable to add translation key."),
-            );
-        },
-    });
-};
+            onError: () => {
+                toast.error(t("Unable to add translation key."));
+            },
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -375,6 +368,7 @@ const handleAddKeySubmit = (
 
                 <form id="translation-form" onSubmit={handleSubmit}>
                     <DataTable
+                        t={t}
                         columns={columns}
                         data={paginatedSourceKeys.data}
                         pageIndex={paginatedSourceKeys.current_page - 1}
@@ -387,39 +381,39 @@ const handleAddKeySubmit = (
                     />
                 </form>
 
-<FormSheet
-    open={addKeyOpen}
-    onOpenChange={setAddKeyOpen}
-    title={t("Add New Translation Word")}
-    description={t(
-        "Add a new translation key and its localized value.",
-    )}
-    form={addKeyForm}
-    fields={[
-        {
-            type: "input",
-            name: "source_value",
-            label: t(
-                `Source Word (${sourceLocale.toUpperCase()})`,
-            ),
-            placeholder: t("Default English Word"),
-            required: true,
-        },
-        {
-            type: "input",
-            name: "target_value",
-            label: t(
-                `Localized Word (${locale.toUpperCase()})`,
-            ),
-            placeholder: t(
-                "Local language translation (optional)",
-            ),
-        },
-    ]}
-    onSubmit={handleAddKeySubmit}
-    submitLabel={t("Save")}
-    cancelLabel={t("Cancel")}
-/>
+                <FormSheet
+                    open={addKeyOpen}
+                    onOpenChange={setAddKeyOpen}
+                    title={t("Add New Translation Word")}
+                    description={t(
+                        "Add a new translation key and its localized value.",
+                    )}
+                    form={addKeyForm}
+                    fields={[
+                        {
+                            type: "input",
+                            name: "source_value",
+                            label: t(
+                                `Source Word (${sourceLocale.toUpperCase()})`,
+                            ),
+                            placeholder: t("Default English Word"),
+                            required: true,
+                        },
+                        {
+                            type: "input",
+                            name: "target_value",
+                            label: t(
+                                `Localized Word (${locale.toUpperCase()})`,
+                            ),
+                            placeholder: t(
+                                "Local language translation (optional)",
+                            ),
+                        },
+                    ]}
+                    onSubmit={handleAddKeySubmit}
+                    submitLabel={t("Save")}
+                    cancelLabel={t("Cancel")}
+                />
             </div>
         </AppLayout>
     );

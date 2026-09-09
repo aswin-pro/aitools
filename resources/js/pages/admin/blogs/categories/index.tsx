@@ -251,6 +251,7 @@ export default function Index({
 
             <div className="mb-4 flex items-start justify-between">
                 <Heading
+                t={t}
                     title={t("Blog Categories")}
                     description={t("Create and manage your blog categories")}
                 />
@@ -263,6 +264,7 @@ export default function Index({
 
             {/* Table */}
             <DataTable
+            t={t}
                 columns={columns}
                 data={blogsCategories.data}
                 pageIndex={blogsCategories.current_page - 1}

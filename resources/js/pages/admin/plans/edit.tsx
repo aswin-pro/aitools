@@ -165,6 +165,7 @@ export default function EditPlan({ plan, templates }: Props) {
                 {/* Header */}
                 <div>
                     <Heading
+                    t={t}
                         title={t("Edit Plan")}
                         description={t("Update the subscription plan.")}
                     />

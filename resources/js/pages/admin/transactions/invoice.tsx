@@ -17,6 +17,7 @@ import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import { BreadcrumbItem } from "@/types";
 import Heading from "@/components/heading";
+import { useTranslation } from "react-i18next";
 
 interface InvoiceProps {
     transaction: InvoiceTransaction;
@@ -53,6 +54,8 @@ export default function Invoice({
     const billing = transaction.billing_details;
 
     const invoiceRef = useRef<HTMLDivElement>(null);
+
+    const { t } = useTranslation();
 
     const handlePrint = () => {
         window.print();
@@ -135,6 +138,7 @@ export default function Invoice({
                     <div className="flex items-center justify-between py-4">
                         <div>
                             <Heading
+                                t={t}
                                 title="Invoice"
                                 description="View and download invoice details"
                             />

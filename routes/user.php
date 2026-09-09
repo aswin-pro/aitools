@@ -1,111 +1,194 @@
 <?php
 
+use App\Http\Controllers\User\VerificationController;
+use App\Http\Controllers\User\CodeGeneratorController;
+use App\Http\Controllers\User\ContentGeneratorController;
+use App\Http\Controllers\User\DashboardController;
+use App\Http\Controllers\User\DocumentAnalyzerController;
+use App\Http\Controllers\User\ImageGeneratorController;
+use App\Http\Controllers\User\PersonalizedChatController;
+use App\Http\Controllers\User\SiteAnalyzerController;
+use App\Http\Controllers\User\SpeechToTextConverterController;
+use App\Http\Controllers\User\SubscriptionController;
+use App\Http\Controllers\User\TextToSpeechConverterController;
+use App\Http\Controllers\User\UserUploadController;
 use Illuminate\Support\Facades\Route;
 
-    Route::group(['as' => 'user.', 'prefix' => 'user', 'namespace' => 'User', 'middleware' => ['auth', 'user'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
-        // Dashboard
-        Route::get('dashboard', [App\Http\Controllers\User\DashboardController::class, "index"])->name('dashboard');
+// User routes
+Route::group(['as' => 'dashboard.user.', 'prefix' => 'dashboard/user', 'middleware' => ['auth', 'user'], 'where' => ['locale' => '[a-zA-Z]{2}']], function () {
+    // Resend Email Verfication
+    Route::get('verify-email-verification', [VerificationController::class, "verifyEmailVerification"])->name('verify.email.verification');
+    Route::get('resend-email-verification', [VerificationController::class, "resendEmailVerification"])->name('resend.email.verification');
 
-        // Plans
-        Route::get('plans', [App\Http\Controllers\User\PlanController::class, "index"])->name('plans');
+    // Dashboard
+    Route::get('overview', [DashboardController::class, "index"])->name('overview');
 
-        // Create AI Content 
-        Route::get('ai/gc', [App\Http\Controllers\User\AIContentCreatorController::class, "indexAllAiContent"])->name('all.ai.content');
-        Route::get('ai/gc/templates', [App\Http\Controllers\User\AIContentCreatorController::class, "indexAiTemplates"])->name('new.ai.templates');
-        Route::get('ai/gc/new/{slug}', [App\Http\Controllers\User\AIContentCreatorController::class, "indexNewAiContent"])->name('new.ai.content');
-        Route::post('ai/gc/generate', [App\Http\Controllers\User\AIContentCreatorController::class, "generateAiContent"])->name('generate.ai.content');
-        Route::get('ai/gc/view/{id}', [App\Http\Controllers\User\AIContentCreatorController::class, "viewAiContent"])->name('view.ai.content');
-        Route::get('ai/gc/edit/{id}', [App\Http\Controllers\User\AIContentCreatorController::class, "editAiContent"])->name('edit.ai.content');
-        Route::post('ai/gc/update', [App\Http\Controllers\User\AIContentCreatorController::class, "updateAiContent"])->name('update.ai.content');
-        Route::get('ai/gc/export-docs/{id}', [App\Http\Controllers\User\AIContentCreatorController::class, "exportDocsAiContent"])->name('export.docs.content');
-        Route::get('ai/gc/delete', [App\Http\Controllers\User\AIContentCreatorController::class, "deleteAiContent"])->name('delete.ai.content');
+    // Content Generator
+    Route::prefix('content-generator')->as('content-generator.')->controller(ContentGeneratorController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
 
-        // Create AI Images 
-        Route::get('ai/gi', [App\Http\Controllers\User\AiImageCreatorController::class, "indexAllAiImage"])->name('all.ai.images');
-        Route::get('ai/gi/new', [App\Http\Controllers\User\AiImageCreatorController::class, "indexNewAiImage"])->name('new.ai.image');
-        Route::post('ai/gi/generate', [App\Http\Controllers\User\AiImageCreatorController::class, "generateAiImage"])->name('generate.ai.image');
-        Route::get('ai/gi/view/{id}', [App\Http\Controllers\User\AiImageCreatorController::class, "viewAiImage"])->name('view.ai.image');
-        Route::get('ai/gi/delete-image', [App\Http\Controllers\User\AiImageCreatorController::class, "deleteAiImage"])->name('delete.ai.image');
+        // templates
+        Route::get('/templates', 'templates')->name('templates');
 
-        // Create AI Speech to text 
-        Route::get('ai/gst', [App\Http\Controllers\User\AiSpeechToTextController::class, "indexAllAiSpeechToText"])->name('all.ai.speech.to.text');
-        Route::get('ai/gst/new', [App\Http\Controllers\User\AiSpeechToTextController::class, "indexNewAiSpeechToText"])->name('new.ai.speech.to.text');
-        Route::post('ai/gst/generate', [App\Http\Controllers\User\AiSpeechToTextController::class, "generateAiSpeechToText"])->name('generate.ai.speech.to.text');
-        Route::get('ai/gst/view/{id}', [App\Http\Controllers\User\AiSpeechToTextController::class, "viewAiSpeechToText"])->name('view.ai.speech.to.text');
-        Route::get('ai/gst/edit/{id}', [App\Http\Controllers\User\AiSpeechToTextController::class, "editAiSpeechToText"])->name('edit.ai.speech.to.text');
-        Route::post('ai/gst/update', [App\Http\Controllers\User\AiSpeechToTextController::class, "updateAiSpeechToText"])->name('update.ai.speech.to.text');
-        Route::get('ai/gst/export-docs/{id}', [App\Http\Controllers\User\AiSpeechToTextController::class, "exportDocsAiSpeechToText"])->name('export.docs.speech.to.text');
+        // generate
+        Route::get('/generate/{template}', 'generate')->name('generate');
+        Route::post('/generate/{template}', 'generateContent')->name('generate.store');
 
-        // Create AI Text to speech
-        Route::get('ai/gts', [App\Http\Controllers\User\AiTextToSpeechController::class, "indexAllAiTextToSpeech"])->name('all.ai.text.to.speech');
-        Route::get('ai/gts/new', [App\Http\Controllers\User\AiTextToSpeechController::class, "indexNewAiTextToSpeech"])->name('new.ai.text.to.speech');
-        Route::post('ai/gts/generate', [App\Http\Controllers\User\AiTextToSpeechController::class, "generateAiTextToSpeech"])->name('generate.ai.text.to.speech');
-        Route::get('ai/gts/delete', [App\Http\Controllers\User\AiTextToSpeechController::class, "deleteAiTextToSpeech"])->name('delete.ai.text.to.speech');
+        // update
+        Route::put('/update/{id}', 'update')->name('update');
 
-        // Create AI Code
-        Route::get('ai/gcode', [App\Http\Controllers\User\AiCodeController::class, "indexAllAiCode"])->name('all.ai.code');
-        Route::get('ai/gcode/new', [App\Http\Controllers\User\AiCodeController::class, "indexNewAiCode"])->name('new.ai.code');
-        Route::post('ai/gcode/generate', [App\Http\Controllers\User\AiCodeController::class, "generateAiCode"])->name('generate.ai.code');
-        Route::get('ai/gcode/view/{id}', [App\Http\Controllers\User\AiCodeController::class, "viewAiCode"])->name('view.ai.code');
-        Route::get('ai/gcode/edit/{id}', [App\Http\Controllers\User\AiCodeController::class, "editAiCode"])->name('edit.ai.code');
-        Route::post('ai/gcode/update', [App\Http\Controllers\User\AiCodeController::class, "updateAiCode"])->name('update.ai.code');
-        Route::get('ai/gcode/export-docs/{id}', [App\Http\Controllers\User\AiCodeController::class, "exportDocsAiCode"])->name('export.docs.code');
-
-        // Chat Genius
-        Route::get('ai/chatgenius', [App\Http\Controllers\User\ChatAssistantController::class, "indexAllAiChatGenius"])->name('all.ai.chatgenius');
-        Route::get('ai/chatgenius/new/{slug}', [App\Http\Controllers\User\ChatAssistantController::class, "indexNewAiChatGenius"])->name('new.ai.chatgenius');
-        Route::post('ai/chatgenius/generate', [App\Http\Controllers\User\ChatAssistantController::class, "generateAiChatGenius"])->name('generate.ai.chatgenius');
-        Route::any('ai/chatgenius/new-conversation/{slug}', [App\Http\Controllers\User\ChatAssistantController::class, "newConversationAiChatGenius"])->name('new.ai.chatgenius.conversation');
-        Route::post('ai/chatgenius/update-details', [App\Http\Controllers\User\ChatAssistantController::class, 'updateAiChatGeniusDetails'])->name('update.ai.chatgenius.details');
-        Route::post('ai/chatgenius/delete', [App\Http\Controllers\User\ChatAssistantController::class, "deleteAiChatGenius"])->name('delete.ai.chatgenius');
-        Route::get('ai/chatgenius/export-docs/{id}', [App\Http\Controllers\User\ChatAssistantController::class, "exportAiChatGenius"])->name('export.ai.chatgenius');
-
-        // DocuAssistant
-        Route::get('ai/docu-assistant', [App\Http\Controllers\User\DocuAssistController::class, "indexAllAiDocuAssistant"])->name('all.ai.docuassistant');
-        Route::post('ai/docu-assistant/generate', [App\Http\Controllers\User\DocuAssistController::class, "generateAiDocuAssistant"])->name('generate.ai.docuassistant');
-        Route::any('ai/docu-assistant/new-conversation/{slug}', [App\Http\Controllers\User\DocuAssistController::class, "newConversationAiDocuAssistant"])->name('new.ai.docuassistant');
-        Route::post('ai/docu-assistant/update-details', [App\Http\Controllers\User\DocuAssistController::class, 'updateAiDocuAssistantDetails'])->name('update.ai.docuassistant.details');
-        Route::post('ai/docu-assistant/delete', [App\Http\Controllers\User\DocuAssistController::class, "deleteAiDocuAssistant"])->name('delete.ai.docuassistant');
-        Route::get('ai/docu-assistant/export-docs/{id}', [App\Http\Controllers\User\DocuAssistController::class, "exportAiDocuAssistant"])->name('export.ai.docuassistant');
-
-        // WebChat
-        Route::get('ai/webchat', [App\Http\Controllers\User\WebChatController::class, "indexAllAiWebChat"])->name('all.ai.webchat');
-        Route::post('ai/webchat/generate', [App\Http\Controllers\User\WebChatController::class, "generateAiWebChat"])->name('generate.ai.webchat');
-        Route::any('ai/webchat/new-conversation/{slug}', [App\Http\Controllers\User\WebChatController::class, "newConversationAiWebChat"])->name('new.ai.webchat');
-        Route::post('ai/webchat/update-details', [App\Http\Controllers\User\WebChatController::class, 'updateAiWebChatDetails'])->name('update.ai.webchat.details');
-        Route::post('ai/webchat/delete', [App\Http\Controllers\User\WebChatController::class, "deleteAiWebChat"])->name('delete.ai.webchat');
-        Route::get('ai/webchat/export-docs/{id}', [App\Http\Controllers\User\WebChatController::class, "exportAiWebChat"])->name('export.ai.webchat');
-
-        //Addtional Tootls -> QR Maker
-        Route::get('tools/whois-lookup', [App\Http\Controllers\User\AdditionalController::class, "whoisLookup"])->name('whois-lookup');
-        Route::post('tools/whois-lookup', [App\Http\Controllers\User\AdditionalController::class, "resultWhoisLookup"])->name('result.whois-lookup');
-        Route::get('tools/dns-lookup', [App\Http\Controllers\User\AdditionalController::class, "dnsLookup"])->name('dns-lookup');
-        Route::post('tools/dns-lookup', [App\Http\Controllers\User\AdditionalController::class, "resultDnsLookup"])->name('result.dns-lookup');
-        Route::get('tools/ip-lookup', [App\Http\Controllers\User\AdditionalController::class, "ipLookup"])->name('ip-lookup');
-        Route::post('tools/ip-lookup', [App\Http\Controllers\User\AdditionalController::class, "resultIpLookup"])->name('result.ip-lookup');
-
-        // Transactions
-        Route::get('transactions', [App\Http\Controllers\User\TransactionsController::class, "indexTransactions"])->name('transactions');
-        Route::get('view-invoice/{id}', [App\Http\Controllers\User\TransactionsController::class, "viewInvoice"])->name('view.invoice');
-
-        // Billing
-        Route::get('billing/{id}', [App\Http\Controllers\User\BillingController::class, "billing"])->name('billing');
-        Route::post('update-billing', [App\Http\Controllers\User\BillingController::class, "updateBilling"])->name('update.billing')->middleware(['demo.mode']);
-
-        // Checkout
-        Route::get('checkout/{id}', [App\Http\Controllers\User\CheckOutController::class, "checkout"])->name('checkout');
-
-        // Account Setting
-        Route::get('account', [App\Http\Controllers\User\AccountController::class, "index"])->name('index.account');
-        Route::get('edit-account', [App\Http\Controllers\User\AccountController::class, "editAccount"])->name('edit.account');
-        Route::post('update-account', [App\Http\Controllers\User\AccountController::class, "updateAccount"])->name('update.account')->middleware(['demo.mode']);
-        Route::get('change-password', [App\Http\Controllers\User\AccountController::class, "changePassword"])->name('change.password');
-        Route::post('update-password', [App\Http\Controllers\User\AccountController::class, "updatePassword"])->name('update.password')->middleware(['demo.mode']);
-
-        // Change theme
-        Route::get('theme/{id}', [App\Http\Controllers\User\AccountController::class, "changeTheme"])->name('change.theme');
-
-        // Resend Email Verfication
-        Route::get('verify-email-verification', [App\Http\Controllers\User\VerificationController::class, "verifyEmailVerification"])->name('verify.email.verification');
-        Route::get('resend-email-verification', [App\Http\Controllers\User\VerificationController::class, "resendEmailVerification"])->name('resend.email.verification');
+        // destroy
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
     });
+
+    // Image Generator
+    Route::prefix('image-generator')->as('image-generator.')->controller(ImageGeneratorController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // generate
+        Route::get('/generate', 'generate')->name('generate');
+
+        // store
+        Route::post('/generate', 'generateImage')->name('generate.store');
+
+        // destroy
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+    });
+
+    // Code Generator
+    Route::prefix('code-generator')->as('code-generator.')->controller(CodeGeneratorController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // generate
+        Route::get('/generate', 'generate')->name('generate');
+
+        // store
+        Route::post('/generate', 'generateCode')->name('generate.store');
+
+        // destroy
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+    });
+
+    // Speech to Text
+    Route::prefix('speech-to-text')->as('speech-to-text.')->controller(SpeechToTextConverterController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // convert
+        Route::get('/convert', 'convert')->name('convert');
+        Route::post('/convert', 'convertToText')->name('convert.store');
+
+        // update
+        Route::put('/update/{id}', 'update')->name('update');
+
+        // destroy
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+    });
+
+    // Text to Speech
+    Route::prefix('text-to-speech')->as('text-to-speech.')->controller(TextToSpeechConverterController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // convert
+        Route::get('convert', 'convert')->name('convert');
+        Route::post('convert', 'convertToSpeech')->name('convert.store');
+
+        // destroy
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+    });
+
+    // Personalized Chat
+    Route::prefix('personalized-chat')->as('personalized-chat.')->controller(PersonalizedChatController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // chat index
+        Route::get('/assistant/{assistant}/chat/{chat?}', 'chat')->name('chat');
+
+        // Send message (new or existing chat)
+        Route::post('/assistant/{assistant}/message', 'message')->name('message');
+        Route::post('/assistant/{assistant}/chat/{chat}/message', 'message')->name('message.chat');
+
+        // update
+        Route::put('/chat/{chat}', 'updateChatTitle')->name('update');
+
+        // delete
+        Route::delete('/assistant/{assistant}/chat/{id}', 'destroy')->name('destroy');
+    });
+
+    // Document Analyzer
+    Route::prefix('document-analyzer')->as('document-analyzer.')->controller(DocumentAnalyzerController::class)->group(function () {
+        // index
+        Route::get('/chat/{chat?}', 'index')->name('index');
+
+        // chat
+        Route::post('/message', 'message')->name('message');
+        Route::post('chat/{chat}/message', 'message')->name('message.chat');
+
+        // update
+        Route::put('/update/{chat}', 'updateChatTitle')->name('update');
+
+        // delete
+        Route::delete('/delete/{chat}', 'destroy')->name('destroy');
+    });
+
+    // User Uploads
+    Route::prefix('user-uploads')->as('user-uploads.')->controller(UserUploadController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // upload
+        Route::post('/upload', 'upload')->name('upload');
+
+        // delete
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+    });
+
+    // Site Analyzer
+    Route::prefix('site-analyzer')->as('site-analyzer.')->controller(SiteAnalyzerController::class)->group(function () {
+        // index
+        Route::get('/{chat?}', 'index')->name('index');
+
+        // analyze
+        Route::post('/analyze', 'analyze')->name('analyze');
+        Route::post('/{chat}/message', 'message')->name('message.chat');
+
+        // update
+        Route::put('/update/{chat}', 'updateChatTitle')->name('update');
+
+        // delete
+        Route::delete('/delete/{chat}', 'destroy')->name('destroy');
+    });
+
+    // Subscriptions
+    Route::prefix('subscriptions')->as('subscriptions.')->controller(SubscriptionController::class)->group(function () {
+        // index
+        Route::get('/', 'index')->name('index');
+
+        // plans
+        Route::get('/plans', 'plans')->name('plans');
+
+        // invoice
+        Route::get('/invoice/{id}', 'invoice')->name('invoice');
+    });
+
+    // Settings
+    Route::redirect('settings', 'settings/profile')->name('settings');
+    Route::prefix('settings')->as('settings.')->group(function () {
+        // Profile
+        Route::get('profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile');
+        Route::post('profile', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
+
+        // Password
+        Route::get('password', [App\Http\Controllers\User\PasswordController::class, 'index'])->name('password');
+        Route::post('password', [App\Http\Controllers\User\PasswordController::class, 'update'])->name('password.update');
+
+        // Preferences
+        Route::get('preferences', [App\Http\Controllers\User\PreferenceController::class, 'index'])->name('preferences');
+        Route::put('preferences', [App\Http\Controllers\User\PreferenceController::class, 'update'])->name('preferences.update');
+    });
+});

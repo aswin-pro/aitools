@@ -1,57 +1,59 @@
-    <?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 
-    Route::group(['middleware' => 'checkType'], function () {
-        // Choose Payment Gateway
-        Route::post('/prepare-payment/{planId}', [App\Http\Controllers\Payment\PaymentController::class, "preparePaymentGateway"])->name('prepare.payment.gateway')->middleware(['demo.mode']);
+Route::group(['middleware' => 'checkType'], function () {
+    // Checkout
+    Route::get('/checkout/{plan}', [App\Http\Controllers\User\CheckoutController::class, "checkout"])->name('checkout.index');
 
-        // PayPal Payment Gateway
-        Route::get('/payment-paypal/{planId}', [App\Http\Controllers\Payment\PaypalController::class, "paywithpaypal"])->name('paywithpaypal');
-        Route::get('/payment/status', [App\Http\Controllers\Payment\PaypalController::class, "paypalPaymentStatus"])->name('paypalPaymentStatus');
+    // Choose Payment Gateway
+    Route::post('/prepare-payment/{planId}', [App\Http\Controllers\Payment\PaymentController::class, "preparePaymentGateway"])->name('prepare.payment.gateway')->middleware(['demo.mode']);
 
-        // RazorPay
-        Route::get('payment-razorpay/{planId}', [App\Http\Controllers\Payment\RazorPayController::class, "prepareRazorpay"])->name('paywithrazorpay');
-        Route::get('razorpay-payment-status/{oid}/{paymentId}', [App\Http\Controllers\Payment\RazorPayController::class, "razorpayPaymentStatus"])->name('razorpay.payment.status');
+    // PayPal
+    Route::get('/payment/paypal/{planId}', [App\Http\Controllers\Payment\PaypalController::class, "index"])->name('payment.paypal');
+    Route::get('/paypal-payment/status', [App\Http\Controllers\Payment\PaypalController::class, "paymentStatus"])->name('payment.paypal.status');
 
-        // Phonepe
-        Route::get('payment-phonepe/{planId}', [App\Http\Controllers\Payment\PhonepeController::class, 'preparePhonpe'])->name('paywithphonepe');
-        Route::any('phonepe-payment-status', [App\Http\Controllers\Payment\PhonepeController::class, 'phonepePaymentStatus'])->name('phonepe.payment.status');
+    // RazorPay
+    Route::get('payment/razorpay/{planId}', [App\Http\Controllers\Payment\RazorPayController::class, "index"])->name('payment.razorpay');
+    Route::get('/razorpay-payment/status/{oid}/{paymentId}', [App\Http\Controllers\Payment\RazorPayController::class, "paymentStatus"])->name('payment.razorpay.status');
 
-        // Stripe
-        Route::get('/payment-stripe/{planId}', [App\Http\Controllers\Payment\StripeController::class, "stripeCheckout"])->name('paywithstripe');
-        Route::post('/stripe-payment-status/{paymentId}', [App\Http\Controllers\Payment\StripeController::class, "stripePaymentStatus"])->name('stripe.payment.status');
-        Route::get('/stripe-payment-cancel/{paymentId}', [App\Http\Controllers\Payment\StripeController::class, "stripePaymentCancel"])->name('stripe.payment.cancel');
+    // Stripe
+    Route::get('/payment/stripe/{planId}', [App\Http\Controllers\Payment\StripeController::class, "index"])->name('payment.stripe');
+    Route::post('/stripe-payment/status/{paymentId}', [App\Http\Controllers\Payment\StripeController::class, "paymentStatus"])->name('payment.stripe.status');
+    Route::get('/stripe-payment/cancel/{paymentId}', [App\Http\Controllers\Payment\StripeController::class, "paymentCancel"])->name('payment.stripe.cancel');
 
-        // Paystack
-        Route::get('/payment-paystack/{planId}', [App\Http\Controllers\Payment\PaystackController::class, "paystackCheckout"])->name('paywithpaystack');
-        Route::get('/paystack-payment/callback', [App\Http\Controllers\Payment\PaystackController::class, 'paystackHandleGatewayCallback'])->name('paystack.handle.gateway.callback');
+    // Mollie
+    Route::get('/payment/mollie/{planId}', [App\Http\Controllers\Payment\MollieController::class, "index"])->name('payment.mollie');
+    Route::get('/mollie-payment/status', [App\Http\Controllers\Payment\MollieController::class, "paymentStatus"])->name('payment.mollie.status');
 
-        // Mollie
-        Route::get('/payment-mollie/{planId}', [App\Http\Controllers\Payment\MollieController::class, "prepareMollie"])->name('paywithmollie');
-        Route::get('/mollie-payment-status', [App\Http\Controllers\Payment\MollieController::class, "molliePaymentStatus"])->name('mollie.payment.status');
+    // Offline
+    Route::get('/payment/offline/{planId}', [App\Http\Controllers\Payment\OfflineController::class, "index"])->name('payment.offline');
+    Route::post('/mollie-payment/mark', [App\Http\Controllers\Payment\OfflineController::class, "markOfflinePayment"])->name('payment.offline.mark');
 
-        // Offline
-        Route::get('/payment-offline/{planId}', [App\Http\Controllers\Payment\OfflineController::class, "offlineCheckout"])->name('paywithoffline');
-        Route::post('/mark-offline-payment', [App\Http\Controllers\Payment\OfflineController::class, "markOfflinePayment"])->name('mark.payment.payment');
+    // Transaction Cloud
+    Route::get('/payment/transactioncloud/{planId}', [App\Http\Controllers\Payment\TransactionCloudController::class, "index"])->name('payment.transactioncloud');
+    Route::get('/transactioncloud-payment/status', [App\Http\Controllers\Payment\TransactionCloudController::class, "paymentStatus"])->name('payment.transactioncloud.status');
 
-        // Transaction Cloud
-        Route::get('/payment-transactioncloud/{planId}', [App\Http\Controllers\Payment\TransactionCloudController::class, "prepareTransactionCloud"])->name('paywithtransactioncloud');
-        Route::get('/transactioncloud-payment-status', [App\Http\Controllers\Payment\TransactionCloudController::class, "transactionCloudPaymentStatus"])->name('transactioncloud.payment.status');
+    // Phonepe
+    Route::get('payment-phonepe/{planId}', [App\Http\Controllers\Payment\PhonepeController::class, 'index'])->name('payment.phonepe');
+    Route::any('phonepe-payment/status', [App\Http\Controllers\Payment\PhonepeController::class, 'paymentStatus'])->name('payment.phonepe.status');
 
-        // Mercado Pago
-        Route::get('/payment-mercadopago/{planId}', [App\Http\Controllers\Payment\MercadoPagoController::class, "prepareMercadoPago"])->name('paywithmercadopago');
-        Route::get('/mercadopago-payment-status', [App\Http\Controllers\Payment\MercadoPagoController::class, "mercadoPagoPaymentStatus"])->name('mercadopago.payment.status');
-        Route::get('/mercadopago-payment-failure', [App\Http\Controllers\Payment\MercadoPagoController::class, "mercadoPagoPaymentFailure"])->name('mercadopago.payment.failure');
-        Route::get('/mercadopago-payment-pending', [App\Http\Controllers\Payment\MercadoPagoController::class, "mercadoPagoPaymentPending"])->name('mercadopago.payment.pending');
-        Route::get('/mercadopago-callback', [App\Http\Controllers\Payment\MercadoPagoController::class, "mercadoPagoCallback"])->name('mercadopago.callback');
+    // Mercado Pago
+    Route::get('/payment-mercadopago/{planId}', [App\Http\Controllers\Payment\MercadoPagoController::class, "index"])->name('payment.mercadopago');
+    Route::get('/mercadopago-payment/status', [App\Http\Controllers\Payment\MercadoPagoController::class, "paymentStatus"])->name('payment.mercadopago.status');
+    Route::get('/mercadopago-payment/failure', [App\Http\Controllers\Payment\MercadoPagoController::class, "paymentFailure"])->name('payment.mercadopago.failure');
+    Route::get('/mercadopago-payment/pending', [App\Http\Controllers\Payment\MercadoPagoController::class, "paymentPending"])->name('payment.mercadopago.pending');
 
-        // Toyyibpay
-        Route::get('/payment-toyyibpay/{planId}', [App\Http\Controllers\Payment\ToyyibpayController::class, "prepareToyyibpay"])->name('prepare.toyyibpay');
-        Route::get('/toyyibpay-payment-status', [App\Http\Controllers\Payment\ToyyibpayController::class, "toyyibpayPaymentStatus"])->name('toyyibpay.payment.status');
-        Route::get('/toyyibpay-payment-success', [App\Http\Controllers\Payment\ToyyibpayController::class, 'toyyibpayPaymentSuccess'])->name('toyyibpay.payment.success');
+    // Toyyibpay
+    Route::get('/payment-toyyibpay/{planId}', [App\Http\Controllers\Payment\ToyyibpayController::class, "index"])->name('payment.toyyibpay');
+    Route::get('/toyyibpay-payment/status', [App\Http\Controllers\Payment\ToyyibpayController::class, "paymentStatus"])->name('payment.toyyibpay.status');
+    Route::get('/toyyibpay-payment/success', [App\Http\Controllers\Payment\ToyyibpayController::class, 'paymentSuccess'])->name('payment.toyyibpay.success');
 
-        // Flutterwave
-        Route::get('/payment-flutterwave/{planId}', [App\Http\Controllers\Payment\FlutterwaveController::class, "prepareFlutterwave"])->name('prepare.flutterwave');
-        Route::get('/flutterwave-payment-status', [App\Http\Controllers\Payment\FlutterwaveController::class, "flutterwavePaymentStatus"])->name('flutterwave.payment.status');
-    });
+    // Flutterwave
+    Route::get('/payment-flutterwave/{planId}', [App\Http\Controllers\Payment\FlutterwaveController::class, "index"])->name('payment.flutterwave');
+    Route::get('/flutterwave-payment/status', [App\Http\Controllers\Payment\FlutterwaveController::class, "paymentStatus"])->name('payment.flutterwave.status');
+
+    // Paystack
+    Route::get('/payment-paystack/{planId}', [App\Http\Controllers\Payment\PaystackController::class, "index"])->name('payment.paystack');
+    Route::get('/paystack-payment/callback', [App\Http\Controllers\Payment\PaystackController::class, 'callback'])->name('payment.paystack.callback');
+});

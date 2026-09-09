@@ -27,6 +27,7 @@ export default function InvoiceEmailSettings({
     return (
         <>
             <HeadingSmall
+            t={t}
                 title={t("Invoice Email Settings")}
                 description={t(
                     "Configure the heading and footer used in invoice emails.",

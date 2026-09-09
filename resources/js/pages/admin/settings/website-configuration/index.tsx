@@ -68,6 +68,7 @@ export default function WebsiteSettings({
                     }) => (
                         <div className="space-y-8">
                             <HeadingSmall
+                            t={t}
                                 title={t("Website Configuration")}
                                 description={t(
                                     "Customize your website appearance and branding."

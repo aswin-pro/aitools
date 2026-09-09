@@ -48,6 +48,7 @@ export default function Index() {
             <SettingsLayout>
                 <div className="max-w-[5xl] space-y-6">
                     <HeadingSmall
+                    t={t}
                         title={t("Tax Settings")}
                         description={t(
                             "These details will be used for the invoice.",

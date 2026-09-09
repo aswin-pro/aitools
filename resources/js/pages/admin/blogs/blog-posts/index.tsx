@@ -135,6 +135,7 @@ export default function Index({ blogs }: { blogs: LaravelPagination<Blog> }) {
 
             <div className="mb-4 flex items-start justify-between">
                 <Heading
+                t={t}
                     title={t("Blogs")}
                     description={t("Create and manage your blog posts")}
                 />
@@ -150,6 +151,7 @@ export default function Index({ blogs }: { blogs: LaravelPagination<Blog> }) {
             </div>
 
             <DataTable
+            t={t}
                 columns={columns}
                 data={blogs.data}
                 pageIndex={blogs.current_page - 1}

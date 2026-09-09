@@ -167,6 +167,7 @@ export default function Create({ categories }: AddTemplateProps) {
 
             <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
                 <Heading
+                t={t}
                     title={t("Add Template")}
                     description={t("Create a new template")}
                 />

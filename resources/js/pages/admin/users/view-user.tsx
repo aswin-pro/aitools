@@ -11,6 +11,7 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import GeneratedContents from "./generated-contents";
 import GeneratedImages from "./generated-images";
+import { useTranslation } from "react-i18next";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -83,12 +84,15 @@ export default function ViewUser({
         );
     };
 
+    const { t } = useTranslation();
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="View User" />
 
             <div className="mb-6">
                 <Heading
+                    t={t}
                     title="View User"
                     description="View customer details and activity"
                 />

@@ -73,6 +73,7 @@ export default function EditCustomPage() {
 
             <div className="flex flex-col gap-4 p-4 md:p-6">
                 <Heading
+                t={t}
                     title={`${t("Edit")} ${page.title || page.name}`}
                     description={t("Edit your custom page")}
                 />

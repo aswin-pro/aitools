@@ -1,3 +1,4 @@
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { LucideIcon } from 'lucide-react';
 
 export interface Auth {
@@ -11,66 +12,87 @@ export interface BreadcrumbItem {
 
 export interface NavItem {
     title: string;
-    route: string;
     url: string;
+    route: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
 }
 
-export interface NavGroup {
-    label: string;
-    items: NavItem[];
-}
-
-type Settings = {
-    site_logo: string | null;
-    site_logo_light: string | null;
-    favicon: string | null;
-};  
-
-export interface SharedData {
+export interface SharedData extends InertiaPageProps {
     name: string;
     auth: Auth;
-    [key: string]: unknown;
-    role: number;
-
-    upload: {
-        size_limit: number;
-    };
-
+    upload_limit: number;
     flash: {
         success?: string;
         error?: string;
-    }
-
-    settings: Settings;
-
-
+    };
+    role: number;
+    logo_light?: string;
+    logo_dark?: string;
+    favicon?: string;
+    credits: {
+        ai_credits: {
+            total: number;
+            used: number;
+        };
+        ai_image_credits: {
+            total: number;
+            used: number;
+        };
+    };
+    theme: string;
 }
 
-export interface ProfileForm {
-    name: string;
-    email: string;
-    profile_picture: File | null;
-}
+export type FieldRenderType =
+    | 'input'
+    | 'input-group'
+    | 'text-area'
+    | 'select'
+    | 'date-picker'
+    | 'checkbox';
 
+type DynamicValue<T, V> = V | ((item: T) => V);
 
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    profile_image?: string;
-    role_id: number;
-    created_at: string;
-    updated_at: string;
-    [key: string]: unknown;
-}
+type SelectOption = {
+    label: string;
+    value?: string;
+    items?: {
+        label: string;
+        value: string;
+    }[];
+};
+
+type FieldProps = React.InputHTMLAttributes<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+> & {
+    options?: SelectOption[];
+    onValueChange?: (value: string) => void;
+};
+
+export type FieldType<T = never> = {
+    id: string;
+    show?: boolean;
+    label?: string;
+    fieldType: FieldRenderType;
+    props: FieldProps<T>;
+    inputGroup?: {
+        align: 'inline-start' | 'inline-end';
+        content: DynamicValue<T, React.ReactNode>;
+    };
+    value?: DynamicValue<
+        T,
+        React.InputHTMLAttributes<HTMLInputElement>['value']
+    >;
+    className?: string;
+    helperText?: string;
+};
 
 export interface NavigateParams {
+    [key: string]: FormDataConvertible;
+
     page?: number;
     per_page?: number;
-    search?: string;    
-    [key: string]: FormDataConvertible;
+    search?: string;
 }
 
 export interface LaravelPagination<T> {
@@ -89,25 +111,27 @@ export interface LaravelPagination<T> {
     total: number;
 }
 
-export interface Transaction {
+
+
+
+
+export interface ProfileForm {
+    name: string;
+    email: string;
+    profile_picture: File | null;
+}
+
+
+export interface User {
     id: number;
-    transaction_id: string;
-    user_id: number;
-    plan_id: number;
-    description: string;
-    payment_gateway_name: string;
-    transaction_currency: string;
-    transaction_amount: number;
-    invoice_number: number;
-    invoice_prefix: string;
-    invoice_details: string;
-    payment_status: string;
-    status: string;
-    formatted_created_at: string;
-    user: User;
-    plan: Plan;
-    currency: Currency;
-    formatted_amount: string;
+    name: string;
+    email: string;
+    profile_image?: string;
+    role_id: number;
+    created_at: string;
+    updated_at: string;
+    lang: string;
+    [key: string]: unknown;
 }
 
 

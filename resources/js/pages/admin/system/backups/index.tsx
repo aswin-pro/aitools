@@ -185,6 +185,7 @@ const databaseColumns = getColumns({
             <Head title={t("Backups")} />
 
             <Heading
+            t={t}
                 title={t("Backups")}
                 description={t(
                     "Create, download, restore, and manage your system backups",
@@ -218,6 +219,7 @@ const databaseColumns = getColumns({
                 </div>
 
                 <DataTable
+                t={t}
                     columns={fileColumns}
                     data={fileBackups.data}
                     pageIndex={fileBackups.current_page - 1}
@@ -274,6 +276,7 @@ const databaseColumns = getColumns({
                 </div>
 
                 <DataTable
+                t={t}
                     columns={databaseColumns}
                     data={databaseBackups.data}
                     pageIndex={databaseBackups.current_page - 1}

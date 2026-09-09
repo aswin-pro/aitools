@@ -204,6 +204,7 @@ const importFields = [
             <div className="flex justify-between  items-center">
                 <div>
                     <Heading
+                        t={t}
                         title={t("System Translations")}
                         description={t(
                             "Manage translation languages and locales for your platform.",
@@ -228,6 +229,7 @@ const importFields = [
 
             <div className="mt-4">
                 <DataTable
+                    t={t}
                     columns={columns}
                     data={languages.data}
                     pageIndex={languages.current_page - 1}

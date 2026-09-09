@@ -2,30 +2,40 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { UserInfo } from "@/components/user-info";
-import { useMobileNavigation } from "@/hooks/use-mobile-navigation";
-import { SharedData, type User } from "@/types";
-import { Link, router, usePage } from "@inertiajs/react";
-import { LogOut, Settings } from "lucide-react";
-import { useTranslation } from "react-i18next";
+} from '@/components/ui/dropdown-menu';
+import { UserInfo } from '@/components/user-info';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
+import { SharedData } from '@/types';
+import { User } from '@/types/user';
+import { Link, router, usePage } from '@inertiajs/react';
+import { LogOut, User as UserIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface UserMenuContentProps {
     user: User;
 }
 
 export function UserMenuContent({ user }: UserMenuContentProps) {
+    // mobile navigation
     const cleanup = useMobileNavigation();
 
+    // handle logout
     const handleLogout = () => {
         cleanup();
         router.flushAll();
     };
 
+    // translation
     const { t } = useTranslation();
+
+    // role
     const role = usePage<SharedData>().props.role;
 
-    const profileRoute = role == 1 ? route('dashboard.admin.edit.account') : route('user.settings.profile');
+    // profile route
+    const profileRoute =
+        role === 1
+            ? route('dashboard.admin.edit.account')
+            : route('dashboard.user.settings.profile');
 
     return (
         <>
@@ -36,13 +46,9 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-                <Link
-                    className="block w-full"
-                    href={profileRoute}
-                    as="button"
-                >
-                    <Settings />
-                    {t("Profile")}
+                <Link className="block w-full" href={profileRoute} as="button">
+                    <UserIcon />
+                    {t('Profile')}
                 </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -51,13 +57,13 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                 <Link
                     className="block w-full text-red-600"
                     method="post"
-                    href={route("logout")}
+                    href={route('logout')}
                     as="button"
                     onClick={handleLogout}
                     data-test="logout-button"
                 >
                     <LogOut className="text-red-600" />
-                    {t("Log out")}
+                    {t('Log out')}
                 </Link>
             </DropdownMenuItem>
         </>

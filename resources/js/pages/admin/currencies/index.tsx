@@ -201,6 +201,7 @@ export default function Index({
 
             <div className="flex justify-between items-center">
                 <Heading
+                t={t}
                     title={t("Currencies")}
                     description={t(
                         "Manage supported currencies, symbols, and currency formatting settings",
@@ -215,6 +216,7 @@ export default function Index({
 
             <div className="">
                 <DataTable
+                t={t}
                     columns={columns}
                     data={currencies.data}
                     pageIndex={currencies.current_page - 1}

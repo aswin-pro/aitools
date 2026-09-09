@@ -208,6 +208,7 @@ export default function Index({
              
 
                 <Heading
+                t={t}
                     title={t("Pages")}
                     description={t(
                         "Manage website pages and custom pages",
@@ -217,6 +218,7 @@ export default function Index({
 
                 <div className="space-y-3">
                     <Heading
+                    t={t}
                         title={t("Standard Pages")}
                         description={t(
                             "Manage your website's standard pages",
@@ -224,6 +226,7 @@ export default function Index({
                     />
 
                     <DataTable
+                    t={t}
                         columns={staticColumns}
                         data={pages.data}
                         pageIndex={pages.current_page - 1}
@@ -261,6 +264,7 @@ export default function Index({
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <Heading
+                        t={t}
                             title={t("Custom Pages")}
                             description={t(
                                 "Create and manage custom website pages",
@@ -280,6 +284,7 @@ export default function Index({
                     </div>
 
                     <DataTable
+                    t={t}
                         columns={customColumns}
                         data={custom_pages.data}
                         pageIndex={

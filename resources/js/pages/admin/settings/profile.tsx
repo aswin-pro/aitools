@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Profile() {
     const { t } = useTranslation();
 
-    const { auth,  upload } = usePage<SharedData>().props;
+    const { auth,  upload_limit } = usePage<SharedData>().props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -38,6 +38,7 @@ export default function Profile() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
+                    t={t}
                         title={t("Profile information")}
                         description={t("Update your name and email address")}
                     />
@@ -70,12 +71,12 @@ export default function Profile() {
 
                                 if (!file) return;
 
-                                if (file.size > upload.size_limit * 1024) {
+                                if (file.size > upload_limit * 1024) {
                                     toast.error(
                                         t(
                                             "Profile photo must be less than {{size}} KB.",
                                             {
-                                                size: upload.size_limit,
+                                                size: upload_limit,
                                             },
                                         ),
                                     );
@@ -85,7 +86,7 @@ export default function Profile() {
                                         t(
                                             "Profile photo must be less than {{size}} KB.",
                                             {
-                                                size: upload.size_limit,
+                                                size: upload_limit,
                                             },
                                         ),
                                     );

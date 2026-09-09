@@ -67,6 +67,7 @@ export default function CreateCustomPage() {
 
             <div className="flex flex-col gap-4 p-4 md:p-6">
                 <Heading
+                t={t}
                     title={t("Add Custom Page")}
                     description={t("Create a new custom page")}
                 />

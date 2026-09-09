@@ -123,6 +123,7 @@ export default function AddPlan({ templates }: Props) {
                 {/* Header */}
                 <div>
                     <Heading
+                    t={t}
                         title={t("Add Plan")}
                         description={t("Create a new subscription plan.")}
                     />

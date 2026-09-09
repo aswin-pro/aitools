@@ -41,6 +41,7 @@ export default function Create({
 
             <div className="mb-6">
                 <Heading
+                    t={t}
                     title={t("Create Blog")}
                     description={t(
                         "Create and publish a new blog post",

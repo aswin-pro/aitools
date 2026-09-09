@@ -1,5 +1,5 @@
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
@@ -8,21 +8,28 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { Link, usePage } from "@inertiajs/react";
-import AppLogo from "./app-logo";
-import { SharedData } from "@/types";
+} from '@/components/ui/sidebar';
+import { SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import AppLogo from './app-logo';
 
 export function AppSidebar() {
-    const role = usePage<SharedData>().props.role;
-
+    const { role, auth } = usePage<SharedData>().props;
 
     const dashboardRoute =
         role === 1
-            ? route("dashboard.admin.overview")
-            : route("dashboard.user.dashboard");
+            ? route('dashboard.admin.overview')
+            : route('dashboard.user.overview');
+
+    const lang = auth.user?.lang ?? 'en';
+    const rtlLanguages = ['ar', 'ur', 'he', 'fa'];
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar
+            collapsible="icon"
+            variant="inset"
+            side={rtlLanguages.includes(lang) ? 'right' : 'left'}
+        >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

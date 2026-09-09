@@ -12,7 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        '/phonepe-payment-status',
-        '/mercadopago-callback',
+        '/phonepe-payment/status',
+        '/mercadopago-payment/status',
     ];
 }

@@ -56,6 +56,7 @@ export default function Index({
             <Head title={t("Login Activity")} />
 
             <Heading
+                t={t}
                 title={t("Login Activity")}
                 description={t(
                     "View and monitor user login and authentication activity",
@@ -64,6 +65,7 @@ export default function Index({
 
             <div className="mt-4">
                 <DataTable
+                    t={t}
                     columns={columns}
                     data={logs.data}
                     pageIndex={logs.current_page - 1}

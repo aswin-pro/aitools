@@ -230,6 +230,7 @@ export default function Index({
             <Head title={t("Currencies")} />
 
             <Heading
+                t={t}
                 title={t("Users")}
                 description={t(
                     "Manage registered users, plans, and account details",
@@ -238,6 +239,7 @@ export default function Index({
 
             <div className="">
                 <DataTable
+                    t={t}
                     columns={columns}
                     data={users.data}
                     pageIndex={users.current_page - 1}

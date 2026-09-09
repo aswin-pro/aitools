@@ -230,6 +230,7 @@ export default function Index({ categories, filters }: IndexProps) {
 
             <div className="mb-4 flex items-start justify-between">
                 <Heading
+                t={t}
                     title={t("Template Categories")}
                     description={t(
                         "Create and manage your Template categories",
@@ -243,6 +244,7 @@ export default function Index({ categories, filters }: IndexProps) {
             </div>
 
             <DataTable
+            t={t}
                 columns={columns}
                 data={categories.data}
                 pageIndex={categories.current_page - 1}

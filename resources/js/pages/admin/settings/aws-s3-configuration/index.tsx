@@ -70,6 +70,7 @@ export default function Index() {
             <SettingsLayout>
                 <div className="max-w-[5xl] space-y-6">
                     <HeadingSmall
+                    t={t}
                         title={t("AWS S3 Configuration Settings")}
                         description={t(
                             "Configure AWS S3 storage settings for your application.",

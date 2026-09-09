@@ -101,6 +101,7 @@ export default function SlackNotification({ slack_settings }: Props) {
 
             <div className="space-y-6">
                 <Heading
+                t={t}
                     title={t("Slack Settings")}
                     description={t(
                         "Configure Slack notifications for your application.",

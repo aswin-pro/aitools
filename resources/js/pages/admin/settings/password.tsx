@@ -40,6 +40,7 @@ export default function Password() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
+                    t={t}
                         title={t("Update password")}
                         description={t("Ensure your account is using a long, random password to stay secure.")}
                     />

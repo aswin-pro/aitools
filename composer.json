@@ -16,6 +16,7 @@
         "io-developer/php-whois": "^4.1",
         "jenssegers/agent": "^2.6",
         "joedixon/laravel-translation": "^1.1",
+        "laravel/ai": "1.x-dev",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.19.0",
@@ -25,9 +26,7 @@
         "mews/purifier": "^3.3",
         "mollie/laravel-mollie": "^3.0",
         "monolog/monolog": "^3.0",
-        "openai-php/client": "^0.17.1",
-        "orhanerday/open-ai": "^3.5",
-        "paypal/paypal-checkout-sdk": "^1.0",
+        "paypal/paypal-server-sdk": "^2.4",
         "phpunit/phpunit": "^11.5",
         "protonemedia/laravel-verify-new-email": "^1.6",
         "rachidlaasri/laravel-installer": "^4.1",
@@ -66,8 +65,7 @@
             "app/Helpers/DateHelper.php",
             "app/Helpers/CommonHelper.php",
             "app/Helpers/UserHelper.php",
-            "app/Helpers/PaymentHelper.php",
-            "app/Helpers/helper.php"
+            "app/Helpers/PaymentHelper.php"
         ],
         "classmap": [
             "app/Classes",

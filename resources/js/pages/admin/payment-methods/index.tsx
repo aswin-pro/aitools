@@ -554,6 +554,7 @@ const getConfigureFields = () => {
             <Head title={t("Payment Methods")} />
 
             <Heading
+            t={t}
                 title={t("Payment Methods")}
                 description={t(
                     "Manage your payment methods and configurations",
@@ -562,6 +563,7 @@ const getConfigureFields = () => {
 
             <div className="">
                 <DataTable
+                t={t}
                     columns={columns}
                     data={payment_methods.data}
                     pageIndex={payment_methods.current_page - 1}

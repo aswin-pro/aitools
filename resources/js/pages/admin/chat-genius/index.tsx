@@ -234,6 +234,7 @@ export default function Index({
 
             <div className="mb-4 flex items-start justify-between">
                 <Heading
+                t={t}
                     title={t("Chat Assistant")}
                     description={t("Create and manage your chat assistants")}
                 />
@@ -245,6 +246,7 @@ export default function Index({
             </div>
 
             <DataTable
+            t={t}
                 columns={columns}
                 data={chatgenius.data}
                 pageIndex={chatgenius.current_page - 1}

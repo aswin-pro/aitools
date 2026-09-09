@@ -2,7 +2,6 @@ import AppLayout from "@/layouts/app/app-layout";
 import Heading from "@/components/heading";
 import FormInput from "@/components/admin/form-input";
 import FormTextarea from "@/components/admin/form-textarea";
-import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/ui/loading-swap";
 import { BreadcrumbItem } from "@/types";
 import { Head, useForm, usePage } from "@inertiajs/react";
@@ -10,6 +9,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import grapesjs from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
+import { Button } from "@/components/ui/button";
 
 type PageData = {
     id: number;
@@ -163,6 +163,7 @@ ${html}
 
             <div className="space-y-6">
                 <Heading
+                t={t}
                     title={`Edit ${page.title || page.name}`}
                     description={t("Edit your page visually")}
                 />

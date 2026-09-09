@@ -4,7 +4,6 @@ import { useState } from "react";
 import HeadingSmall from "@/components/heading-small";
 import InputError from "@/components/input-error";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SettingsLayout from "@/layouts/settings/layout";
 import { toast } from "sonner";
@@ -78,6 +77,7 @@ export default function SystemSetting() {
             <SettingsLayout>
                 <div className="space-y-6 max-w-[5xl]">
                     <HeadingSmall
+                    t={t}
                         title={t("System Configuration")}
                         description={"General System configuration settings"}
                     />

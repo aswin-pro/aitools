@@ -52,6 +52,7 @@ export default function CookieConsent({
             <div className="space-y-6">
                 <div className="mb-6">
                     <Heading
+                    t={t}
                         title={t("Overview")}
                         description={t("Cookie Consent Settings")}
                     />

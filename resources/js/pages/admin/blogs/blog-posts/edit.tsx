@@ -36,6 +36,7 @@ export default function Edit({ blog, categories }: EditProps) {
 
             <div className="mb-6">
                 <Heading
+                t={t}
                     title={t("Edit Blog")}
                     description={t("Update and manage your existing blog post")}
                 />

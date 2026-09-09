@@ -1,14 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\CurrencyController;
-use App\Http\Controllers\Admin\PluginController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Payment\ToyyibpayController;
-use App\Http\Controllers\Payment\FlutterwaveController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +15,6 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -65,18 +59,18 @@ Route::group(['middleware' => 'Installer'], function () {
     // Auth routes
     Auth::routes();
 
-    // Admin routes
-    require __DIR__ . '/admin.php';
-
-    // User routes
-    require __DIR__ . '/user.php';
-
-    // Google auth routes
+     // Google auth routes
     Route::get('/google-login', [App\Http\Controllers\Auth\LoginController::class, "redirectToProvider"])->name('login.google');
     Route::get('/sign-in-with-google', [App\Http\Controllers\Auth\LoginController::class, "handleProviderCallback"]);
 
-    // Payment routes
+    // Admin Routes
+    require __DIR__ . '/admin.php';
+
+    // User Routes
+    require __DIR__ . '/user.php';   
+
+    // Payment Routes
     require __DIR__ . '/payment.php';
 
-require __DIR__ . '/../Modules/TranslationManager/routes/web.php';
+    require __DIR__ . '/../Modules/TranslationManager/routes/web.php';
 });

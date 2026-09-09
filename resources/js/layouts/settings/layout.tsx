@@ -2,16 +2,17 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { SharedData, type NavItem } from '@/types';
+import { NavItem, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Bot, Calculator, ClockFading, CloudCog, Globe, LockKeyhole, Settings, User, UserKey, UserPen } from 'lucide-react';
+import { Bot, Calculator, ClockFading, CloudCog, Globe, LockKeyhole, Settings, Settings2, User, UserKey, UserPen } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
     // i18n
     const { t } = useTranslation();
-    
+
+    // role
     const role = usePage<SharedData>().props.role;
 
     let sidebarNavItems: NavItem[] = [];
@@ -70,55 +71,72 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     } else {
         sidebarNavItems = [
             {
-                title: "Profile",
-                url: route("dashboard.user.settings.profile"),
-                route: "dashboard.user.settings.profile",
+                title: 'Profile',
+                url: route('dashboard.user.settings.profile'),
+                route: 'dashboard.user.settings.profile',
                 icon: UserPen,
             },
             {
-                title: "Password",
-                url: route("dashboard.user.settings.password"),
-                route: "dashboard.user.settings.password",
+                title: 'Password',
+                url: route('dashboard.user.settings.password'),
+                route: 'dashboard.user.settings.password',
                 icon: UserKey,
+            },
+            {
+                title: 'Preferences',
+                url: route('dashboard.user.settings.preferences'),
+                route: 'dashboard.user.settings.preferences',
+                icon: Settings2,
             },
         ];
     }
 
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
         return null;
     }
 
-    // current path
-    const currentPath = window.location.pathname;    
-
-
-  return (
+    return (
         <div>
             <Heading
+                t={t}
                 title="Settings"
                 description="Manage your profile and account settings"
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-10">
-                <aside className="w-full max-w-xl lg:w-60 ">
-                    <nav className="flex flex-col space-y-1 space-x-0 border rounded-lg p-3">
+                <aside className="w-full max-w-xl lg:w-60">
+                    <nav className="flex flex-col space-y-1 space-x-0 rounded-lg border p-3">
                         {sidebarNavItems.map((item, index) => (
                             <Button
+                                type="button"
                                 key={`${item.url}-${index}`}
                                 size="sm"
                                 variant="ghost"
                                 asChild
-                                className={cn("w-full justify-start", {
-                                    "bg-muted": route().current(
+                                className={cn('w-full justify-start', {
+                                    'bg-sidebar-accent/70': route().current(
                                         item.route,
                                     ),
                                 })}
                             >
                                 <Link href={item.url}>
                                     {item.icon && (
-                                        <item.icon className="h-4 w-4" />
+                                        <item.icon
+                                            className={cn('h-4 w-4', {
+                                                'text-primary dark:text-white':
+                                                    route().current(item.route),
+                                            })}
+                                        />
                                     )}
-                                    {t(item.title)}
+                                    <span
+                                        className={cn('dark:text-white', {
+                                            'text-primary': route().current(
+                                                item.route,
+                                            ),
+                                        })}
+                                    >
+                                        {t(item.title)}
+                                    </span>
                                 </Link>
                             </Button>
                         ))}
@@ -127,8 +145,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
                 <Separator className="my-6 lg:hidden" />
 
-                <div className="flex-1 md:max-w-4xl">
-                    <section className={`max-w-xl space-y-12 ${role === 1 && "md:max-w-3xl"}`}>
+                <div className="flex-1 md:max-w-2xl">
+                    <section className="max-w-xl space-y-12">
                         {children}
                     </section>
                 </div>

@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name'            => env('APP_NAME', 'Laravel'),
 
-    'code' => env('PURCHASE_CODE', 'YOUR_ENVATO_PURCHASE_CODE'),
+    'code'            => env('PURCHASE_CODE', 'YOUR_ENVATO_PURCHASE_CODE'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env'             => env('APP_ENV', 'production'),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug'           => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url'             => env('APP_URL', 'http://localhost'),
 
-    'asset_url' => env('ASSET_URL', null),
+    'asset_url'       => env('ASSET_URL', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => env('TIMEZONE', 'UTC'),
+    'timezone'        => env('TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale'          => 'en',
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +108,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale'    => 'en_US',
 
     /*
     |--------------------------------------------------------------------------
@@ -121,9 +121,9 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key'             => env('APP_KEY'),
 
-    'cipher' => 'AES-256-CBC',
+    'cipher'          => 'AES-256-CBC',
 
     /*
     |--------------------------------------------------------------------------
@@ -136,7 +136,7 @@ return [
     |
     */
 
-    'providers' => [
+    'providers'       => [
 
         /*
          * Laravel Framework Service Providers...
@@ -201,60 +201,83 @@ return [
     |
     */
 
-    'aliases' => [
+    'aliases'         => [
 
-        'App' => Illuminate\Support\Facades\App::class,
-        'Arr' => Illuminate\Support\Arr::class,
-        'Artisan' => Illuminate\Support\Facades\Artisan::class,
-        'Auth' => Illuminate\Support\Facades\Auth::class,
-        'Blade' => Illuminate\Support\Facades\Blade::class,
-        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
-        'Bus' => Illuminate\Support\Facades\Bus::class,
-        'Cache' => Illuminate\Support\Facades\Cache::class,
-        'Config' => Illuminate\Support\Facades\Config::class,
-        'Cookie' => Illuminate\Support\Facades\Cookie::class,
-        'Crypt' => Illuminate\Support\Facades\Crypt::class,
-        'Date' => Illuminate\Support\Facades\Date::class,
-        'DB' => Illuminate\Support\Facades\DB::class,
-        'Eloquent' => Illuminate\Database\Eloquent\Model::class,
-        'Event' => Illuminate\Support\Facades\Event::class,
-        'File' => Illuminate\Support\Facades\File::class,
-        'Gate' => Illuminate\Support\Facades\Gate::class,
-        'Hash' => Illuminate\Support\Facades\Hash::class,
-        'Http' => Illuminate\Support\Facades\Http::class,
-        'Js' => Illuminate\Support\Js::class,
-        'Lang' => Illuminate\Support\Facades\Lang::class,
-        'Log' => Illuminate\Support\Facades\Log::class,
-        'Mail' => Illuminate\Support\Facades\Mail::class,
+        'App'          => Illuminate\Support\Facades\App::class,
+        'Arr'          => Illuminate\Support\Arr::class,
+        'Artisan'      => Illuminate\Support\Facades\Artisan::class,
+        'Auth'         => Illuminate\Support\Facades\Auth::class,
+        'Blade'        => Illuminate\Support\Facades\Blade::class,
+        'Broadcast'    => Illuminate\Support\Facades\Broadcast::class,
+        'Bus'          => Illuminate\Support\Facades\Bus::class,
+        'Cache'        => Illuminate\Support\Facades\Cache::class,
+        'Config'       => Illuminate\Support\Facades\Config::class,
+        'Cookie'       => Illuminate\Support\Facades\Cookie::class,
+        'Crypt'        => Illuminate\Support\Facades\Crypt::class,
+        'Date'         => Illuminate\Support\Facades\Date::class,
+        'DB'           => Illuminate\Support\Facades\DB::class,
+        'Eloquent'     => Illuminate\Database\Eloquent\Model::class,
+        'Event'        => Illuminate\Support\Facades\Event::class,
+        'File'         => Illuminate\Support\Facades\File::class,
+        'Gate'         => Illuminate\Support\Facades\Gate::class,
+        'Hash'         => Illuminate\Support\Facades\Hash::class,
+        'Http'         => Illuminate\Support\Facades\Http::class,
+        'Js'           => Illuminate\Support\Js::class,
+        'Lang'         => Illuminate\Support\Facades\Lang::class,
+        'Log'          => Illuminate\Support\Facades\Log::class,
+        'Mail'         => Illuminate\Support\Facades\Mail::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
-        'Password' => Illuminate\Support\Facades\Password::class,
-        'Queue' => Illuminate\Support\Facades\Queue::class,
-        'RateLimiter' => Illuminate\Support\Facades\RateLimiter::class,
-        'Redirect' => Illuminate\Support\Facades\Redirect::class,
+        'Password'     => Illuminate\Support\Facades\Password::class,
+        'Queue'        => Illuminate\Support\Facades\Queue::class,
+        'RateLimiter'  => Illuminate\Support\Facades\RateLimiter::class,
+        'Redirect'     => Illuminate\Support\Facades\Redirect::class,
         // 'Redis' => Illuminate\Support\Facades\Redis::class,
-        'Request' => Illuminate\Support\Facades\Request::class,
-        'Response' => Illuminate\Support\Facades\Response::class,
-        'Route' => Illuminate\Support\Facades\Route::class,
-        'Schema' => Illuminate\Support\Facades\Schema::class,
-        'Session' => Illuminate\Support\Facades\Session::class,
-        'Storage' => Illuminate\Support\Facades\Storage::class,
-        'Str' => Illuminate\Support\Str::class,
-        'URL' => Illuminate\Support\Facades\URL::class,
-        'Validator' => Illuminate\Support\Facades\Validator::class,
-        'View' => Illuminate\Support\Facades\View::class,
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        'ReCaptcha' => Biscolab\ReCaptcha\Facades\ReCaptcha::class,
-        'Purifier' => Mews\Purifier\Facades\Purifier::class,
-        'SEO' => Artesaos\SEOTools\Facades\SEOTools::class,
-        'GeoIP' => \Torann\GeoIP\Facades\GeoIP::class,
-        'Agent' => Jenssegers\Agent\Facades\Agent::class,
-        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
-        'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
+        'Request'      => Illuminate\Support\Facades\Request::class,
+        'Response'     => Illuminate\Support\Facades\Response::class,
+        'Route'        => Illuminate\Support\Facades\Route::class,
+        'Schema'       => Illuminate\Support\Facades\Schema::class,
+        'Session'      => Illuminate\Support\Facades\Session::class,
+        'Storage'      => Illuminate\Support\Facades\Storage::class,
+        'Str'          => Illuminate\Support\Str::class,
+        'URL'          => Illuminate\Support\Facades\URL::class,
+        'Validator'    => Illuminate\Support\Facades\Validator::class,
+        'View'         => Illuminate\Support\Facades\View::class,
+        'Socialite'    => Laravel\Socialite\Facades\Socialite::class,
+        'Purifier'     => Mews\Purifier\Facades\Purifier::class,
+        'SEO'          => Artesaos\SEOTools\Facades\SEOTools::class,
+        'GeoIP'        => \Torann\GeoIP\Facades\GeoIP::class,
+        'Agent'        => Jenssegers\Agent\Facades\Agent::class,
     ],
 
     // Languages
-    'languages' => [
-  'en' => 'English',
-  'th' => 'Thai',
-],
+    'languages'       => [
+        'en' => 'English',
+        'ar' => 'Arabic',
+        'bn' => 'Bangla',
+        'bg' => 'Bulgarian',
+        'zh' => 'Chinese',
+        'nl' => 'Dutch',
+        'fr' => 'French',
+        'de' => 'German',
+        'hi' => 'Hindi',
+        'he' => 'Hebrew',
+        'hu' => 'Hungarian',
+        'id' => 'Indonesian',
+        'it' => 'Italian',
+        'ja' => 'Japanese',
+        'lt' => 'Lithuanian',
+        'ms' => 'Malay',
+        'pt' => 'Portuguese',
+        'pl' => 'Polish',
+        'ro' => 'Romanian',
+        'ru' => 'Russian',
+        'es' => 'Spanish',
+        'si' => 'Sinhala',
+        'sv' => 'Swedish',
+        'ta' => 'Tamil',
+        'th' => 'Thai',
+        'tr' => 'Turkish',
+        'ur' => 'Urdu',
+        'vi' => 'Vietnamese',
+    ],
 ];

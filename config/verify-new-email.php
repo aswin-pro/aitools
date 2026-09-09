@@ -4,12 +4,12 @@ return [
     /**
      * Here you can specify the name of a custom route to handle the verification.
      */
-    'route' => 'user.verify.email.verification',
+    'route' => 'dashboard.user.verify.email.verification',
 
     /**
      * Here you can specify the path to redirect to after verification.
      */
-    'redirect_to' => '/user/dashboard',
+    'redirect_to' => '/dashboard/user/overview',
 
     /**
      * Whether to login the user after successfully verifying its email.

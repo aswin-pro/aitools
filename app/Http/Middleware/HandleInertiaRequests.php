@@ -38,6 +38,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settings = Setting::where('status', 1)->first();
+        
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -52,16 +54,13 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'upload' => [
-                'size_limit' => env('SIZE_LIMIT', 5012),
-            ],
-            'role' => $request->user()->role_id ?? 2,
-            'settings' => fn() => Setting::query()-> select([
-                'site_logo',
-                'site_logo_light',
-                'favicon',
-            ])->first(),
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'upload_limit' => env('SIZE_LIMIT', 5012),
+            'role'       => $request->user()->role_id ?? 2,
+            'logo_light' => $settings->site_logo,
+            'logo_dark'  => $settings->site_logo_light,
+            'favicon'    => $settings->favicon,
+            'credits'    => fn () => creditsUsage(),
+            'theme'      => 'default'
         ];
     }
 }

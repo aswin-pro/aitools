@@ -3,7 +3,6 @@ import AppLayout from "@/layouts/app/app-layout";
 import {
     LaravelPagination,
     NavigateParams,
-    Transaction,
     type BreadcrumbItem,
 } from "@/types";
 import { Head, router } from "@inertiajs/react";
@@ -26,6 +25,7 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
+import { Transaction } from "@/types/admin";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -79,6 +79,7 @@ export default function Index({
             <div className="flex items-center justify-between">
                             
                 <Heading
+                    t={t}
                     title="Transactions"
                     description="View and manage customer transactions"
                 />
@@ -191,6 +192,7 @@ export default function Index({
 
 
             <DataTable
+                t={t}
                 columns={columns}
                 data={transactions.data}
                 pageIndex={transactions.current_page - 1}

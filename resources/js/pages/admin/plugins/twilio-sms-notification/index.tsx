@@ -56,6 +56,7 @@ export default function TwilioSmsSettings({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Heading
+                t={t}
                 title={t("Twilio SMS Notification Settings")}
                 description={t(
                     "Configure Twilio SMS notification credentials and templates.",

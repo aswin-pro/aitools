@@ -259,6 +259,7 @@ export default function Edit({
 
             <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
                 <Heading
+                t={t}
                     title={t("Edit Template")}
                     description={t(
                         "Update the template details",

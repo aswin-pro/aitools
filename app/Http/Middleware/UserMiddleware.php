@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -17,8 +16,19 @@ class UserMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        // Fetch User
+        $user = Auth::user();
+
+        // Get the current route name
+        $routeName = $request->route()?->getName();
+
         if (auth::check() && Auth::user()->role_id == 2) {
-            return $next($request);
+            // check plan
+            if (empty($user->plan_details) && $routeName != 'dashboard.user.subscriptions.plans') {
+                return to_route('dashboard.user.subscriptions.plans');
+            } else {
+                return $next($request);
+            }
         } else {
             return redirect()->route('login');
         }

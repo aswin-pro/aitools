@@ -1,3 +1,28 @@
+import { Button } from '@/components/ui/button';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/command';
+import { Input } from '@/components/ui/input';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import {
     ColumnDef,
     flexRender,
@@ -6,39 +31,14 @@ import {
     SortingState,
     useReactTable,
     VisibilityState,
-} from "@tanstack/react-table";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { CheckIcon, Settings2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
-import { Input } from "@/components/ui/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DataTablePagination } from "./pagination";
-import { useTranslation } from "react-i18next";
+} from '@tanstack/react-table';
+import { CheckIcon, Settings2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { DataTablePagination } from './pagination';
 
 interface DataTableProps<TData> {
-    columns: ColumnDef<TData, any>[];
+    t: (key: string) => string;
+    columns: ColumnDef<TData, TData>[];
     data: TData[];
     pageIndex: number;
     pageSize: number;
@@ -51,6 +51,7 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({
+    t,
     columns,
     data,
     pageIndex,
@@ -62,26 +63,24 @@ export function DataTable<TData>({
     onSearch,
     loading = false,
 }: DataTableProps<TData>) {
-    const { t } = useTranslation();
-    const [search, setSearch] = useState(initialSearch ?? "");
+    // search
+    const [search, setSearch] = useState(initialSearch ?? '');
+
+    // refs
     const inputRef = useRef<HTMLInputElement>(null);
-    const focusKey = "datatable_search_focused";
-    useEffect(() => {
-        setSearch(initialSearch ?? "");
-    }, [initialSearch]);
-    useEffect(() => {
-        const wasFocused = sessionStorage.getItem(focusKey) === "1";
-        if (wasFocused) {
-            requestAnimationFrame(() => inputRef.current?.focus());
-        }
-    }, []);
+
+    // sortings
     const [sorting, setSorting] = useState<SortingState>([]);
+
+    // column visibility
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
         {},
     );
 
+    // search timeout
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // handle search
     const handleSearch = (value: string) => {
         setSearch(value);
 
@@ -111,37 +110,40 @@ export function DataTable<TData>({
         },
     });
 
+    // total pages
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
         <div>
             {/* Search + Column toggle */}
-            <div className="flex items-center gap-4 mt-4">
+            <div className="mt-4 flex items-center gap-4">
                 <Input
                     ref={inputRef}
-                    placeholder={t("Search...")}
+                    placeholder={t('Search...')}
                     className="max-w-xs"
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
-                    onFocus={() => sessionStorage.setItem(focusKey, "1")}
-                    onBlur={() => sessionStorage.setItem(focusKey, "0")}
                 />
 
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant="outline" className="ml-auto px-3">
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="ms-auto px-3"
+                        >
                             <Settings2 />
-                            {t("View")}
+                            {t('View')}
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent align="end" className="w-44 p-0">
                         <Command>
                             <CommandInput
-                                placeholder={t("Search columns...")}
+                                placeholder={t('Search columns...')}
                             />
                             <CommandList>
                                 <CommandEmpty>
-                                    {t("No columns found.")}
+                                    {t('No columns found.')}
                                 </CommandEmpty>
                                 <CommandGroup>
                                     {table
@@ -159,10 +161,10 @@ export function DataTable<TData>({
                                                 <span>{column.id}</span>
                                                 <CheckIcon
                                                     className={cn(
-                                                        "ml-auto size-4",
+                                                        'ms-auto size-4',
                                                         column.getIsVisible()
-                                                            ? "opacity-100"
-                                                            : "opacity-0",
+                                                            ? 'opacity-100'
+                                                            : 'opacity-0',
                                                     )}
                                                 />
                                             </CommandItem>
@@ -175,7 +177,7 @@ export function DataTable<TData>({
             </div>
 
             {/* Table */}
-            <div className="rounded-md border overflow-hidden my-4">
+            <div className="my-4 overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((hg) => (
@@ -222,7 +224,7 @@ export function DataTable<TData>({
                                     colSpan={columns.length}
                                     className="text-center"
                                 >
-                                    {t("No results.")}
+                                    {t('No results.')}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -232,11 +234,13 @@ export function DataTable<TData>({
 
             {/* Pagination */}
             <DataTablePagination
+                t={t}
                 pageIndex={pageIndex}
                 totalPages={totalPages}
                 pageSize={pageSize}
                 onPageChange={onPageChange}
                 onPageSizeChange={onPageSizeChange}
+                pageSizeOptions={[10, 20, 30, 40, 50]}
             />
         </div>
     );

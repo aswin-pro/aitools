@@ -106,6 +106,7 @@ export default function Index({ plans, filters }: Props) {
                 <div className="flex items-center justify-between">
                     <div>
                         <Heading
+                        t={t}
                             title={t("Plans")}
                             description={t("Manage your subscription plans.")}
                         />
@@ -121,6 +122,7 @@ export default function Index({ plans, filters }: Props) {
                 </div>
 
                 <DataTable
+                t={t}
                     columns={columns}
                     data={plans.data}
                     pageIndex={plans.current_page - 1}

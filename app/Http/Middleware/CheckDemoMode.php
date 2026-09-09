@@ -18,7 +18,7 @@ class CheckDemoMode
     public function handle(Request $request, Closure $next): Response
     {
         // Exclude the demo route from this middleware
-        if ($request->routeIs('admin.site.demo') || $request->routeIs('admin.demo.toggle') || $request->routeIs('admin.dashboard')) {
+        if ($request->routeIs('admin.site.demo') || $request->routeIs('admin.demo.toggle') || $request->routeIs('dashboard.admin.overview')) {
             return $next($request);
         }
 
@@ -28,13 +28,13 @@ class CheckDemoMode
         if ($demoMode === '1') {
             // Check authentication
             if (!Auth::check()) {
-                return redirect()->route('admin.login')->with('failed', trans('You are not authorized to access this page.'));
+                return redirect()->route('login')->with('failed', trans('You are not authorized to access this page.'));
             }
             // Check login user is admin
             if (Auth::user()->role_id != 2) {
-                return redirect()->route('admin.dashboard')->with('failed', trans('Demo mode is enabled. So, you can not perform this action.'));
+                return redirect()->route('dashboard.admin.overview')->with('failed', trans('Demo mode is enabled. So, you can not perform this action.'));
             } else {
-                return redirect()->route('user.dashboard')->with('failed', trans('Demo mode is enabled. So, you can not perform this action.'));
+                return redirect()->route('dashboard.user.overview')->with('failed', trans('Demo mode is enabled. So, you can not perform this action.'));
             }
         }
 

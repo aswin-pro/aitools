@@ -125,7 +125,7 @@ $pages = Page::get();
                         @else
                         {{-- Dashboard --}}
                         <a class="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-900 hover:text-white border border-gray-200 rounded-md overflow-hidden transition duration-300"
-                            href="{{ route('user.dashboard') }}">
+                            href="{{ route('dashboard.user.overview') }}">
                             <div
                                 class="absolute top-0 right-full w-full h-full bg-orange-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500">
                             </div>
@@ -223,7 +223,7 @@ $pages = Page::get();
                     @endif
                     @else
                     <a class="flex items-center text-sm font-semibold text-orange-900 hover:text-orange-600 py-3"
-                        href="{{ route('user.dashboard') }}">
+                        href="{{ route('dashboard.user.overview') }}">
                         {{ __('Dashboard') }}
                     </a>
                     @endif

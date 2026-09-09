@@ -62,6 +62,7 @@ export default function MSG91WhatsappSettings({
 
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Heading
+                t={t}
                     title={t("MSG91 Whatsapp Notification Settings")}
                     description={t(
                         "Configure MSG91 Whatsapp notification credentials and templates.",
